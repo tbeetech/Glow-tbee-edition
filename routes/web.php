@@ -36,9 +36,6 @@ Route::get('/blog/{slug}', \App\Livewire\Page\BlogDetail::class)->name('blog.sho
 // Public News Routes
 Route::get('/news', NewsPage::class)->name('news');
 Route::get('/news/{slug}', NewsDetail::class)->name('news.show');
-// Public News Routes
-Route::get('/news', NewsPage::class)->name('news');
-Route::get('/news/{slug}', NewsDetail::class)->name('news.show');
 
 
 // Guest Routes (only accessible when not logged in)
@@ -54,6 +51,7 @@ Route::middleware('auth')->prefix('admin/blog')->name('admin.blog.')->group(func
     Route::get('/create', \App\Livewire\Admin\Blog\BlogForm::class)->name('create');
     Route::get('/{id}/edit', \App\Livewire\Admin\Blog\BlogForm::class)->name('edit');
     Route::get('/categories', \App\Livewire\Admin\Blog\BlogCategories::class)->name('categories');
+    Route::get('/{slug}/preview', \App\Livewire\Page\BlogDetail::class)->name('preview');
 });
 
 // Authenticated Routes
