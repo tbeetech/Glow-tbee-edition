@@ -162,7 +162,7 @@ class HomePage extends Component
                     'category' => $post->category->name,
                     'category_slug' => $post->category->slug,
                     'category_color' => $post->category->color,
-                    'date' => $post->published_at->diffForHumans(),
+                    'date' => $post->published_at?->diffForHumans() ?? 'Unpublished',
                     'author' => $post->author->name,
                     'read_time' => $post->read_time,
                     'views' => number_format($post->views),
@@ -184,7 +184,7 @@ class HomePage extends Component
                     'title' => $post->title,
                     'category' => $post->category->name,
                     'views' => $post->views,
-                    'published_at' => $post->published_at->diffForHumans(),
+                    'published_at' => $post->published_at?->diffForHumans() ?? 'Unpublished',
                 ];
             })
             ->toArray();
