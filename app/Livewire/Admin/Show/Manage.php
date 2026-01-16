@@ -5,6 +5,8 @@ namespace App\Livewire\Admin\Show;
 use App\Models\Show\Show;
 use App\Models\Show\Category;
 use App\Models\Show\OAP;
+use App\Models\Show\ScheduleSlot;
+use App\Models\Show\Segment;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -51,7 +53,32 @@ class Manage extends Component
     public $cat_icon = 'fas fa-microphone';
     public $cat_color = 'blue';
 
+    // Schedule form
+    public $schedule_show_id = '';
+    public $schedule_oap_id = '';
+    public $schedule_day_of_week = 'monday';
+    public $schedule_start_time = '';
+    public $schedule_end_time = '';
+    public $schedule_start_date = '';
+    public $schedule_end_date = '';
+    public $schedule_is_recurring = true;
+    public $schedule_status = 'active';
+    public $schedule_notes = '';
+
+    // Segment form
+    public $segment_show_id = '';
+    public $segment_title = '';
+    public $segment_description = '';
+    public $segment_start_minute = 0;
+    public $segment_duration = 5;
+    public $segment_type = 'other';
+
     protected $queryString = ['view', 'search'];
+
+    public function mount($view = 'shows')
+    {
+        $this->view = $view;
+    }
 
     public function openModal($type, $id = null)
     {
@@ -104,12 +131,42 @@ class Manage extends Component
         $this->cat_color = $category->color;
     }
 
+    private function loadSchedule($id)
+    {
+        $slot = ScheduleSlot::findOrFail($id);
+        $this->schedule_show_id = $slot->show_id;
+        $this->schedule_oap_id = $slot->oap_id;
+        $this->schedule_day_of_week = $slot->day_of_week;
+        $this->schedule_start_time = $slot->start_time;
+        $this->schedule_end_time = $slot->end_time;
+        $this->schedule_start_date = $slot->start_date?->format('Y-m-d') ?? '';
+        $this->schedule_end_date = $slot->end_date?->format('Y-m-d') ?? '';
+        $this->schedule_is_recurring = $slot->is_recurring;
+        $this->schedule_status = $slot->status;
+        $this->schedule_notes = $slot->notes;
+    }
+
+    private function loadSegment($id)
+    {
+        $segment = Segment::findOrFail($id);
+        $this->segment_show_id = $segment->show_id;
+        $this->segment_title = $segment->title;
+        $this->segment_description = $segment->description;
+        $this->segment_start_minute = $segment->start_minute;
+        $this->segment_duration = $segment->duration;
+        $this->segment_type = $segment->type;
+    }
+
     public function save()
     {
         if ($this->modalType === 'show') {
             $this->saveShow();
         } elseif ($this->modalType === 'oap') {
             $this->saveOap();
+        } elseif ($this->modalType === 'schedule') {
+            $this->saveSchedule();
+        } elseif ($this->modalType === 'segment') {
+            $this->saveSegment();
         } else {
             $this->saveCategory();
         }
@@ -215,12 +272,125 @@ class Manage extends Component
         $this->closeModal();
     }
 
+    private function saveSchedule()
+    {
+        $this->validate([
+            'schedule_show_id' => 'required|exists:shows,id',
+            'schedule_day_of_week' => 'required',
+            'schedule_start_time' => 'required|date_format:H:i',
+            'schedule_end_time' => 'required|date_format:H:i|after:schedule_start_time',
+            'schedule_start_date' => 'nullable|date',
+            'schedule_end_date' => 'nullable|date|after_or_equal:schedule_start_date',
+            'schedule_is_recurring' => 'boolean',
+            'schedule_status' => 'required',
+        ]);
+
+        $conflictQuery = ScheduleSlot::where('day_of_week', $this->schedule_day_of_week);
+        if ($this->editMode) {
+            $conflictQuery->where('id', '!=', $this->itemId);
+        }
+
+        $timeConflict = $conflictQuery->get()->first(function ($slot) {
+            return $slot->hasConflictWith(
+                $this->schedule_start_time,
+                $this->schedule_end_time,
+                $this->schedule_day_of_week
+            );
+        });
+
+        if ($timeConflict) {
+            $this->addError('schedule_start_time', 'This slot conflicts with another scheduled show.');
+            return;
+        }
+
+        if ($this->schedule_oap_id) {
+            $oapConflict = ScheduleSlot::where('oap_id', $this->schedule_oap_id)
+                ->where('day_of_week', $this->schedule_day_of_week)
+                ->when($this->editMode, function ($q) {
+                    $q->where('id', '!=', $this->itemId);
+                })
+                ->get()
+                ->first(function ($slot) {
+                    return $slot->hasConflictWith(
+                        $this->schedule_start_time,
+                        $this->schedule_end_time,
+                        $this->schedule_day_of_week
+                    );
+                });
+
+            if ($oapConflict) {
+                $this->addError('schedule_oap_id', 'Selected OAP is already booked for this time.');
+                return;
+            }
+        }
+
+        $data = [
+            'show_id' => $this->schedule_show_id,
+            'oap_id' => $this->schedule_oap_id ?: null,
+            'day_of_week' => $this->schedule_day_of_week,
+            'start_time' => $this->schedule_start_time,
+            'end_time' => $this->schedule_end_time,
+            'start_date' => $this->schedule_start_date ?: null,
+            'end_date' => $this->schedule_end_date ?: null,
+            'is_recurring' => $this->schedule_is_recurring,
+            'status' => $this->schedule_status,
+            'notes' => $this->schedule_notes ?: null,
+        ];
+
+        if ($this->editMode) {
+            ScheduleSlot::find($this->itemId)->update($data);
+            session()->flash('success', 'Schedule updated successfully!');
+        } else {
+            ScheduleSlot::create($data);
+            session()->flash('success', 'Schedule created successfully!');
+        }
+
+        $this->closeModal();
+    }
+
+    private function saveSegment()
+    {
+        $this->validate([
+            'segment_show_id' => 'required|exists:shows,id',
+            'segment_title' => 'required|min:3|max:255',
+            'segment_start_minute' => 'required|integer|min:0',
+            'segment_duration' => 'required|integer|min:1',
+            'segment_type' => 'required',
+        ]);
+
+        $order = Segment::where('show_id', $this->segment_show_id)->max('order') ?? 0;
+
+        $data = [
+            'show_id' => $this->segment_show_id,
+            'title' => $this->segment_title,
+            'description' => $this->segment_description,
+            'start_minute' => $this->segment_start_minute,
+            'duration' => $this->segment_duration,
+            'type' => $this->segment_type,
+            'order' => $this->editMode ? Segment::find($this->itemId)->order : $order + 1,
+        ];
+
+        if ($this->editMode) {
+            Segment::find($this->itemId)->update($data);
+            session()->flash('success', 'Segment updated successfully!');
+        } else {
+            Segment::create($data);
+            session()->flash('success', 'Segment created successfully!');
+        }
+
+        $this->closeModal();
+    }
+
     public function delete($type, $id)
     {
         if ($type === 'show') {
             Show::find($id)->delete();
         } elseif ($type === 'oap') {
             OAP::find($id)->delete();
+        } elseif ($type === 'schedule') {
+            ScheduleSlot::find($id)->delete();
+        } elseif ($type === 'segment') {
+            Segment::find($id)->delete();
         } else {
             Category::find($id)->delete();
         }
@@ -242,7 +412,12 @@ class Manage extends Component
             'content_rating', 'is_featured', 'tags',
             'oap_name', 'oap_bio', 'oap_photo', 'oap_photo_url',
             'oap_specializations', 'oap_email', 'oap_phone',
-            'cat_name', 'cat_description', 'cat_icon', 'cat_color'
+            'cat_name', 'cat_description', 'cat_icon', 'cat_color',
+            'schedule_show_id', 'schedule_oap_id', 'schedule_day_of_week',
+            'schedule_start_time', 'schedule_end_time', 'schedule_start_date',
+            'schedule_end_date', 'schedule_is_recurring', 'schedule_status', 'schedule_notes',
+            'segment_show_id', 'segment_title', 'segment_description', 'segment_start_minute',
+            'segment_duration', 'segment_type'
         ]);
     }
 
@@ -285,6 +460,35 @@ class Manage extends Component
         return OAP::active()->get();
     }
 
+    public function getAllShowsProperty()
+    {
+        return Show::orderBy('title')->get();
+    }
+
+    public function getScheduleSlotsProperty()
+    {
+        return ScheduleSlot::with(['show', 'oap'])
+            ->when($this->search, function ($q) {
+                $q->whereHas('show', function ($show) {
+                    $show->where('title', 'like', "%{$this->search}%");
+                });
+            })
+            ->orderBy('day_of_week')
+            ->orderBy('start_time')
+            ->paginate(12);
+    }
+
+    public function getSegmentsProperty()
+    {
+        return Segment::with(['show'])
+            ->when($this->search, function ($q) {
+                $q->where('title', 'like', "%{$this->search}%");
+            })
+            ->orderBy('show_id')
+            ->orderBy('order')
+            ->paginate(12);
+    }
+
     public function getStatsProperty()
     {
         return [
@@ -301,12 +505,17 @@ class Manage extends Component
             'stats' => $this->stats,
             'allCategories' => $this->allCategories,
             'allOaps' => $this->allOaps,
+            'allShows' => $this->allShows,
         ];
 
         if ($this->view === 'shows') {
             $data['shows'] = $this->shows;
         } elseif ($this->view === 'oaps') {
             $data['oaps'] = $this->oaps;
+        } elseif ($this->view === 'schedule') {
+            $data['scheduleSlots'] = $this->scheduleSlots;
+        } elseif ($this->view === 'segments') {
+            $data['segments'] = $this->segments;
         } elseif ($this->view === 'categories') {
             $data['categories'] = $this->categories;
         }

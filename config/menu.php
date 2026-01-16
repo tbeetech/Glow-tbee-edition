@@ -102,7 +102,7 @@ return [
                     ],
                     [
                         'title' => 'Analytics',
-                        'route' => '#',
+                        'route' => 'admin.podcasts.analytics',
                         'active' => 'admin.podcasts.analytics'
                     ],
                 ]
@@ -110,23 +110,23 @@ return [
             [
                 'title' => 'Events',
                 'icon' => 'fas fa-calendar-alt',
-                'route' => '#',
-                'active' => 'events*',
+                'route' => 'admin.events.index',
+                'active' => 'admin.events*',
                 'children' => [
                     [
                         'title' => 'All Events',
-                        'route' => '#',
-                        'active' => 'events.index'
+                        'route' => 'admin.events.index',
+                        'active' => 'admin.events.index'
                     ],
                     [
                         'title' => 'Create Event',
-                        'route' => '#',
-                        'active' => 'events.create'
+                        'route' => 'admin.events.create',
+                        'active' => 'admin.events.create'
                     ],
                     [
-                        'title' => 'Event Calendar',
-                        'route' => '#',
-                        'active' => 'events.calendar'
+                        'title' => 'Categories',
+                        'route' => 'admin.events.categories',
+                        'active' => 'admin.events.categories'
                     ],
                 ]
             ],
@@ -161,23 +161,33 @@ return [
             [
                 'title' => 'Shows & Programs',
                 'icon' => 'fas fa-microphone',
-                'route' => '#',
-                'active' => 'shows*',
+                'route' => 'admin.shows.index',
+                'active' => 'admin.shows*',
                 'children' => [
                     [
                         'title' => 'All Shows',
-                        'route' => '#',
-                        'active' => 'shows.index'
+                        'route' => 'admin.shows.index',
+                        'active' => 'admin.shows.index'
                     ],
                     [
                         'title' => 'Schedule',
-                        'route' => '#',
-                        'active' => 'shows.schedule'
+                        'route' => 'admin.shows.schedule',
+                        'active' => 'admin.shows.schedule'
+                    ],
+                    [
+                        'title' => 'OAPs',
+                        'route' => 'admin.shows.oaps',
+                        'active' => 'admin.shows.oaps'
+                    ],
+                    [
+                        'title' => 'Segments',
+                        'route' => 'admin.shows.segments',
+                        'active' => 'admin.shows.segments'
                     ],
                     [
                         'title' => 'Show Categories',
-                        'route' => '#',
-                        'active' => 'shows.categories'
+                        'route' => 'admin.shows.categories',
+                        'active' => 'admin.shows.categories'
                     ],
                 ]
             ],
@@ -358,25 +368,25 @@ return [
         'group' => 'Team Management',
         'items' => [
             [
-                'title' => 'DJs & Hosts',
+                'title' => 'OAPs & Hosts',
                 'icon' => 'fas fa-user-tie',
                 'route' => '#',
-                'active' => 'djs*',
+                'active' => 'oaps*',
                 'children' => [
                     [
-                        'title' => 'All DJs',
+                        'title' => 'All OAPs',
                         'route' => '#',
-                        'active' => 'djs.index'
+                        'active' => 'oaps.index'
                     ],
                     [
-                        'title' => 'Add DJ',
+                        'title' => 'Add OAP',
                         'route' => '#',
-                        'active' => 'djs.create'
+                        'active' => 'oaps.create'
                     ],
                     [
-                        'title' => 'DJ Schedules',
+                        'title' => 'OAP Schedules',
                         'route' => '#',
-                        'active' => 'djs.schedules'
+                        'active' => 'oaps.schedules'
                     ],
                 ]
             ],

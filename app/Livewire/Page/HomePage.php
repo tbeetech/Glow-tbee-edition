@@ -8,6 +8,7 @@ use App\Models\Podcast\Show;
 use App\Models\Blog\Post; 
 use App\Models\Blog\Category; 
 use App\Models\Podcast\Episode;
+use App\Models\Event\Event;
 use Livewire\Component;
 
 class HomePage extends Component
@@ -226,36 +227,25 @@ class HomePage extends Component
 
     private function loadUpcomingEvents()
     {
-        // This can be replaced with real events from database when you create an Events model
-        $this->upcomingEvents = [
-            [
-                'id' => 1,
-                'title' => 'Summer Beach Party 2025',
-                'date' => 'July 15, 2025',
-                'time' => '6:00 PM - 11:00 PM',
-                'location' => 'Sunset Beach',
-                'image' => 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&h=600&fit=crop',
-                'attendees' => '500+'
-            ],
-            [
-                'id' => 2,
-                'title' => 'Live Concert: Acoustic Sessions',
-                'date' => 'August 5, 2025',
-                'time' => '8:00 PM - 10:00 PM',
-                'location' => 'Glow FM Studio',
-                'image' => 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&h=600&fit=crop',
-                'attendees' => '100'
-            ],
-            [
-                'id' => 3,
-                'title' => 'DJ Workshop: Learn From The Pros',
-                'date' => 'August 20, 2025',
-                'time' => '2:00 PM - 6:00 PM',
-                'location' => 'Broadcast Academy',
-                'image' => 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop',
-                'attendees' => '50'
-            ],
-        ];
+        $this->upcomingEvents = Event::with(['category'])
+            ->published()
+            ->upcoming()
+            ->orderBy('start_at')
+            ->take(3)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'slug' => $event->slug,
+                    'title' => $event->title,
+                    'date' => $event->formatted_date,
+                    'time' => $event->formatted_time,
+                    'location' => $event->venue_name ?? 'Venue TBA',
+                    'image' => $event->featured_image ?? 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&h=600&fit=crop',
+                    'category' => $event->category->name,
+                ];
+            })
+            ->toArray();
     }
 
     // private function loadStats()
@@ -292,29 +282,7 @@ class HomePage extends Component
 
     private function loadTestimonials()
     {
-        $this->testimonials = [
-            [
-                'name' => 'John Anderson',
-                'role' => 'Regular Listener',
-                'message' => 'Glow FM has been my go-to station for years. The music selection is always on point and the DJs are amazing!',
-                'rating' => 5,
-                'avatar' => 'https://ui-avatars.com/api/?name=John+Anderson&background=10b981&color=fff'
-            ],
-            [
-                'name' => 'Maria Garcia',
-                'role' => 'Morning Commuter',
-                'message' => 'MC Olumiko makes my morning drive so much better. Great energy and fantastic music to start the day!',
-                'rating' => 5,
-                'avatar' => 'https://ui-avatars.com/api/?name=Maria+Garcia&background=f59e0b&color=fff'
-            ],
-            [
-                'name' => 'David Lee',
-                'role' => 'Music Enthusiast',
-                'message' => 'The variety of shows and music genres on Glow FM is incredible. There is something for everyone!',
-                'rating' => 5,
-                'avatar' => 'https://ui-avatars.com/api/?name=David+Lee&background=6366f1&color=fff'
-            ],
-        ];
+        $this->testimonials = [];
     }
 
     public function render()
