@@ -1,0 +1,139 @@
+<div class="min-h-screen bg-gray-50">
+    <section class="relative bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 text-white py-16">
+        <div class="absolute inset-0 opacity-20">
+            @if($show->cover_image)
+                <img src="{{ $show->cover_image }}" class="w-full h-full object-cover">
+            @endif
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-4xl mx-auto">
+                <nav class="flex items-center space-x-2 text-sm text-emerald-200 mb-6">
+                    <a href="{{ route('shows.index') }}" class="hover:text-white">Shows</a>
+                    <span>›</span>
+                    <span class="text-white">{{ $show->title }}</span>
+                </nav>
+
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span class="px-4 py-2 bg-{{ $show->category?->color ?? 'emerald' }}-600 text-white font-bold rounded-full">
+                        {{ $show->category?->name ?? 'Show' }}
+                    </span>
+                    @if($show->is_featured)
+                        <span class="px-4 py-2 bg-purple-600 text-white font-bold rounded-full">
+                            <i class="fas fa-star mr-2"></i>Featured
+                        </span>
+                    @endif
+                    <span class="px-4 py-2 bg-white/10 text-white font-bold rounded-full">
+                        <i class="fas fa-clock mr-2"></i>{{ $show->typical_duration }} mins
+                    </span>
+                </div>
+
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">{{ $show->title }}</h1>
+
+                <div class="flex flex-wrap items-center gap-6 mb-8">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ $show->primaryHost?->profile_photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($show->primaryHost?->name ?? $show->title) }}"
+                             class="w-12 h-12 rounded-full border-2 border-emerald-300">
+                        <div>
+                            <p class="font-semibold">{{ $show->primaryHost?->name ?? 'Host TBA' }}</p>
+                            <p class="text-sm text-emerald-200">{{ ucfirst($show->format) }} • {{ $show->content_rating }}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-emerald-200">
+                        <span><i class="fas fa-users mr-1"></i>{{ number_format($show->total_listeners) }} listeners</span>
+                        <span><i class="fas fa-star mr-1"></i>{{ number_format($show->average_rating, 1) }} rating</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('schedule') }}"
+                        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-colors">
+                        <i class="fas fa-calendar mr-2"></i>View Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <main class="lg:col-span-8">
+                <article class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="p-8 md:p-12">
+                        <div class="prose prose-lg max-w-none mb-10">
+                            {!! $show->full_description ?: nl2br(e($show->description)) !!}
+                        </div>
+
+                        @if($show->segments->count() > 0)
+                            <div class="mb-12">
+                                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                                    <i class="fas fa-layer-group text-emerald-600 mr-3"></i>
+                                    Segments
+                                </h3>
+                                <div class="space-y-4">
+                                    @foreach($show->segments as $segment)
+                                        <div class="p-4 bg-gray-50 rounded-xl">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">{{ $segment->title }}</p>
+                                                    <p class="text-sm text-gray-500">{{ $segment->time_range }} • {{ ucfirst($segment->type) }}</p>
+                                                </div>
+                                                <span class="text-xs text-gray-500">{{ $segment->duration }} mins</span>
+                                            </div>
+                                            @if($segment->description)
+                                                <p class="text-sm text-gray-600 mt-2">{{ $segment->description }}</p>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </article>
+            </main>
+
+            <aside class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-calendar-alt text-emerald-600 mr-2"></i>
+                        Upcoming Slots
+                    </h3>
+                    <div class="space-y-3">
+                        @forelse($upcomingSlots as $slot)
+                            <div class="flex items-start space-x-3">
+                                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center text-xs font-bold">
+                                    {{ strtoupper(substr($slot->day_of_week, 0, 3)) }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900">{{ $slot->time_range }}</p>
+                                    <p class="text-xs text-gray-500">{{ $slot->oap?->name ?? 'Host TBA' }}</p>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500">No schedule slots available.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-bold text-gray-900 mb-4">Show Info</h3>
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-center justify-between">
+                            <span>Format</span>
+                            <span class="font-semibold text-gray-900">{{ ucfirst($show->format) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Duration</span>
+                            <span class="font-semibold text-gray-900">{{ $show->typical_duration }} mins</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Content Rating</span>
+                            <span class="font-semibold text-gray-900">{{ $show->content_rating }}</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
