@@ -80,6 +80,7 @@
     <!-- Main Content Area -->
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
+            <x-ad-slot placement="news" />
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 <!-- Sidebar -->

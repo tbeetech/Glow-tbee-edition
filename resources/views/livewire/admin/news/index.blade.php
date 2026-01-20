@@ -109,6 +109,9 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Status
                         </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Featured Placement
+                        </th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
                         </th>
@@ -166,6 +169,15 @@
                                     @endif
                                 </div>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select wire:change="setFeaturedPlacement({{ $article->id }}, $event.target.value)"
+                                    class="px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="none" {{ $article->featured_position === 'none' ? 'selected' : '' }}>None</option>
+                                    <option value="hero" {{ $article->featured_position === 'hero' ? 'selected' : '' }}>Hero</option>
+                                    <option value="secondary" {{ $article->featured_position === 'secondary' ? 'selected' : '' }}>Secondary</option>
+                                    <option value="sidebar" {{ $article->featured_position === 'sidebar' ? 'selected' : '' }}>Sidebar</option>
+                                </select>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-2">
                                     <a href="{{ route('news.show', $article->slug) }}" target="_blank"
@@ -189,7 +201,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center">
                                 <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
                                 <p class="text-gray-500">No news articles found</p>
                             </td>

@@ -15,6 +15,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'department_id',
+        'team_role_id',
         'avatar',
         'is_active',
     ];
@@ -57,5 +59,15 @@ class User extends Authenticatable
     public function hasAnyRole(array $roles): bool
     {
         return in_array($this->role, $roles);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(\App\Models\Team\Department::class, 'department_id');
+    }
+
+    public function teamRole()
+    {
+        return $this->belongsTo(\App\Models\Team\Role::class, 'team_role_id');
     }
 }

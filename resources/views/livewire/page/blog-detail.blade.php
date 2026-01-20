@@ -4,6 +4,7 @@
     @if($post->is_featured)
     <div class="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 text-white py-3 sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-4 flex items-center justify-center space-x-3">
+            <x-ad-slot placement="blog-detail" />
             <span class="flex items-center space-x-2 font-bold text-lg">
                 <i class="fas fa-star animate-pulse"></i>
                 <span>⭐ FEATURED POST</span>

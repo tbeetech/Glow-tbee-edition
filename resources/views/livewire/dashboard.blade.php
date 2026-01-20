@@ -35,9 +35,9 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:col-span-2">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-semibold text-gray-900">Now Playing</h3>
-                <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full flex items-center">
-                    <span class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span>
-                    LIVE
+                <span class="px-3 py-1 {{ $nowPlaying['is_live'] ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600' }} text-xs font-semibold rounded-full flex items-center">
+                    <span class="w-2 h-2 {{ $nowPlaying['is_live'] ? 'bg-red-500 animate-pulse' : 'bg-gray-400' }} rounded-full mr-2"></span>
+                    {{ $nowPlaying['is_live'] ? 'LIVE' : 'OFFLINE' }}
                 </span>
             </div>
             
@@ -48,14 +48,14 @@
                     </div>
                 </div>
                 <div class="flex-1">
-                    <h4 class="text-xl font-bold text-gray-900 mb-1">Evening News</h4>
-                    <p class="text-lg text-gray-600 mb-4">Nancy Chidinma</p>
+                    <h4 class="text-xl font-bold text-gray-900 mb-1">{{ $nowPlaying['title'] }}</h4>
+                    <p class="text-lg text-gray-600 mb-4">{{ $nowPlaying['artist'] }}</p>
                     
                     <!-- Progress Bar -->
                     <div class="mb-3">
                  
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-emerald-600 h-2 rounded-full" style="width: 60%"></div>
+                            <div class="bg-emerald-600 h-2 rounded-full" style="width: {{ $nowPlayingProgress }}%"></div>
                         </div>
                     </div>
 
@@ -85,26 +85,22 @@
                 <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg flex items-center justify-center">
                     <i class="fas fa-microphone-alt text-white text-3xl"></i>
                 </div>
-                <h4 class="text-xl font-bold text-gray-900 mb-1">Morning Vibes</h4>
-                <p class="text-sm text-gray-600 mb-2">with MC Olumiko</p>
+                <h4 class="text-xl font-bold text-gray-900 mb-1">{{ $currentShow['title'] ?? 'No show scheduled' }}</h4>
+                <p class="text-sm text-gray-600 mb-2">{{ $currentShow['host'] ?? 'Host not set' }}</p>
                 <span class="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
                     <i class="fas fa-clock mr-1"></i>
-                    6:00 AM - 10:00 AM
+                    {{ $currentShow['time'] ?? 'Time not set' }}
                 </span>
             </div>
 
             <div class="space-y-2 border-t border-gray-200 pt-4">
                 <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-600">Time Remaining</span>
-                    <span class="font-semibold text-gray-900">2h 35m</span>
+                    <span class="text-gray-600">Status</span>
+                    <span class="font-semibold text-gray-900">{{ $currentShow['status'] ?? 'Unknown' }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-600">Songs Played</span>
-                    <span class="font-semibold text-gray-900">28</span>
-                </div>
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-gray-600">Requests</span>
-                    <span class="font-semibold text-gray-900">12</span>
+                    <span class="text-gray-600">Schedule</span>
+                    <span class="font-semibold text-gray-900">{{ now()->format('l') }}</span>
                 </div>
             </div>
         </div>
@@ -116,13 +112,13 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:col-span-2">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
-                <a href="#" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                <a href="{{ route('admin.comms.analytics') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                     View All
                 </a>
             </div>
 
             <div class="space-y-4">
-                @foreach($recentActivities as $activity)
+                @forelse($recentActivities as $activity)
                     <div class="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-lg transition-colors duration-150">
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 bg-{{ $activity['color'] }}-100 rounded-full flex items-center justify-center">
@@ -135,44 +131,48 @@
                             <p class="text-xs text-gray-500 mt-1">{{ $activity['time'] }}</p>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-sm text-gray-500">No recent activity yet.</p>
+                @endforelse
             </div>
         </div>
 
-        <!-- Top Songs Today -->
+        <!-- Top News -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-900">Top Songs Today</h3>
-                <button class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
+                <h3 class="text-lg font-semibold text-gray-900">Top News</h3>
+                <a href="{{ route('admin.news.index') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                    View All
+                </a>
             </div>
 
             <div class="space-y-4">
-                @foreach($topSongs as $index => $song)
+                @forelse($topItems as $index => $item)
                     <div class="flex items-center space-x-4">
                         <div class="flex-shrink-0 w-8 text-center">
                             <span class="text-lg font-bold text-gray-400">{{ $index + 1 }}</span>
                         </div>
                         <div class="flex-shrink-0">
                             <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg shadow-sm flex items-center justify-center">
-                                <i class="fas fa-music text-white"></i>
+                                <i class="fas fa-newspaper text-white"></i>
                             </div>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate">{{ $song['title'] }}</p>
-                            <p class="text-xs text-gray-600 truncate">{{ $song['artist'] }}</p>
+                            <p class="text-sm font-medium text-gray-900 truncate">{{ $item['title'] }}</p>
+                            <p class="text-xs text-gray-600 truncate">{{ $item['subtitle'] }}</p>
                         </div>
                         <div class="flex-shrink-0">
-                            <span class="text-sm font-semibold text-emerald-600">{{ $song['plays'] }}</span>
+                            <span class="text-sm font-semibold text-emerald-600">{{ $item['metric'] }}</span>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-sm text-gray-500">No news data available.</p>
+                @endforelse
             </div>
 
-            <button class="w-full mt-6 py-2 px-4 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors duration-150">
-                View Full Chart
-            </button>
+            <a href="{{ route('admin.news.index') }}" class="w-full mt-6 py-2 px-4 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors duration-150 inline-flex items-center justify-center">
+                Manage News
+            </a>
         </div>
     </div>
 
@@ -180,13 +180,13 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-gray-900">Upcoming Shows</h3>
-            <a href="#" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+            <a href="{{ route('admin.shows.schedule') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                 View Schedule
             </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            @foreach($upcomingShows as $show)
+            @forelse($upcomingShows as $show)
                 <div class="p-4 border border-gray-200 rounded-lg hover:border-emerald-300 hover:shadow-sm transition-all duration-150">
                     <div class="flex items-center space-x-3 mb-3">
                         <div class="flex-shrink-0">
@@ -204,46 +204,48 @@
                         {{ $show['time'] }}
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-span-full text-sm text-gray-500">No upcoming shows scheduled for today.</div>
+            @endforelse
         </div>
     </div>
 
     <!-- Quick Actions -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-        <button class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all duration-150 group">
+        <a href="{{ route('admin.news.create') }}" class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:shadow-md transition-all duration-150 group">
             <div class="flex flex-col items-center text-center">
                 <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-emerald-600 transition-colors duration-150">
                     <i class="fas fa-plus text-emerald-600 text-xl group-hover:text-white"></i>
                 </div>
-                <span class="text-sm font-medium text-gray-900">Add Song</span>
+                <span class="text-sm font-medium text-gray-900">Add News</span>
             </div>
-        </button>
+        </a>
 
-        <button class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-150 group">
+        <a href="{{ route('admin.shows.schedule') }}" class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-150 group">
             <div class="flex flex-col items-center text-center">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-blue-600 transition-colors duration-150">
                     <i class="fas fa-calendar-plus text-blue-600 text-xl group-hover:text-white"></i>
                 </div>
                 <span class="text-sm font-medium text-gray-900">Schedule Show</span>
             </div>
-        </button>
+        </a>
 
-        <button class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-amber-500 hover:shadow-md transition-all duration-150 group">
+        <a href="{{ route('admin.events.create') }}" class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-amber-500 hover:shadow-md transition-all duration-150 group">
             <div class="flex flex-col items-center text-center">
                 <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-amber-600 transition-colors duration-150">
                     <i class="fas fa-bullhorn text-amber-600 text-xl group-hover:text-white"></i>
                 </div>
-                <span class="text-sm font-medium text-gray-900">New Announcement</span>
+                <span class="text-sm font-medium text-gray-900">Add Event</span>
             </div>
-        </button>
+        </a>
 
-        <button class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-pink-500 hover:shadow-md transition-all duration-150 group">
+        <a href="{{ route('admin.comms.analytics') }}" class="p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-pink-500 hover:shadow-md transition-all duration-150 group">
             <div class="flex flex-col items-center text-center">
                 <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-pink-600 transition-colors duration-150">
                     <i class="fas fa-chart-bar text-pink-600 text-xl group-hover:text-white"></i>
                 </div>
-                <span class="text-sm font-medium text-gray-900">View Reports</span>
+                <span class="text-sm font-medium text-gray-900">Comms Analytics</span>
             </div>
-        </button>
+        </a>
     </div>
 </div>

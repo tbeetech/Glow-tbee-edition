@@ -7,7 +7,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Glow FM 99.1 - Your Voice, Your Music' }}</title>
     <meta name="description"
-        content="Glow FM 99.1 - The heartbeat of the city. Listen to the best music, engaging shows, and stay connected with your community.">
+        content="{{ $meta_description ?? 'Glow FM 99.1 - The heartbeat of the city. Listen to the best music, engaging shows, and stay connected with your community.' }}">
+    <meta property="og:title" content="{{ $meta_title ?? ($title ?? 'Glow FM 99.1') }}">
+    <meta property="og:description" content="{{ $meta_description ?? 'Glow FM 99.1 - The heartbeat of the city.' }}">
+    <meta property="og:image" content="{{ $meta_image ?? '' }}">
+    <meta property="og:url" content="{{ request()->url() }}">
+    <meta property="og:type" content="{{ $meta_type ?? 'website' }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -18,12 +23,48 @@
     mobileMenuOpen: false, 
     searchOpen: false,
     scrolled: false,
-    playerOpen: true
+    playerOpen: true,
+    audioPlaying: false,
+    toggleLive() {
+        const audio = this.$refs.liveAudio;
+        if (!audio || !audio.src) return;
+        if (audio.paused) {
+            audio.play();
+            this.audioPlaying = true;
+        } else {
+            audio.pause();
+            this.audioPlaying = false;
+        }
+    },
+    startLive() {
+        const audio = this.$refs.liveAudio;
+        if (!audio || !audio.src) return;
+        audio.play();
+        this.audioPlaying = true;
+        this.playerOpen = true;
+    }
 }" x-init="
     window.addEventListener('scroll', () => {
         scrolled = window.pageYOffset > 20
     })
 ">
+    @php
+        $stationSettings = \App\Models\Setting::get('station', []);
+        $stationName = data_get($stationSettings, 'name', 'Glow FM');
+        $stationFrequency = data_get($stationSettings, 'frequency', '99.1 MHz');
+        $stationTagline = data_get($stationSettings, 'tagline', 'Your Voice, Your Music');
+        $stationPhone = data_get($stationSettings, 'phone', '+1 (234) 567-890');
+        $stationEmail = data_get($stationSettings, 'email', 'info@glowfm.com');
+        $stationAddress = data_get($stationSettings, 'address', '123 Radio Street, Broadcasting City, BC 12345');
+        $stationStreamUrl = data_get($stationSettings, 'stream_url', 'https://stream-176.zeno.fm/mwam2yirv1pvv');
+        $stationSocials = data_get($stationSettings, 'socials', []);
+        $streamSettings = \App\Models\Setting::get('stream', []);
+        $streamIsLive = data_get($streamSettings, 'is_live', true);
+        $streamStatusMessage = data_get($streamSettings, 'status_message', 'Broadcasting live now');
+        $streamTitle = data_get($streamSettings, 'now_playing_title', 'Blinding Lights');
+        $streamArtist = data_get($streamSettings, 'now_playing_artist', 'The Weeknd');
+        $streamShowName = data_get($streamSettings, 'show_name', 'Morning Vibes');
+    @endphp
 
     <!-- Fixed Header -->
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
@@ -33,33 +74,40 @@
             <div class="container mx-auto px-4">
                 <div class="flex items-center justify-between h-10 text-sm">
                     <div class="flex items-center space-x-6">
-                        <a href="tel:+1234567890"
+                        <a href="tel:{{ $stationPhone }}"
                             class="flex items-center space-x-2 hover:text-emerald-100 transition-colors">
                             <i class="fas fa-phone text-xs"></i>
-                            <span class="hidden md:inline">+1 (234) 567-890</span>
+                            <span class="hidden md:inline">{{ $stationPhone }}</span>
                         </a>
-                        <a href="mailto:info@glowfm.com"
+                        <a href="mailto:{{ $stationEmail }}"
                             class="flex items-center space-x-2 hover:text-emerald-100 transition-colors">
                             <i class="fas fa-envelope text-xs"></i>
-                            <span class="hidden md:inline">info@glowfm.com</span>
+                            <span class="hidden md:inline">{{ $stationEmail }}</span>
                         </a>
                     </div>
                     <div class="flex items-center space-x-4">
                         <span class="hidden sm:flex items-center space-x-2 text-xs">
-                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            <span class="font-medium">NOW PLAYING: Morning Vibes with MC Olumiko</span>
+                            <span class="relative flex h-2 w-2">
+                                <span class="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"
+                                    :class="audioPlaying ? 'animate-ping' : ''"></span>
+                                <span class="relative inline-flex h-2 w-2 rounded-full"
+                                    :class="audioPlaying ? 'bg-emerald-400' : 'bg-red-500'"></span>
+                            </span>
+                            <span class="font-medium" x-text="audioPlaying ? 'LIVE STREAMING' : '{{ $streamIsLive ? 'LIVE NOW' : 'OFFLINE' }}'"></span>
+                            <span class="text-emerald-200">•</span>
+                            <span class="font-medium">{{ $streamShowName }}</span>
                         </span>
                         <div class="flex items-center space-x-3">
-                            <a href="#" class="hover:text-emerald-100 transition-colors" aria-label="Facebook">
+                            <a href="{{ data_get($stationSocials, 'facebook', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Facebook">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a href="#" class="hover:text-emerald-100 transition-colors" aria-label="Twitter">
+                            <a href="{{ data_get($stationSocials, 'twitter', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Twitter">
                                 <i class="fab fa-twitter"></i>
                             </a>
-                            <a href="#" class="hover:text-emerald-100 transition-colors" aria-label="Instagram">
+                            <a href="{{ data_get($stationSocials, 'instagram', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Instagram">
                                 <i class="fab fa-instagram"></i>
                             </a>
-                            <a href="#" class="hover:text-emerald-100 transition-colors" aria-label="YouTube">
+                            <a href="{{ data_get($stationSocials, 'youtube', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="YouTube">
                                 <i class="fab fa-youtube"></i>
                             </a>
                         </div>
@@ -84,8 +132,8 @@
                         </div>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 leading-none">Glow FM</h1>
-                        <p class="text-xs font-semibold text-emerald-600">99.1 MHz</p>
+                        <h1 class="text-2xl font-bold text-gray-900 leading-none">{{ $stationName }}</h1>
+                        <p class="text-xs font-semibold text-emerald-600">{{ $stationFrequency }}</p>
                     </div>
                 </a>
 
@@ -102,6 +150,14 @@
                     <a href="/shows"
                         class="px-4 py-2 text-gray-700 font-medium hover:text-emerald-600 transition-colors duration-200 {{ request()->is('shows*') ? 'text-emerald-600' : '' }}">
                         Shows
+                    </a>
+                    <a href="/oaps"
+                        class="px-4 py-2 text-gray-700 font-medium hover:text-emerald-600 transition-colors duration-200 {{ request()->is('oaps*') ? 'text-emerald-600' : '' }}">
+                        OAPs
+                    </a>
+                    <a href="/team"
+                        class="px-4 py-2 text-gray-700 font-medium hover:text-emerald-600 transition-colors duration-200 {{ request()->is('team') ? 'text-emerald-600' : '' }}">
+                        Team
                     </a>
                     <a href="/schedule"
                         class="px-4 py-2 text-gray-700 font-medium hover:text-emerald-600 transition-colors duration-200 {{ request()->is('schedule') ? 'text-emerald-600' : '' }}">
@@ -200,11 +256,11 @@
                     @endauth
 
                     <!-- Listen Live Button -->
-                    <a href="#"
+                    <button type="button" @click="startLive"
                         class="hidden md:flex items-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                         <i class="fas fa-play-circle text-xl"></i>
                         <span>Listen Live</span>
-                    </a>
+                    </button>
 
                     <!-- Mobile Menu Button -->
                     <button @click="mobileMenuOpen = !mobileMenuOpen"
@@ -252,6 +308,14 @@
                     class="block px-4 py-3 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors">
                     Shows
                 </a>
+                <a href="/oaps"
+                    class="block px-4 py-3 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors">
+                    OAPs
+                </a>
+                <a href="/team"
+                    class="block px-4 py-3 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors">
+                    Team
+                </a>
                 <a href="/schedule"
                     class="block px-4 py-3 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors">
                     Schedule
@@ -282,13 +346,34 @@
                         <i class="fas fa-search mr-2"></i> Search
                     </button>
                 </div>
-                <a href="#"
+                <button type="button" @click="startLive"
                     class="block mt-4 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full text-center shadow-lg">
                     <i class="fas fa-play-circle mr-2"></i> Listen Live
-                </a>
+                </button>
             </div>
         </div>
     </header>
+
+    @if($streamIsLive)
+        <div class="bg-emerald-600 text-white">
+            <div class="container mx-auto px-4 py-2">
+                <div class="flex items-center space-x-4 text-sm">
+                    <span class="flex items-center space-x-2 font-semibold">
+                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span>NOW PLAYING</span>
+                    </span>
+                    <marquee class="flex-1">
+                        {{ $streamTitle }} — {{ $streamArtist }} • {{ $streamShowName }} • {{ $streamStatusMessage }}
+                    </marquee>
+                    <button type="button" @click="startLive"
+                        class="hidden sm:inline-flex items-center space-x-2 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-xs font-semibold">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Listen Live</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Spacer for Fixed Header -->
     <div class="h-28"></div>
@@ -310,28 +395,28 @@
                             <i class="fas fa-radio text-white text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold">Glow FM</h3>
-                            <p class="text-sm text-emerald-400">99.1 MHz</p>
+                            <h3 class="text-xl font-bold">{{ $stationName }}</h3>
+                            <p class="text-sm text-emerald-400">{{ $stationFrequency }}</p>
                         </div>
                     </div>
                     <p class="text-gray-400 mb-6 leading-relaxed">
-                        Your voice, your music. Broadcasting the heartbeat of the city of Akure with the best music, engaging
+                        {{ $stationTagline }}. Broadcasting the heartbeat of the city of Akure with the best music, engaging
                         shows, and vibrant community connection.
                     </p>
                     <div class="flex items-center space-x-3">
-                        <a href="#"
+                        <a href="{{ data_get($stationSocials, 'facebook', '#') }}"
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#"
+                        <a href="{{ data_get($stationSocials, 'twitter', '#') }}"
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#"
+                        <a href="{{ data_get($stationSocials, 'instagram', '#') }}"
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#"
+                        <a href="{{ data_get($stationSocials, 'youtube', '#') }}"
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
                             <i class="fab fa-youtube"></i>
                         </a>
@@ -394,21 +479,20 @@
                         <li class="flex items-start space-x-3">
                             <i class="fas fa-map-marker-alt text-emerald-400 mt-1"></i>
                             <span class="text-gray-400">
-                                123 Radio Street, <br>
-                                Broadcasting City, BC 12345
+                                {{ $stationAddress }}
                             </span>
                         </li>
                         <li class="flex items-center space-x-3">
                             <i class="fas fa-phone text-emerald-400"></i>
-                            <a href="tel:+1234567890" class="text-gray-400 hover:text-emerald-400 transition-colors">
-                                +1 (234) 567-890
+                            <a href="tel:{{ $stationPhone }}" class="text-gray-400 hover:text-emerald-400 transition-colors">
+                                {{ $stationPhone }}
                             </a>
                         </li>
                         <li class="flex items-center space-x-3">
                             <i class="fas fa-envelope text-emerald-400"></i>
-                            <a href="mailto:info@glowfm.com"
+                            <a href="mailto:{{ $stationEmail }}"
                                 class="text-gray-400 hover:text-emerald-400 transition-colors">
-                                info@glowfm.com
+                                {{ $stationEmail }}
                             </a>
                         </li>
                         <li class="flex items-start space-x-3">
@@ -427,8 +511,10 @@
                     <p class="text-gray-400 mb-4">
                         Subscribe to get updates on shows, events, and exclusive content!
                     </p>
-                    <form class="space-y-3">
-                        <input type="email" placeholder="Your email address"
+                    <form method="POST" action="{{ route('newsletter.subscribe') }}" class="space-y-3">
+                        @csrf
+                        <input type="hidden" name="source" value="footer">
+                        <input type="email" name="email" required placeholder="Your email address"
                             class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
                         <button type="submit"
                             class="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors duration-300">
@@ -464,7 +550,7 @@
             <div class="pt-8 border-t border-gray-800">
                 <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
                     <p class="text-gray-400 text-sm">
-                        &copy; {{ date('Y') }} Glow FM 99.1. All rights reserved.
+                        &copy; {{ date('Y') }} {{ $stationName }} {{ $stationFrequency }}. All rights reserved.
                     </p>
                     <div class="flex items-center space-x-6 text-sm">
                         <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
@@ -485,8 +571,13 @@
             <!-- Player Header -->
             <div class="bg-emerald-600 px-4 py-2 flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                    <span class="text-sm font-semibold">LIVE NOW</span>
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="absolute inline-flex h-full w-full rounded-full bg-white opacity-60"
+                            :class="audioPlaying ? 'animate-ping' : ''"></span>
+                        <span class="relative inline-flex h-2.5 w-2.5 rounded-full"
+                            :class="audioPlaying ? 'bg-lime-300' : 'bg-white'"></span>
+                    </span>
+                    <span class="text-sm font-semibold" x-text="audioPlaying ? 'STREAMING LIVE' : 'LIVE NOW'"></span>
                 </div>
                 <button @click="playerOpen = false" class="text-white hover:text-gray-200 transition-colors">
                     <i class="fas fa-times"></i>
@@ -503,28 +594,34 @@
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-semibold text-sm truncate">Blinding Lights</h4>
-                        <p class="text-xs text-gray-400 truncate">The Weeknd</p>
+                        <h4 class="font-semibold text-sm truncate">{{ $streamTitle }}</h4>
+                        <p class="text-xs text-gray-400 truncate">{{ $streamArtist }}</p>
                         <div class="flex items-center space-x-2 mt-1">
                             <i class="fas fa-microphone text-emerald-400 text-xs"></i>
-                            <span class="text-xs text-gray-400">MC Olumiko - Morning Vibes</span>
+                            <span class="text-xs text-gray-400">{{ $streamShowName }}</span>
                         </div>
+                    </div>
+                    <div class="flex items-end space-x-1" x-show="audioPlaying">
+                        <span class="w-1 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
+                        <span class="w-1 h-5 bg-emerald-300 rounded-full animate-pulse"></span>
+                        <span class="w-1 h-4 bg-emerald-200 rounded-full animate-pulse"></span>
                     </div>
                 </div>
 
                 <!-- Controls -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
-                        <button
+                        <button type="button" @click="toggleLive"
                             class="w-10 h-10 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center transition-colors">
-                            <i class="fas fa-play text-white"></i>
+                            <i class="fas text-white" :class="audioPlaying ? 'fa-pause' : 'fa-play'"></i>
                         </button>
                         <button
                             class="w-8 h-8 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors">
                             <i class="fas fa-volume-up text-white text-sm"></i>
                         </button>
                     </div>
-                    <a href="#"
+                    <span class="text-xs text-gray-400">{{ $streamStatusMessage }}</span>
+                    <a href="{{ $stationStreamUrl }}" target="_blank" rel="noopener"
                         class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg transition-colors">
                         Full Player
                     </a>
@@ -532,6 +629,20 @@
             </div>
         </div>
     </div>
+
+    <audio x-ref="liveAudio" src="{{ $stationStreamUrl }}" preload="none"></audio>
+
+    @if (session()->has('newsletter_success'))
+        <div class="fixed bottom-4 left-4 z-50 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            {{ session('newsletter_success') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="fixed bottom-4 left-4 z-50 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            {{ session('error') }}
+        </div>
+    @endif
 
     @livewireScripts
 </body>

@@ -26,6 +26,7 @@ class NewsForm extends Component
     public $category_id = '';
     public $is_published = false;
     public $is_featured = false;
+    public $featured_position = 'none';
     public $published_at = '';
     public $meta_description = '';
     public $meta_keywords = '';
@@ -47,6 +48,7 @@ class NewsForm extends Component
             'category_id' => 'required|exists:news_categories,id',
             'is_published' => 'boolean',
             'is_featured' => 'boolean',
+            'featured_position' => 'nullable|in:none,hero,secondary,sidebar',
             'published_at' => 'nullable|date',
             'meta_description' => 'nullable|max:500', // Changed from 160 to 500
             'meta_keywords' => 'nullable|max:255',
@@ -84,6 +86,7 @@ class NewsForm extends Component
         $this->category_id = $this->news->category_id;
         $this->is_published = $this->news->is_published;
         $this->is_featured = $this->news->is_featured;
+        $this->featured_position = $this->news->featured_position ?? 'none';
         $this->published_at = $this->news->published_at ? 
             $this->news->published_at->format('Y-m-d\TH:i') : '';
         $this->meta_description = $this->news->meta_description;
@@ -160,6 +163,7 @@ class NewsForm extends Component
             'category_id' => $this->category_id,
             'is_published' => $this->is_published,
             'is_featured' => $this->is_featured,
+            'featured_position' => $this->featured_position ?? 'none',
             'published_at' => $this->is_published && $this->published_at ? 
                 $this->published_at : null,
             'meta_description' => $this->meta_description,

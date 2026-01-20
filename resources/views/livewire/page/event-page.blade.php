@@ -7,6 +7,7 @@
             </div>
         </div>
         <div class="container mx-auto px-4 relative z-10">
+            <x-ad-slot placement="events" />
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-5xl md:text-6xl font-bold mb-6">Events & Experiences</h1>
                 <p class="text-xl md:text-2xl text-amber-100 leading-relaxed">

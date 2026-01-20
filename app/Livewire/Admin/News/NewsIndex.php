@@ -98,6 +98,24 @@ class NewsIndex extends Component
         }
     }
 
+    public function setFeaturedPlacement($newsId, $placement)
+    {
+        $news = News::find($newsId);
+        if (!$news) {
+            return;
+        }
+
+        if ($placement === 'hero') {
+            News::where('featured_position', 'hero')->update(['featured_position' => 'none']);
+        }
+
+        $news->featured_position = $placement;
+        $news->is_featured = $placement !== 'none';
+        $news->save();
+
+        session()->flash('success', 'Featured placement updated successfully!');
+    }
+
     public function getNewsProperty()
     {
         $query = News::with(['category', 'author'])

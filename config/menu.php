@@ -13,8 +13,8 @@ return [
             [
                 'title' => 'Analytics',
                 'icon' => 'fas fa-chart-line',
-                'route' => '#',
-                'active' => 'analytics*',
+                'route' => 'admin.comms.analytics',
+                'active' => 'admin.comms.analytics',
                 'children' => [
                     [
                         'title' => 'Listener Statistics',
@@ -30,6 +30,11 @@ return [
                         'title' => 'Content Reports',
                         'route' => '#',
                         'active' => 'analytics.content'
+                    ],
+                    [
+                        'title' => 'Comms Analytics',
+                        'route' => 'admin.comms.analytics',
+                        'active' => 'admin.comms.analytics'
                     ],
                 ]
             ],
@@ -71,6 +76,11 @@ return [
                         'title' => 'All Posts',
                         'route' => 'admin.blog.index',
                         'active' => 'admin.blog.index'
+                    ],
+                    [
+                        'title' => 'Analytics',
+                        'route' => 'admin.blog.analytics',
+                        'active' => 'admin.blog.analytics'
                     ],
                     [
                         'title' => 'Add Post',
@@ -138,18 +148,18 @@ return [
             [
                 'title' => 'Live Stream',
                 'icon' => 'fas fa-broadcast-tower',
-                'route' => '#',
-                'active' => 'stream*',
+                'route' => 'admin.stream',
+                'active' => 'admin.stream',
                 'children' => [
                     [
                         'title' => 'Stream Status',
-                        'route' => '#',
-                        'active' => 'stream.status'
+                        'route' => 'admin.stream',
+                        'active' => 'admin.stream'
                     ],
                     [
                         'title' => 'Stream Settings',
-                        'route' => '#',
-                        'active' => 'stream.settings'
+                        'route' => 'admin.stream',
+                        'active' => 'admin.stream'
                     ],
                     [
                         'title' => 'Backup Streams',
@@ -245,23 +255,23 @@ return [
             [
                 'title' => 'Jingles & Ads',
                 'icon' => 'fas fa-bullhorn',
-                'route' => '#',
-                'active' => 'jingles*',
+                'route' => 'admin.ads.index',
+                'active' => 'admin.ads.*',
                 'children' => [
                     [
                         'title' => 'Station Jingles',
-                        'route' => '#',
-                        'active' => 'jingles.index'
+                        'route' => 'admin.ads.index',
+                        'active' => 'admin.ads.index'
                     ],
                     [
                         'title' => 'Commercials',
-                        'route' => '#',
-                        'active' => 'jingles.commercials'
+                        'route' => 'admin.ads.index',
+                        'active' => 'admin.ads.index'
                     ],
                     [
                         'title' => 'Ad Schedule',
-                        'route' => '#',
-                        'active' => 'jingles.schedule'
+                        'route' => 'admin.ads.index',
+                        'active' => 'admin.ads.index'
                     ],
                 ]
             ],
@@ -273,92 +283,92 @@ return [
             [
                 'title' => 'Listeners',
                 'icon' => 'fas fa-users',
-                'route' => '#',
-                'active' => 'listeners*',
+                'route' => 'admin.listeners.index',
+                'active' => 'admin.listeners.*',
                 'children' => [
                     [
                         'title' => 'All Listeners',
-                        'route' => '#',
-                        'active' => 'listeners.index'
+                        'route' => 'admin.listeners.index',
+                        'active' => 'admin.listeners.index'
                     ],
                     [
                         'title' => 'Demographics',
-                        'route' => '#',
-                        'active' => 'listeners.demographics'
+                        'route' => 'admin.listeners.demographics',
+                        'active' => 'admin.listeners.demographics'
                     ],
                     [
                         'title' => 'Feedback',
-                        'route' => '#',
-                        'active' => 'listeners.feedback'
+                        'route' => 'admin.listeners.feedback',
+                        'active' => 'admin.listeners.feedback'
                     ],
                 ]
             ],
             [
                 'title' => 'Requests',
                 'icon' => 'fas fa-headphones',
-                'route' => '#',
-                'active' => 'requests*',
+                'route' => 'admin.requests.songs',
+                'active' => 'admin.requests.*',
                 'children' => [
                     [
                         'title' => 'Song Requests',
-                        'route' => '#',
-                        'active' => 'requests.songs'
+                        'route' => 'admin.requests.songs',
+                        'active' => 'admin.requests.songs'
                     ],
                     [
                         'title' => 'Dedications',
-                        'route' => '#',
-                        'active' => 'requests.dedications'
+                        'route' => 'admin.requests.dedications',
+                        'active' => 'admin.requests.dedications'
                     ],
                     [
                         'title' => 'Request Settings',
-                        'route' => '#',
-                        'active' => 'requests.settings'
+                        'route' => 'admin.requests.settings',
+                        'active' => 'admin.requests.settings'
                     ],
                 ]
             ],
             [
                 'title' => 'Contests & Giveaways',
                 'icon' => 'fas fa-gift',
-                'route' => '#',
-                'active' => 'contests*',
+                'route' => 'admin.contests.active',
+                'active' => 'admin.contests.*',
                 'children' => [
                     [
                         'title' => 'Active Contests',
-                        'route' => '#',
-                        'active' => 'contests.active'
+                        'route' => 'admin.contests.active',
+                        'active' => 'admin.contests.active'
                     ],
                     [
                         'title' => 'Past Contests',
-                        'route' => '#',
-                        'active' => 'contests.past'
+                        'route' => 'admin.contests.past',
+                        'active' => 'admin.contests.past'
                     ],
                     [
                         'title' => 'Winners',
-                        'route' => '#',
-                        'active' => 'contests.winners'
+                        'route' => 'admin.contests.winners',
+                        'active' => 'admin.contests.winners'
                     ],
                 ]
             ],
             [
                 'title' => 'Messages',
                 'icon' => 'fas fa-comments',
-                'route' => '#',
-                'active' => 'messages*',
+                'route' => 'admin.messages.inbox',
+                'active' => 'admin.messages.*',
                 'children' => [
                     [
                         'title' => 'Inbox',
-                        'route' => '#',
-                        'active' => 'messages.inbox'
+                        'route' => 'admin.messages.inbox',
+                        'active' => 'admin.messages.inbox'
                     ],
                     [
                         'title' => 'Text Line',
-                        'route' => '#',
-                        'active' => 'messages.textline'
+                        'route' => 'admin.messages.textline',
+                        'active' => 'admin.messages.textline'
                     ],
                     [
                         'title' => 'Social Messages',
-                        'route' => '#',
-                        'active' => 'messages.social'
+                        'route' => 'admin.messages.social',
+                        'active' => 'admin.messages.social'
                     ],
                 ]
             ],
@@ -370,46 +380,64 @@ return [
             [
                 'title' => 'OAPs & Hosts',
                 'icon' => 'fas fa-user-tie',
-                'route' => '#',
-                'active' => 'oaps*',
+                'route' => 'admin.team.oaps',
+                'active' => 'admin.team.oaps*',
                 'children' => [
                     [
                         'title' => 'All OAPs',
-                        'route' => '#',
-                        'active' => 'oaps.index'
+                        'route' => 'admin.team.oaps',
+                        'active' => 'admin.team.oaps'
                     ],
                     [
                         'title' => 'Add OAP',
-                        'route' => '#',
-                        'active' => 'oaps.create'
+                        'route' => 'admin.team.oaps.create',
+                        'active' => 'admin.team.oaps.create'
                     ],
                     [
                         'title' => 'OAP Schedules',
-                        'route' => '#',
-                        'active' => 'oaps.schedules'
+                        'route' => 'admin.shows.schedule',
+                        'active' => 'admin.shows.schedule'
                     ],
                 ]
             ],
             [
                 'title' => 'Staff',
                 'icon' => 'fas fa-user-friends',
-                'route' => '#',
-                'active' => 'staff*',
+                'route' => 'admin.team.staff',
+                'active' => 'admin.team.staff*',
                 'children' => [
                     [
                         'title' => 'All Staff',
-                        'route' => '#',
-                        'active' => 'staff.index'
+                        'route' => 'admin.team.staff',
+                        'active' => 'admin.team.staff'
                     ],
                     [
                         'title' => 'Departments',
-                        'route' => '#',
-                        'active' => 'staff.departments'
+                        'route' => 'admin.team.departments',
+                        'active' => 'admin.team.departments*'
                     ],
                     [
                         'title' => 'Roles & Permissions',
-                        'route' => '#',
-                        'active' => 'staff.roles'
+                        'route' => 'admin.team.roles',
+                        'active' => 'admin.team.roles*'
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Users',
+                'icon' => 'fas fa-user-shield',
+                'route' => 'admin.users.index',
+                'active' => 'admin.users*',
+                'children' => [
+                    [
+                        'title' => 'All Users',
+                        'route' => 'admin.users.index',
+                        'active' => 'admin.users.index'
+                    ],
+                    [
+                        'title' => 'Add User',
+                        'route' => 'admin.users.create',
+                        'active' => 'admin.users.create'
                     ],
                 ]
             ],
@@ -467,8 +495,8 @@ return [
             [
                 'title' => 'Email Campaigns',
                 'icon' => 'fas fa-envelope',
-                'route' => '#',
-                'active' => 'email*',
+                'route' => 'admin.newsletter.subscribers',
+                'active' => 'admin.newsletter.*',
                 'children' => [
                     [
                         'title' => 'Campaigns',
@@ -477,8 +505,8 @@ return [
                     ],
                     [
                         'title' => 'Subscribers',
-                        'route' => '#',
-                        'active' => 'email.subscribers'
+                        'route' => 'admin.newsletter.subscribers',
+                        'active' => 'admin.newsletter.subscribers'
                     ],
                     [
                         'title' => 'Templates',
@@ -495,69 +523,69 @@ return [
             [
                 'title' => 'Station Settings',
                 'icon' => 'fas fa-cog',
-                'route' => '#',
-                'active' => 'settings*',
+                'route' => 'admin.settings.station',
+                'active' => 'admin.settings.station',
                 'children' => [
                     [
                         'title' => 'General',
-                        'route' => '#',
-                        'active' => 'settings.general'
+                        'route' => 'admin.settings.station',
+                        'active' => 'admin.settings.station'
                     ],
                     [
                         'title' => 'Stream Configuration',
-                        'route' => '#',
-                        'active' => 'settings.stream'
+                        'route' => 'admin.settings.station',
+                        'active' => 'admin.settings.station'
                     ],
                     [
                         'title' => 'Branding',
-                        'route' => '#',
-                        'active' => 'settings.branding'
+                        'route' => 'admin.settings.station',
+                        'active' => 'admin.settings.station'
                     ],
                 ]
             ],
             [
                 'title' => 'Website',
                 'icon' => 'fas fa-globe',
-                'route' => '#',
-                'active' => 'website*',
+                'route' => 'admin.settings.website',
+                'active' => 'admin.settings.website',
                 'children' => [
                     [
                         'title' => 'Pages',
-                        'route' => '#',
-                        'active' => 'website.pages'
+                        'route' => 'admin.settings.website',
+                        'active' => 'admin.settings.website'
                     ],
                     [
                         'title' => 'Navigation',
-                        'route' => '#',
-                        'active' => 'website.navigation'
+                        'route' => 'admin.settings.website',
+                        'active' => 'admin.settings.website'
                     ],
                     [
                         'title' => 'Theme Settings',
-                        'route' => '#',
-                        'active' => 'website.theme'
+                        'route' => 'admin.settings.website',
+                        'active' => 'admin.settings.website'
                     ],
                 ]
             ],
             [
                 'title' => 'System',
                 'icon' => 'fas fa-server',
-                'route' => '#',
-                'active' => 'system*',
+                'route' => 'admin.settings.system',
+                'active' => 'admin.settings.system',
                 'children' => [
                     [
                         'title' => 'System Info',
-                        'route' => '#',
-                        'active' => 'system.info'
+                        'route' => 'admin.settings.system',
+                        'active' => 'admin.settings.system'
                     ],
                     [
                         'title' => 'Backups',
-                        'route' => '#',
-                        'active' => 'system.backups'
+                        'route' => 'admin.settings.system',
+                        'active' => 'admin.settings.system'
                     ],
                     [
                         'title' => 'Logs',
-                        'route' => '#',
-                        'active' => 'system.logs'
+                        'route' => 'admin.settings.system',
+                        'active' => 'admin.settings.system'
                     ],
                 ]
             ],

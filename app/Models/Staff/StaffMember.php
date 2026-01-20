@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Models\Staff;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
+
+class StaffMember extends Model
+{
+    use HasFactory;
+
+    protected $table = 'staff_members';
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'role',
+        'department',
+        'department_id',
+        'team_role_id',
+        'bio',
+        'photo_url',
+        'email',
+        'phone',
+        'employment_status',
+        'is_active',
+        'joined_date',
+        'social_links',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'joined_date' => 'date',
+        'social_links' => 'array',
+    ];
+
+    public function departmentRelation()
+    {
+        return $this->belongsTo(\App\Models\Team\Department::class, 'department_id');
+    }
+
+    public function teamRole()
+    {
+        return $this->belongsTo(\App\Models\Team\Role::class, 'team_role_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($staff) {
+            if (empty($staff->slug)) {
+                $staff->slug = Str::slug($staff->name);
+            }
+        });
+    }
+}

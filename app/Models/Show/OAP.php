@@ -16,7 +16,7 @@ class OAP extends Model
 
     protected $fillable = [
         'name', 'slug', 'bio', 'profile_photo', 'gallery', 'voice_sample_url',
-        'specializations', 'email', 'phone', 'social_media', 'employment_status',
+        'specializations', 'email', 'department_id', 'team_role_id', 'phone', 'social_media', 'employment_status',
         'is_active', 'available', 'joined_date', 'total_shows_hosted', 'average_rating'
     ];
 
@@ -42,6 +42,16 @@ class OAP extends Model
     public function shows()
     {
         return $this->hasMany(Show::class, 'primary_host_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(\App\Models\Team\Department::class, 'department_id');
+    }
+
+    public function teamRole()
+    {
+        return $this->belongsTo(\App\Models\Team\Role::class, 'team_role_id');
     }
 
     public function scheduleSlots()
@@ -84,7 +94,6 @@ class OAP extends Model
         return 'slug';
     }
 }
-
 
 
 

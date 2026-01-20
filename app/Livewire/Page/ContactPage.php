@@ -3,6 +3,9 @@
 namespace App\Livewire\Page;
 
 use App\Models\Setting;
+use App\Models\ContactMessage;
+use App\Mail\ContactSubmittedMail;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class ContactPage extends Component
@@ -151,17 +154,23 @@ class ContactPage extends Component
     {
         $this->validate();
 
-        // Here you would normally save to database or send email
-        // For now, we'll just show a success message
-        
-        $this->successMessage = 'Thank you for contacting us! We\'ve received your message and will get back to you within 24 hours.';
-        $this->errorMessage = '';
+        $record = ContactMessage::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'subject' => $this->subject,
+            'inquiry_type' => $this->inquiry_type,
+            'message' => $this->message,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
 
-        // Reset form
-        $this->reset(['name', 'email', 'phone', 'subject', 'message', 'inquiry_type']);
+        $notifyEmail = Setting::get('system.support_email', Setting::get('station.email', config('mail.from.address')));
+        if ($notifyEmail) {
+            Mail::to($notifyEmail)->send(new ContactSubmittedMail($record));
+        }
 
-        // Scroll to success message
-        $this->dispatch('scrollToTop');
+        return redirect()->route('contact.success');
     }
 
     public function render()

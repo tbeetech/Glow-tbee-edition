@@ -8,6 +8,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
         <div class="container mx-auto px-4 relative z-10">
+            <x-ad-slot placement="show-detail" />
             <div class="max-w-4xl mx-auto">
                 <nav class="flex items-center space-x-2 text-sm text-emerald-200 mb-6">
                     <a href="{{ route('shows.index') }}" class="hover:text-white">Shows</a>

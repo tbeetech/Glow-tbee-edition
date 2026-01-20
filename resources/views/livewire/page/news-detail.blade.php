@@ -4,6 +4,7 @@
     @if($news->is_breaking)
     <div class="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-3 sticky top-0 z-50 shadow-lg animate-pulse">
         <div class="container mx-auto px-4 flex items-center justify-center space-x-3">
+            <x-ad-slot placement="news-detail" />
             <span class="flex items-center space-x-2 font-bold text-lg">
                 @if($news->breaking === 'urgent')
                 <i class="fas fa-exclamation-triangle animate-bounce"></i>

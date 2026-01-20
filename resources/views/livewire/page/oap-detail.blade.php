@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-gray-50">
     <section class="relative bg-gradient-to-br from-slate-700 via-slate-800 to-gray-900 text-white py-16">
         <div class="container mx-auto px-4">
+            <x-ad-slot placement="oap-detail" />
             <div class="max-w-4xl mx-auto">
                 <nav class="flex items-center space-x-2 text-sm text-slate-200 mb-6">
                     <a href="{{ route('oaps.index') }}" class="hover:text-white">OAPs</a>
@@ -13,7 +14,8 @@
                         alt="{{ $oap->name }}" class="w-24 h-24 rounded-full border-2 border-white/40">
                     <div class="mt-4 md:mt-0">
                         <h1 class="text-4xl font-bold">{{ $oap->name }}</h1>
-                        <p class="text-slate-200 mt-2">{{ $oap->employment_status ?? 'Broadcaster' }}</p>
+                        <p class="text-slate-200 mt-2">{{ $oap->teamRole?->name ?? ($oap->employment_status ?? 'Broadcaster') }}</p>
+                        <p class="text-sm text-slate-300">{{ $oap->department?->name ?? 'General' }}</p>
                     </div>
                 </div>
             </div>

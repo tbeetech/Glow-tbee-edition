@@ -300,12 +300,18 @@ class HomePage extends Component
             'secondary_cta_text' => 'View Schedule',
             'secondary_cta_url' => '/shows',
             'now_playing_label' => 'Currently Playing',
-            'now_playing_title' => 'Morning Vibes with MC Olumiko',
+            'now_playing_title' => 'Morning Vibes',
             'now_playing_time' => '6:00 AM - 10:00 AM',
         ];
 
         $settings = Setting::get('website.home', []);
         $this->homeContent = array_replace_recursive($defaults, $settings);
+
+        $stream = Setting::get('stream', []);
+        if (!empty($stream)) {
+            $this->homeContent['now_playing_title'] = $stream['show_name'] ?? $this->homeContent['now_playing_title'];
+            $this->homeContent['now_playing_time'] = $stream['show_time'] ?? $this->homeContent['now_playing_time'];
+        }
     }
 
     public function render()

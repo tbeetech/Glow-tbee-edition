@@ -1,6 +1,7 @@
 <div>
     <section class="relative bg-gradient-to-br from-slate-700 via-slate-800 to-gray-900 text-white py-16">
         <div class="container mx-auto px-4">
+            <x-ad-slot placement="oap-directory" />
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">OAP Directory</h1>
                 <p class="text-lg md:text-xl text-slate-200">Meet the voices behind Glow FM.</p>
@@ -29,7 +30,8 @@
                                         alt="{{ $oap->name }}" class="w-16 h-16 rounded-full">
                                     <div class="min-w-0">
                                         <h3 class="text-lg font-bold text-gray-900 truncate">{{ $oap->name }}</h3>
-                                        <p class="text-sm text-gray-500">{{ $oap->employment_status ?? 'Broadcaster' }}</p>
+                                        <p class="text-sm text-gray-500">{{ $oap->teamRole?->name ?? ($oap->employment_status ?? 'Broadcaster') }}</p>
+                                        <p class="text-xs text-slate-500">{{ $oap->department?->name ?? 'General' }}</p>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mt-4 line-clamp-3">{{ $oap->bio }}</p>

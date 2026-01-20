@@ -209,6 +209,14 @@
         </div>
     </section>
 
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-5xl mx-auto">
+                <x-ad-slot placement="home" />
+            </div>
+        </div>
+    </section>
+
     <!-- Latest News Section - REAL DATA -->
     <section class="py-20 bg-gray-50">
         <div class="container mx-auto px-4">

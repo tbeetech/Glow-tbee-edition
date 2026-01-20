@@ -6,6 +6,7 @@
         </div>
         
         <div class="container mx-auto px-4 relative z-10">
+            <x-ad-slot placement="contact" />
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-5xl md:text-6xl font-bold mb-6">{{ $contactContent['header_title'] }}</h1>
                 <p class="text-xl md:text-2xl text-emerald-100 leading-relaxed">

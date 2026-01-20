@@ -1,6 +1,7 @@
 <div>
     <section class="relative bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-800 text-white py-16">
         <div class="container mx-auto px-4">
+            <x-ad-slot placement="schedule" />
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">Weekly Schedule</h1>
                 <p class="text-lg md:text-xl text-emerald-100">Your weekly guide to every show on Glow FM.</p>
