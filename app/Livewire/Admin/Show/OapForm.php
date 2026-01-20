@@ -3,8 +3,8 @@
 namespace App\Livewire\Admin\Show;
 
 use App\Models\Show\OAP;
+use App\Support\CloudinaryUploader;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -54,8 +54,7 @@ class OapForm extends Component
 
         $photoPath = $this->profile_photo;
         if ($this->profile_photo_upload) {
-            $path = $this->profile_photo_upload->store('oaps/photos', 'public');
-            $photoPath = Storage::url($path);
+            $photoPath = CloudinaryUploader::uploadImage($this->profile_photo_upload, 'oaps/photos');
         }
 
         $data = [

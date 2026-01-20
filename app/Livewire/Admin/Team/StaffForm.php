@@ -5,8 +5,8 @@ namespace App\Livewire\Admin\Team;
 use App\Models\Staff\StaffMember;
 use App\Models\Team\Department;
 use App\Models\Team\Role as TeamRole;
+use App\Support\CloudinaryUploader;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -128,8 +128,7 @@ class StaffForm extends Component
 
         $photoPath = $this->photo_url;
         if ($this->photo_upload) {
-            $path = $this->photo_upload->store('staff/photos', 'public');
-            $photoPath = Storage::url($path);
+            $photoPath = CloudinaryUploader::uploadImage($this->photo_upload, 'staff/photos');
         }
 
         $departmentName = Department::find($this->department_id)?->name;

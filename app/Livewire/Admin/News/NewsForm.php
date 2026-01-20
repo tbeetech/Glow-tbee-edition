@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\News;
 
 use App\Models\News\News;
 use App\Models\News\NewsCategory;
+use App\Support\CloudinaryUploader;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
@@ -142,8 +143,7 @@ class NewsForm extends Component
         // Handle image
         $imagePath = $this->existing_image;
         if ($this->featured_image) {
-            $path = $this->featured_image->store('news', 'public');
-            $imagePath = asset('storage/' . $path);
+            $imagePath = CloudinaryUploader::uploadImage($this->featured_image, 'news');
         } elseif (!empty($this->featured_image_url)) {
             $imagePath = $this->featured_image_url;
         }

@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Show;
 use App\Models\Show\Category;
 use App\Models\Show\OAP;
 use App\Models\Show\Show;
+use App\Support\CloudinaryUploader;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -70,8 +71,7 @@ class ShowForm extends Component
 
         $coverPath = $this->cover_url;
         if ($this->cover_image) {
-            $coverPath = $this->cover_image->store('shows/covers', 'public');
-            $coverPath = asset('storage/' . $coverPath);
+            $coverPath = CloudinaryUploader::uploadImage($this->cover_image, 'shows/covers');
         }
 
         $data = [

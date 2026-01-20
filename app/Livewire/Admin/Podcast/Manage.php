@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Podcast;
 
 use App\Models\Podcast\Show;
 use App\Models\Podcast\Episode;
+use App\Support\CloudinaryUploader;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -188,8 +189,7 @@ class Manage extends Component
         // Handle cover image
         $coverPath = $this->existing_show_cover;
         if ($this->show_cover) {
-            $path = $this->show_cover->store('podcasts/covers', 'public');
-            $coverPath = Storage::url($path);
+            $coverPath = CloudinaryUploader::uploadImage($this->show_cover, 'podcasts/covers');
         } elseif (!empty($this->show_cover_url)) {
             $coverPath = $this->show_cover_url;
         }
@@ -287,8 +287,7 @@ class Manage extends Component
         // Handle cover image
         $coverPath = $this->existing_episode_cover;
         if ($this->episode_cover) {
-            $path = $this->episode_cover->store('podcasts/episode-covers', 'public');
-            $coverPath = Storage::url($path);
+            $coverPath = CloudinaryUploader::uploadImage($this->episode_cover, 'podcasts/episode-covers');
         } elseif (!empty($this->episode_cover_url)) {
             $coverPath = $this->episode_cover_url;
         }

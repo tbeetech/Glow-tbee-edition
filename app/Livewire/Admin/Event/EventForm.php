@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Event;
 
 use App\Models\Event\Event;
 use App\Models\Event\EventCategory;
+use App\Support\CloudinaryUploader;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
@@ -171,8 +172,7 @@ class EventForm extends Component
     {
         $imagePath = $this->existing_image;
         if ($this->featured_image) {
-            $path = $this->featured_image->store('events', 'public');
-            $imagePath = asset('storage/' . $path);
+            $imagePath = CloudinaryUploader::uploadImage($this->featured_image, 'events');
         } elseif (!empty($this->featured_image_url)) {
             $imagePath = $this->featured_image_url;
         }

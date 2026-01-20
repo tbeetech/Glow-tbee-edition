@@ -7,6 +7,7 @@ use App\Models\Show\Category;
 use App\Models\Show\OAP;
 use App\Models\Show\ScheduleSlot;
 use App\Models\Show\Segment;
+use App\Support\CloudinaryUploader;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -182,8 +183,7 @@ class Manage extends Component
 
         $coverPath = $this->cover_url;
         if ($this->cover_image) {
-            $coverPath = $this->cover_image->store('shows/covers', 'public');
-            $coverPath = asset('storage/' . $coverPath);
+            $coverPath = CloudinaryUploader::uploadImage($this->cover_image, 'shows/covers');
         }
 
         $data = [
@@ -220,8 +220,7 @@ class Manage extends Component
 
         $photoPath = $this->oap_photo_url;
         if ($this->oap_photo) {
-            $photoPath = $this->oap_photo->store('oaps/photos', 'public');
-            $photoPath = asset('storage/' . $photoPath);
+            $photoPath = CloudinaryUploader::uploadImage($this->oap_photo, 'oaps/photos');
         }
 
         $data = [

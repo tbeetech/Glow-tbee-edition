@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Blog;
 
 use App\Models\Blog\Post;
 use App\Models\Blog\Category;
+use App\Support\CloudinaryUploader;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
@@ -144,8 +145,7 @@ class BlogForm extends Component
         // Handle image
         $imagePath = $this->existing_image;
         if ($this->featured_image) {
-            $path = $this->featured_image->store('blog', 'public');
-            $imagePath = asset('storage/' . $path);
+            $imagePath = CloudinaryUploader::uploadImage($this->featured_image, 'blog');
         } elseif (!empty($this->featured_image_url)) {
             $imagePath = $this->featured_image_url;
         }
