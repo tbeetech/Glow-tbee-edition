@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Glow FM 99.1 - Your Voice, Your Music' }}</title>
+    <meta name="google-adsense-account" content="ca-pub-3970534274644088">
+    
     <meta name="description"
         content="{{ $meta_description ?? 'Glow FM 99.1 - The heartbeat of the city. Listen to the best music, engaging shows, and stay connected with your community.' }}">
     <meta property="og:title" content="{{ $meta_title ?? ($title ?? 'Glow FM 99.1') }}">
