@@ -57,6 +57,11 @@ use App\Livewire\Admin\Ads\Index as AdminAdsIndex;
 use App\Livewire\Admin\Ads\Form as AdminAdsForm;
 
 use App\Livewire\Admin\Show\Manage as ShowManage;
+use App\Livewire\Admin\Show\ShowForm as AdminShowForm;
+use App\Livewire\Admin\Show\CategoryForm as AdminShowCategoryForm;
+use App\Livewire\Admin\Show\ScheduleForm as AdminShowScheduleForm;
+use App\Livewire\Admin\Show\SegmentForm as AdminShowSegmentForm;
+use App\Livewire\Admin\Show\OapForm as AdminShowOapForm;
 
 // Public Routes
 Route::get('/', HomePage::class)->name('home');
@@ -228,10 +233,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::prefix('admin/shows')->name('admin.shows.')->group(function () {
         Route::get('/', ShowManage::class)->name('index');
+        Route::get('/create', AdminShowForm::class)->name('create');
+        Route::get('/{showId}/edit', AdminShowForm::class)->name('edit');
         Route::get('/oaps', ShowManage::class)->name('oaps')->defaults('view', 'oaps');
+        Route::get('/oaps/create', AdminShowOapForm::class)->name('oaps.create');
+        Route::get('/oaps/{oapId}/edit', AdminShowOapForm::class)->name('oaps.edit');
         Route::get('/schedule', ShowManage::class)->name('schedule')->defaults('view', 'schedule');
+        Route::get('/schedule/create', AdminShowScheduleForm::class)->name('schedule.create');
+        Route::get('/schedule/{slotId}/edit', AdminShowScheduleForm::class)->name('schedule.edit');
         Route::get('/segments', ShowManage::class)->name('segments')->defaults('view', 'segments');
+        Route::get('/segments/create', AdminShowSegmentForm::class)->name('segments.create');
+        Route::get('/segments/{segmentId}/edit', AdminShowSegmentForm::class)->name('segments.edit');
         Route::get('/categories', ShowManage::class)->name('categories')->defaults('view', 'categories');
+        Route::get('/categories/create', AdminShowCategoryForm::class)->name('categories.create');
+        Route::get('/categories/{categoryId}/edit', AdminShowCategoryForm::class)->name('categories.edit');
     });
 
     Route::prefix('admin/settings')->name('admin.settings.')->group(function () {
