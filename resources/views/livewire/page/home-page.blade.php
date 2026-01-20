@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.60s="refreshHomeData">
     <!-- Breaking News Banner (if exists) -->
     @if($breakingNews)
     <div class="bg-red-600 text-white py-3 sticky top-28 z-40 shadow-lg animate-pulse">

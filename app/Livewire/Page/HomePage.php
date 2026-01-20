@@ -4,10 +4,10 @@ namespace App\Livewire\Page;
 
 use App\Models\News\News;
 use App\Models\News\NewsCategory;
-use App\Models\Podcast\Show;
 use App\Models\Blog\Post; 
 use App\Models\Blog\Category; 
 use App\Models\Podcast\Episode;
+use App\Models\Show\Show as ProgramShow;
 use App\Models\Event\Event;
 use App\Models\Setting;
 use Livewire\Component;
@@ -91,7 +91,15 @@ class HomePage extends Component
     private function loadRealPodcasts()
     {
         // Get Featured Shows (up to 3)
-        $featuredShows = Show::with(['publishedEpisodes', 'host'])
+        $featuredShows = ProgramShow::with([
+                'category',
+                'primaryHost',
+                'scheduleSlots' => function ($query) {
+                    $query->active()
+                        ->orderBy('day_of_week')
+                        ->orderBy('start_time');
+                },
+            ])
             ->active()
             ->featured()
             ->take(3)
@@ -99,29 +107,34 @@ class HomePage extends Component
 
         // If no featured shows, get the most popular ones
         if ($featuredShows->isEmpty()) {
-            $featuredShows = Show::with(['publishedEpisodes', 'host'])
+            $featuredShows = ProgramShow::with([
+                    'category',
+                    'primaryHost',
+                    'scheduleSlots' => function ($query) {
+                        $query->active()
+                            ->orderBy('day_of_week')
+                            ->orderBy('start_time');
+                    },
+                ])
                 ->active()
-                ->orderBy('total_plays', 'desc')
+                ->orderBy('total_listeners', 'desc')
                 ->take(3)
                 ->get();
         }
 
         $this->featuredShows = $featuredShows->map(function ($show) {
-            $latestEpisode = $show->publishedEpisodes()->latest('published_at')->first();
-            
+            $slot = $show->scheduleSlots->first();
+
             return [
                 'id' => $show->id,
                 'slug' => $show->slug,
                 'title' => $show->title,
-                'host' => $show->host_name,
-                'time' => $latestEpisode ? $latestEpisode->published_at->format('g:i A') : 'Coming Soon',
+                'host' => $show->primaryHost?->name ?? 'TBA',
+                'time' => $slot?->time_range ?? 'Schedule TBA',
                 'description' => $show->description,
                 'image' => $show->cover_image ?? 'https://ui-avatars.com/api/?name=' . urlencode($show->title) . '&background=10b981&color=fff&size=400',
-                'category' => ucfirst($show->category),
-                'days' => ucfirst($show->frequency),
-                'episodes_count' => $show->publishedEpisodes->count(),
-                'total_plays' => number_format($show->total_plays),
-                'subscribers' => number_format($show->subscribers),
+                'category' => $show->category?->name ?? 'Show',
+                'days' => $slot ? ucfirst($slot->day_of_week) : 'Weekly',
             ];
         })->toArray();
 
@@ -200,7 +213,7 @@ class HomePage extends Component
         // Get real statistics from database
         $totalNews = News::published()->count();
         $totalBlogPosts = \App\Models\Blog\Post::published()->count(); // ADD THIS
-        $totalPodcasts = Show::active()->count();
+        $totalPodcasts = ProgramShow::active()->count();
         $totalEpisodes = Episode::where('status', 'published')->count();
         $totalPodcastPlays = Episode::sum('plays');
         
@@ -222,10 +235,21 @@ class HomePage extends Component
             ],
             [
                 'number' => $totalPodcasts . '+',
-                'label' => 'Podcast Shows',
-                'icon' => 'fas fa-podcast'
+                'label' => 'Show Programs',
+                'icon' => 'fas fa-microphone'
             ],
         ];
+    }
+
+    public function refreshHomeData()
+    {
+        $this->loadRealNews();
+        $this->loadRealPodcasts();
+        $this->loadUpcomingEvents();
+        $this->loadRealBlogPosts();
+        $this->loadStats();
+        $this->loadTestimonials();
+        $this->loadHomeContent();
     }
 
     private function loadUpcomingEvents()
