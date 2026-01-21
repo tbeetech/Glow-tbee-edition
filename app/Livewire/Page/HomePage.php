@@ -8,8 +8,10 @@ use App\Models\Blog\Post;
 use App\Models\Blog\Category; 
 use App\Models\Podcast\Episode;
 use App\Models\Show\Show as ProgramShow;
+use App\Models\Show\ScheduleSlot;
 use App\Models\Event\Event;
 use App\Models\Setting;
+use Carbon\Carbon;
 use Livewire\Component;
 
 class HomePage extends Component
@@ -25,11 +27,13 @@ class HomePage extends Component
     public $breakingNews = null;
     public $trendingNews = [];
     public $homeContent = [];
+    public $currentShow = null;
 
     public function mount()
     {
         $this->loadRealNews();
         $this->loadRealPodcasts();
+        $this->loadCurrentShow();
         $this->loadUpcomingEvents();
          $this->loadRealBlogPosts();
         $this->loadStats();
@@ -161,6 +165,40 @@ class HomePage extends Component
                 ];
             })
             ->toArray();
+    }
+
+    private function loadCurrentShow()
+    {
+        $now = Carbon::now(config('app.timezone', 'UTC'));
+        $day = strtolower($now->format('l'));
+        $time = $now->format('H:i:s');
+
+        $currentSlot = ScheduleSlot::query()
+            ->with(['show', 'oap'])
+            ->active()
+            ->forDay($day)
+            ->where('start_time', '<=', $time)
+            ->where('end_time', '>', $time)
+            ->orderBy('start_time', 'desc')
+            ->first();
+
+        if ($currentSlot && !$currentSlot->isActiveOn($now)) {
+            $currentSlot = null;
+        }
+
+        if ($currentSlot) {
+            $this->currentShow = [
+                'title' => $currentSlot->show?->title ?? 'Untitled Show',
+                'slug' => $currentSlot->show?->slug,
+                'host' => $currentSlot->oap?->name ?? 'Host TBA',
+                'host_slug' => $currentSlot->oap?->slug,
+                'time' => $currentSlot->time_range,
+            ];
+
+            return;
+        }
+
+        $this->currentShow = null;
     }
  private function loadRealBlogPosts()
     {

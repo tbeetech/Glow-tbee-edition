@@ -64,9 +64,33 @@
                                 </div>
                             </div>
                             <div class="flex-1 text-left">
-                                <p class="text-sm text-emerald-200 mb-1">{{ $homeContent['now_playing_label'] }}</p>
-                                <h3 class="text-lg font-bold">{{ $homeContent['now_playing_title'] }}</h3>
-                                <p class="text-sm text-emerald-100">{{ $homeContent['now_playing_time'] }}</p>
+                                <p class="text-sm text-emerald-200 mb-1">Now Playing</p>
+                                @if($currentShow)
+                                    <h3 class="text-lg font-bold">
+                                        @if(!empty($currentShow['slug']))
+                                            <a href="{{ route('shows.show', $currentShow['slug']) }}" class="hover:text-white">
+                                                {{ $currentShow['title'] }}
+                                            </a>
+                                        @else
+                                            {{ $currentShow['title'] ?? 'On Air' }}
+                                        @endif
+                                    </h3>
+                                    <p class="text-sm text-emerald-100">
+                                        @if(!empty($currentShow['host_slug']))
+                                            <a href="{{ route('oaps.show', $currentShow['host_slug']) }}" class="hover:text-white">
+                                                {{ $currentShow['host'] }}
+                                            </a>
+                                        @else
+                                            {{ $currentShow['host'] ?? 'Live' }}
+                                        @endif
+                                        @if(!empty($currentShow['time']))
+                                            <span class="mx-2">•</span>{{ $currentShow['time'] }}
+                                        @endif
+                                    </p>
+                                @else
+                                    <h3 class="text-lg font-bold">No show scheduled</h3>
+                                    <p class="text-sm text-emerald-100">Check the weekly schedule</p>
+                                @endif
                             </div>
                         </div>
                     </div>
