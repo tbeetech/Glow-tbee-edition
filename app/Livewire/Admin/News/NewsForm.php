@@ -25,6 +25,9 @@ class NewsForm extends Component
     public $featured_image_url = '';
     public $existing_image = '';
     public $category_id = '';
+    public $category_choice = '';
+    public $new_category_name = '';
+    public $new_category_description = '';
     public $is_published = false;
     public $is_featured = false;
     public $featured_position = 'none';
@@ -85,6 +88,7 @@ class NewsForm extends Component
         $this->content = $this->news->content;
         $this->existing_image = $this->news->featured_image;
         $this->category_id = $this->news->category_id;
+        $this->category_choice = $this->news->category_id;
         $this->is_published = $this->news->is_published;
         $this->is_featured = $this->news->is_featured;
         $this->featured_position = $this->news->featured_position ?? 'none';
@@ -172,6 +176,39 @@ class NewsForm extends Component
             'breaking' => $this->breaking,
             'breaking_until' => $this->breaking_until ?: null,
         ];
+    }
+
+    public function createCategory()
+    {
+        $this->validate([
+            'new_category_name' => 'required|min:3|max:255',
+            'new_category_description' => 'nullable|max:1000',
+        ], [], [
+            'new_category_name' => 'category name',
+            'new_category_description' => 'category description',
+        ]);
+
+        $slug = Str::slug($this->new_category_name);
+        $slugExists = NewsCategory::where('slug', $slug)->exists();
+
+        if ($slugExists) {
+            $this->addError('new_category_name', 'A category with a similar name already exists.');
+            return;
+        }
+
+        $category = NewsCategory::create([
+            'name' => $this->new_category_name,
+            'slug' => $slug,
+            'description' => $this->new_category_description ?: null,
+            'icon' => 'fas fa-newspaper',
+            'color' => 'emerald',
+            'is_active' => true,
+        ]);
+
+        $this->category_id = $category->id;
+        $this->category_choice = $category->id;
+        $this->new_category_name = '';
+        $this->new_category_description = '';
     }
 
     public function saveAsDraft()

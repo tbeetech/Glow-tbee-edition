@@ -24,6 +24,9 @@ class EventForm extends Component
     public $featured_image_url = '';
     public $existing_image = '';
     public $category_id = '';
+    public $category_choice = '';
+    public $new_category_name = '';
+    public $new_category_description = '';
     public $is_published = false;
     public $is_featured = false;
     public $allow_comments = true;
@@ -104,6 +107,7 @@ class EventForm extends Component
         $this->content = $this->event->content;
         $this->existing_image = $this->event->featured_image;
         $this->category_id = $this->event->category_id;
+        $this->category_choice = $this->event->category_id;
         $this->is_published = $this->event->is_published;
         $this->is_featured = $this->event->is_featured;
         $this->allow_comments = $this->event->allow_comments;
@@ -210,6 +214,39 @@ class EventForm extends Component
             'meta_keywords' => $this->meta_keywords,
             'tags' => $tagsArray,
         ];
+    }
+
+    public function createCategory()
+    {
+        $this->validate([
+            'new_category_name' => 'required|min:3|max:255',
+            'new_category_description' => 'nullable|max:1000',
+        ], [], [
+            'new_category_name' => 'category name',
+            'new_category_description' => 'category description',
+        ]);
+
+        $slug = Str::slug($this->new_category_name);
+        $slugExists = EventCategory::where('slug', $slug)->exists();
+
+        if ($slugExists) {
+            $this->addError('new_category_name', 'A category with a similar name already exists.');
+            return;
+        }
+
+        $category = EventCategory::create([
+            'name' => $this->new_category_name,
+            'slug' => $slug,
+            'description' => $this->new_category_description ?: null,
+            'icon' => 'fas fa-calendar-alt',
+            'color' => 'amber',
+            'is_active' => true,
+        ]);
+
+        $this->category_id = $category->id;
+        $this->category_choice = $category->id;
+        $this->new_category_name = '';
+        $this->new_category_description = '';
     }
 
     public function saveAsDraft()

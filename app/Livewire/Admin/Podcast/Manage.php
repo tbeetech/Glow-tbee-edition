@@ -33,9 +33,20 @@ class Manage extends Component
     public $existing_show_cover = '';
     public $show_host_name = '';
     public $show_category = 'music';
+    public $show_category_choice = 'music';
+    public $show_category_custom = '';
     public $show_frequency = 'weekly';
     public $show_explicit = false;
     public $show_tags = '';
+
+    protected array $podcastCategoryOptions = [
+        'music',
+        'talk',
+        'interview',
+        'tech',
+        'lifestyle',
+        'education',
+    ];
 
     // Episode form
     public $episode_show_id = '';
@@ -131,6 +142,13 @@ class Manage extends Component
         $this->show_description = $show->description;
         $this->show_host_name = $show->host_name;
         $this->show_category = $show->category;
+        if ($this->isDefaultPodcastCategory($show->category)) {
+            $this->show_category_choice = $show->category;
+            $this->show_category_custom = '';
+        } else {
+            $this->show_category_choice = '__new__';
+            $this->show_category_custom = $show->category;
+        }
         $this->show_frequency = $show->frequency;
         $this->show_explicit = $show->explicit;
         $this->show_tags = $show->tags ? implode(', ', $show->tags) : '';
@@ -164,6 +182,15 @@ class Manage extends Component
         $this->episode_audiomack_url = $episode->audiomack_url ?? '';
         $this->episode_soundcloud_url = $episode->soundcloud_url ?? '';
         $this->custom_links = $episode->custom_links ?? [];
+    }
+
+    private function isDefaultPodcastCategory(?string $value): bool
+    {
+        if ($value === null) {
+            return false;
+        }
+
+        return in_array($value, $this->podcastCategoryOptions, true);
     }
 
     public function save()
@@ -376,7 +403,8 @@ class Manage extends Component
     {
         $this->reset([
             'itemId', 'show_title', 'show_description', 'show_cover', 'show_cover_url',
-            'existing_show_cover', 'show_host_name', 'show_category', 'show_frequency', 
+            'existing_show_cover', 'show_host_name', 'show_category', 'show_category_choice',
+            'show_category_custom', 'show_frequency',
             'show_explicit', 'show_tags', 'episode_show_id', 'episode_title', 
             'episode_description', 'episode_show_notes', 'episode_audio', 'episode_audio_url',
             'existing_episode_audio', 'episode_video', 'episode_video_url', 
