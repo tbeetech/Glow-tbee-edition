@@ -3,10 +3,12 @@
 namespace App\Livewire\Admin\Team;
 
 use App\Models\Show\OAP;
+use App\Models\Staff\StaffMember;
 use App\Models\Team\Department;
 use App\Models\Team\Role as TeamRole;
 use App\Support\CloudinaryUploader;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -17,6 +19,7 @@ class OapForm extends Component
     public $oapId = null;
     public $isEditing = false;
 
+    public $staff_member_id = '';
     public $name = '';
     public $bio = '';
     public $profile_photo = '';
@@ -33,6 +36,7 @@ class OapForm extends Component
     public $joined_date = '';
     public $departments = [];
     public $teamRoles = [];
+    public $staffMembers = [];
 
     public $social_media = [
         'facebook' => '',
@@ -43,20 +47,28 @@ class OapForm extends Component
         'youtube' => '',
     ];
 
-    protected $rules = [
-        'name' => 'required|min:3|max:255',
-        'bio' => 'required|min:10',
-        'profile_photo' => 'nullable|url',
-        'profile_photo_upload' => 'nullable|image|max:5120',
-        'voice_sample_url' => 'nullable|url',
-        'email' => 'nullable|email',
-        'department_id' => 'required|exists:team_departments,id',
-        'team_role_id' => 'required|exists:team_roles,id',
-        'joined_date' => 'nullable|date',
-        'employment_status' => 'required',
-        'is_active' => 'boolean',
-        'available' => 'boolean',
-    ];
+    protected function rules()
+    {
+        return [
+            'staff_member_id' => [
+                'required',
+                'exists:staff_members,id',
+                Rule::unique('oaps', 'staff_member_id')->ignore($this->oapId),
+            ],
+            'name' => 'required|min:3|max:255',
+            'bio' => 'required|min:10',
+            'profile_photo' => 'nullable|url',
+            'profile_photo_upload' => 'nullable|image|max:5120',
+            'voice_sample_url' => 'nullable|url',
+            'email' => 'nullable|email',
+            'department_id' => 'required|exists:team_departments,id',
+            'team_role_id' => 'required|exists:team_roles,id',
+            'joined_date' => 'nullable|date',
+            'employment_status' => 'required',
+            'is_active' => 'boolean',
+            'available' => 'boolean',
+        ];
+    }
 
     public function mount($oapId = null)
     {
@@ -69,6 +81,7 @@ class OapForm extends Component
             $oap = OAP::findOrFail($oapId);
             $this->oapId = $oap->id;
             $this->isEditing = true;
+            $this->staff_member_id = $oap->staff_member_id;
             $this->name = $oap->name;
             $this->bio = $oap->bio;
             $this->profile_photo = $oap->profile_photo;
@@ -83,6 +96,77 @@ class OapForm extends Component
             $this->available = $oap->available;
             $this->joined_date = $oap->joined_date?->format('Y-m-d') ?? '';
             $this->social_media = $oap->social_media ?? $this->social_media;
+        }
+
+        $this->loadStaffMembers();
+
+        $this->teamRoles = TeamRole::query()
+            ->where('is_active', true)
+            ->when($this->department_id, function ($query) {
+                $query->where('department_id', $this->department_id);
+            })
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function loadStaffMembers()
+    {
+        $query = StaffMember::query()
+            ->where('is_active', true)
+            ->orderBy('name');
+
+        if ($this->oapId) {
+            $query->where(function ($query) {
+                $query->whereDoesntHave('oap')
+                    ->orWhereHas('oap', function ($oapQuery) {
+                        $oapQuery->where('id', $this->oapId);
+                    });
+            });
+        } else {
+            $query->whereDoesntHave('oap');
+        }
+
+        $this->staffMembers = $query->get();
+    }
+
+    public function updatedStaffMemberId()
+    {
+        if (!$this->staff_member_id) {
+            return;
+        }
+
+        $staff = StaffMember::find($this->staff_member_id);
+        if (!$staff) {
+            return;
+        }
+
+        $this->name = $staff->name;
+        if (!empty($staff->bio)) {
+            $this->bio = $staff->bio;
+        }
+        if (!empty($staff->photo_url)) {
+            $this->profile_photo = $staff->photo_url;
+        }
+        if (!empty($staff->email)) {
+            $this->email = $staff->email;
+        }
+        if (!empty($staff->phone)) {
+            $this->phone = $staff->phone;
+        }
+        if (!empty($staff->employment_status)) {
+            $this->employment_status = $staff->employment_status;
+        }
+        if (!empty($staff->joined_date)) {
+            $this->joined_date = $staff->joined_date->format('Y-m-d');
+        }
+        if (!empty($staff->department_id)) {
+            $this->department_id = $staff->department_id;
+        }
+        if (!empty($staff->team_role_id)) {
+            $this->team_role_id = $staff->team_role_id;
+        }
+        if (!empty($staff->social_links) && is_array($staff->social_links)) {
+            $this->social_media = array_merge($this->social_media, $staff->social_links);
         }
 
         $this->teamRoles = TeamRole::query()
@@ -136,6 +220,7 @@ class OapForm extends Component
         }
 
         $data = [
+            'staff_member_id' => $this->staff_member_id,
             'name' => $this->name,
             'slug' => $slug,
             'bio' => $this->bio,

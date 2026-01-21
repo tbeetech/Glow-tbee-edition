@@ -5,6 +5,7 @@ namespace App\Models\Staff;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use App\Models\Show\OAP;
 
 class StaffMember extends Model
 {
@@ -43,6 +44,11 @@ class StaffMember extends Model
     public function teamRole()
     {
         return $this->belongsTo(\App\Models\Team\Role::class, 'team_role_id');
+    }
+
+    public function oap()
+    {
+        return $this->hasOne(OAP::class, 'staff_member_id');
     }
 
     protected static function boot()

@@ -3,6 +3,7 @@
 namespace App\Models\Show;
 
 use App\Models\User;
+use App\Models\Staff\StaffMember;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
@@ -15,7 +16,7 @@ class OAP extends Model
     protected $table = 'oaps';
 
     protected $fillable = [
-        'name', 'slug', 'bio', 'profile_photo', 'gallery', 'voice_sample_url',
+        'staff_member_id', 'name', 'slug', 'bio', 'profile_photo', 'gallery', 'voice_sample_url',
         'specializations', 'email', 'department_id', 'team_role_id', 'phone', 'social_media', 'employment_status',
         'is_active', 'available', 'joined_date', 'total_shows_hosted', 'average_rating'
     ];
@@ -42,6 +43,11 @@ class OAP extends Model
     public function shows()
     {
         return $this->hasMany(Show::class, 'primary_host_id');
+    }
+
+    public function staffMember()
+    {
+        return $this->belongsTo(StaffMember::class, 'staff_member_id');
     }
 
     public function department()
@@ -94,6 +100,5 @@ class OAP extends Model
         return 'slug';
     }
 }
-
 
 
