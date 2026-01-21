@@ -90,6 +90,80 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div class="border-t border-gray-200 pt-8">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4">Rate & Comment</h3>
+                            @if (session()->has('success'))
+                                <p class="mb-4 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2">
+                                    {{ session('success') }}
+                                </p>
+                            @endif
+                            <form wire:submit.prevent="submitReview" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                                    <div
+                                        x-data="{
+                                            selected: @js($rating ?? 0),
+                                            hover: 0,
+                                            setRating(value) {
+                                                this.selected = value;
+                                                $wire.set('rating', value);
+                                            }
+                                        }"
+                                        class="flex items-center space-x-2"
+                                    >
+                                        <template x-for="star in [1,2,3,4,5]" :key="star">
+                                            <button type="button"
+                                                class="text-2xl focus:outline-none"
+                                                @mouseenter="hover = star"
+                                                @mouseleave="hover = 0"
+                                                @click="setRating(star)"
+                                                :aria-label="`Rate ${star} star${star > 1 ? 's' : ''}`">
+                                                <i class="fas fa-star"
+                                                   :class="(hover >= star || selected >= star) ? 'text-emerald-500' : 'text-gray-300'"></i>
+                                            </button>
+                                        </template>
+                                        <span class="text-sm text-gray-500" x-text="selected ? `${selected}/5` : 'Select rating'"></span>
+                                    </div>
+                                    @error('rating') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Comment (optional)</label>
+                                    <textarea wire:model="review" rows="4"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                        placeholder="Share what you enjoyed about this show..."></textarea>
+                                    @error('review') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                                <button type="submit"
+                                    class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors">
+                                    <i class="fas fa-star mr-2"></i>Submit Review
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="mt-10">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4">Listener Reviews</h3>
+                            <div class="space-y-4">
+                                @forelse($reviews as $listenerReview)
+                                    <div class="p-4 bg-gray-50 rounded-xl">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="font-semibold text-gray-900">{{ $listenerReview->user?->name ?? 'Listener' }}</p>
+                                                <p class="text-xs text-gray-500">{{ $listenerReview->created_at->format('M d, Y') }}</p>
+                                            </div>
+                                            <span class="text-sm font-semibold text-emerald-700">
+                                                {{ $listenerReview->rating }}/5
+                                            </span>
+                                        </div>
+                                        @if($listenerReview->review)
+                                            <p class="text-sm text-gray-700 mt-2">{{ $listenerReview->review }}</p>
+                                        @endif
+                                    </div>
+                                @empty
+                                    <p class="text-sm text-gray-500">No reviews yet. Be the first to review this show.</p>
+                                @endforelse
+                            </div>
+                        </div>
                     </div>
                 </article>
             </main>

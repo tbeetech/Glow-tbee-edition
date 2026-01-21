@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Event\Event;
 use App\Models\News\News;
 use App\Models\Show\OAP;
+use App\Models\Show\Review;
 use App\Models\Show\ScheduleSlot;
 use App\Models\Show\Show;
 use Carbon\Carbon;
@@ -25,6 +26,7 @@ class Dashboard extends Component
     public $nowPlaying = [];
     public $currentShow = null;
     public $nowPlayingProgress = 0;
+    public $recentReviews = [];
 
     public function mount()
     {
@@ -33,6 +35,7 @@ class Dashboard extends Component
         $this->loadShows();
         $this->loadRecentActivities();
         $this->loadTopItems();
+        $this->loadRecentReviews();
     }
 
     private function loadStats(): void
@@ -262,6 +265,25 @@ class Dashboard extends Component
                     'title' => $news->title,
                     'subtitle' => $news->category?->name ?? 'Uncategorized',
                     'metric' => number_format($news->views ?? 0),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    private function loadRecentReviews(): void
+    {
+        $this->recentReviews = Review::with(['show', 'user'])
+            ->latest()
+            ->take(6)
+            ->get()
+            ->map(function ($review) {
+                return [
+                    'show' => $review->show?->title ?? 'Unknown Show',
+                    'user' => $review->user?->name ?? 'Listener',
+                    'rating' => $review->rating,
+                    'review' => $review->review,
+                    'time' => $review->created_at?->diffForHumans() ?? '',
                 ];
             })
             ->values()

@@ -167,7 +167,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($featuredShows as $show)
                     <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                        <div class="relative h-64 overflow-hidden">
+                        <a href="{{ route('shows.show', $show['slug']) }}" class="relative h-64 overflow-hidden block">
                             <img src="{{ $show['image'] }}" alt="{{ $show['title'] }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             <div class="absolute top-4 right-4">
@@ -179,19 +179,25 @@
                                 <h3 class="text-2xl font-bold text-white mb-1">{{ $show['title'] }}</h3>
                                 <p class="text-emerald-300 text-sm">{{ $show['days'] }}</p>
                             </div>
-                        </div>
+                        </a>
                         <div class="p-6">
                             <div class="flex items-center space-x-3 mb-4">
                                 <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
                                     <i class="fas fa-microphone text-white"></i>
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-gray-900">{{ $show['host'] }}</p>
+                                    @if(!empty($show['host_slug']))
+                                        <a href="{{ route('oaps.show', $show['host_slug']) }}" class="font-semibold text-gray-900 hover:text-emerald-600 transition-colors">
+                                            {{ $show['host'] }}
+                                        </a>
+                                    @else
+                                        <p class="font-semibold text-gray-900">{{ $show['host'] }}</p>
+                                    @endif
                                     <p class="text-sm text-emerald-600">{{ $show['time'] }}</p>
                                 </div>
                             </div>
                             <p class="text-gray-600 mb-4">{{ $show['description'] }}</p>
-                            <a href="#" class="inline-flex items-center space-x-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+                            <a href="{{ route('shows.show', $show['slug']) }}" class="inline-flex items-center space-x-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
                                 <span>Learn More</span>
                                 <i class="fas fa-arrow-right"></i>
                             </a>

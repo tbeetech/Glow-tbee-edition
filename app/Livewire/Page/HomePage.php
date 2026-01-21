@@ -130,6 +130,7 @@ class HomePage extends Component
                 'slug' => $show->slug,
                 'title' => $show->title,
                 'host' => $show->primaryHost?->name ?? 'TBA',
+                'host_slug' => $show->primaryHost?->slug,
                 'time' => $slot?->time_range ?? 'Schedule TBA',
                 'description' => $show->description,
                 'image' => $show->cover_image ?? 'https://ui-avatars.com/api/?name=' . urlencode($show->title) . '&background=10b981&color=fff&size=400',

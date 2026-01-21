@@ -137,42 +137,75 @@
             </div>
         </div>
 
-        <!-- Top News -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-semibold text-gray-900">Top News</h3>
-                <a href="{{ route('admin.news.index') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                    View All
+        <div class="space-y-6">
+            <!-- Top News -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Top News</h3>
+                    <a href="{{ route('admin.news.index') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                        View All
+                    </a>
+                </div>
+
+                <div class="space-y-4">
+                    @forelse($topItems as $index => $item)
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0 w-8 text-center">
+                                <span class="text-lg font-bold text-gray-400">{{ $index + 1 }}</span>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg shadow-sm flex items-center justify-center">
+                                    <i class="fas fa-newspaper text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ $item['title'] }}</p>
+                                <p class="text-xs text-gray-600 truncate">{{ $item['subtitle'] }}</p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="text-sm font-semibold text-emerald-600">{{ $item['metric'] }}</span>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500">No news data available.</p>
+                    @endforelse
+                </div>
+
+                <a href="{{ route('admin.news.index') }}" class="w-full mt-6 py-2 px-4 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors duration-150 inline-flex items-center justify-center">
+                    Manage News
                 </a>
             </div>
 
-            <div class="space-y-4">
-                @forelse($topItems as $index => $item)
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0 w-8 text-center">
-                            <span class="text-lg font-bold text-gray-400">{{ $index + 1 }}</span>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg shadow-sm flex items-center justify-center">
-                                <i class="fas fa-newspaper text-white"></i>
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate">{{ $item['title'] }}</p>
-                            <p class="text-xs text-gray-600 truncate">{{ $item['subtitle'] }}</p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <span class="text-sm font-semibold text-emerald-600">{{ $item['metric'] }}</span>
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-sm text-gray-500">No news data available.</p>
-                @endforelse
-            </div>
+            <!-- Show Performance -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Show Performance</h3>
+                    <a href="{{ route('admin.shows.index') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                        View Shows
+                    </a>
+                </div>
 
-            <a href="{{ route('admin.news.index') }}" class="w-full mt-6 py-2 px-4 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors duration-150 inline-flex items-center justify-center">
-                Manage News
-            </a>
+                <div class="space-y-4">
+                    @forelse($recentReviews as $review)
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-semibold text-gray-900">{{ $review['show'] }}</p>
+                                <div class="flex items-center space-x-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star {{ $review['rating'] >= $i ? 'text-emerald-500' : 'text-gray-300' }}"></i>
+                                    @endfor
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500">{{ $review['user'] }} • {{ $review['time'] }}</p>
+                            @if($review['review'])
+                                <p class="text-sm text-gray-700 mt-2 line-clamp-2">{{ $review['review'] }}</p>
+                            @endif
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500">No reviews yet.</p>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
 

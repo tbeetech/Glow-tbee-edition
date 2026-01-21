@@ -21,7 +21,7 @@ class SchedulePage extends Component
 
         $this->scheduleByDay = collect($days)->mapWithKeys(function ($day) use ($slots) {
             return [$day => $slots->get($day, collect())];
-        })->toArray();
+        });
     }
 
     public function render()
