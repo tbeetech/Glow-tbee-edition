@@ -70,7 +70,7 @@ class Manage extends Component
     public $segment_show_id = '';
     public $segment_title = '';
     public $segment_description = '';
-    public $segment_start_minute = 0;
+    public $segment_start_time = '';
     public $segment_duration = 5;
     public $segment_type = 'other';
 
@@ -153,7 +153,7 @@ class Manage extends Component
         $this->segment_show_id = $segment->show_id;
         $this->segment_title = $segment->title;
         $this->segment_description = $segment->description;
-        $this->segment_start_minute = $segment->start_minute;
+        $this->segment_start_time = $this->minutesToTime($segment->start_minute);
         $this->segment_duration = $segment->duration;
         $this->segment_type = $segment->type;
     }
@@ -352,18 +352,19 @@ class Manage extends Component
         $this->validate([
             'segment_show_id' => 'required|exists:shows,id',
             'segment_title' => 'required|min:3|max:255',
-            'segment_start_minute' => 'required|integer|min:0',
+            'segment_start_time' => 'required|date_format:H:i',
             'segment_duration' => 'required|integer|min:1',
             'segment_type' => 'required',
         ]);
 
         $order = Segment::where('show_id', $this->segment_show_id)->max('order') ?? 0;
+        $startMinute = $this->timeToMinutes($this->segment_start_time);
 
         $data = [
             'show_id' => $this->segment_show_id,
             'title' => $this->segment_title,
             'description' => $this->segment_description,
-            'start_minute' => $this->segment_start_minute,
+            'start_minute' => $startMinute,
             'duration' => $this->segment_duration,
             'type' => $this->segment_type,
             'order' => $this->editMode ? Segment::find($this->itemId)->order : $order + 1,
@@ -415,9 +416,22 @@ class Manage extends Component
             'schedule_show_id', 'schedule_oap_id', 'schedule_day_of_week',
             'schedule_start_time', 'schedule_end_time', 'schedule_start_date',
             'schedule_end_date', 'schedule_is_recurring', 'schedule_status', 'schedule_notes',
-            'segment_show_id', 'segment_title', 'segment_description', 'segment_start_minute',
+            'segment_show_id', 'segment_title', 'segment_description', 'segment_start_time',
             'segment_duration', 'segment_type'
         ]);
+    }
+
+    private function timeToMinutes(string $time): int
+    {
+        [$hours, $minutes] = array_map('intval', explode(':', $time));
+        return ($hours * 60) + $minutes;
+    }
+
+    private function minutesToTime(int $minutes): string
+    {
+        $hours = intdiv($minutes, 60);
+        $mins = $minutes % 60;
+        return sprintf('%02d:%02d', $hours, $mins);
     }
 
     public function getShowsProperty()

@@ -14,7 +14,7 @@ class SegmentForm extends Component
     public $segment_show_id = '';
     public $segment_title = '';
     public $segment_description = '';
-    public $segment_start_minute = 0;
+    public $segment_start_time = '';
     public $segment_duration = 5;
     public $segment_type = 'other';
 
@@ -23,7 +23,7 @@ class SegmentForm extends Component
     protected $rules = [
         'segment_show_id' => 'required|exists:shows,id',
         'segment_title' => 'required|min:3|max:255',
-        'segment_start_minute' => 'required|integer|min:0',
+        'segment_start_time' => 'required|date_format:H:i',
         'segment_duration' => 'required|integer|min:1',
         'segment_type' => 'required',
         'segment_description' => 'nullable|string',
@@ -40,10 +40,23 @@ class SegmentForm extends Component
             $this->segment_show_id = $segment->show_id;
             $this->segment_title = $segment->title;
             $this->segment_description = $segment->description;
-            $this->segment_start_minute = $segment->start_minute;
+            $this->segment_start_time = $this->minutesToTime($segment->start_minute);
             $this->segment_duration = $segment->duration;
             $this->segment_type = $segment->type;
         }
+    }
+
+    private function timeToMinutes(string $time): int
+    {
+        [$hours, $minutes] = array_map('intval', explode(':', $time));
+        return ($hours * 60) + $minutes;
+    }
+
+    private function minutesToTime(int $minutes): string
+    {
+        $hours = intdiv($minutes, 60);
+        $mins = $minutes % 60;
+        return sprintf('%02d:%02d', $hours, $mins);
     }
 
     public function save()
@@ -51,12 +64,13 @@ class SegmentForm extends Component
         $this->validate();
 
         $order = Segment::where('show_id', $this->segment_show_id)->max('order') ?? 0;
+        $startMinute = $this->timeToMinutes($this->segment_start_time);
 
         $data = [
             'show_id' => $this->segment_show_id,
             'title' => $this->segment_title,
             'description' => $this->segment_description,
-            'start_minute' => $this->segment_start_minute,
+            'start_minute' => $startMinute,
             'duration' => $this->segment_duration,
             'type' => $this->segment_type,
             'order' => $this->isEditing ? Segment::findOrFail($this->segmentId)->order : $order + 1,

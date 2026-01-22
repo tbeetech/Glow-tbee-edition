@@ -90,6 +90,10 @@
         $streamTitle = data_get($streamSettings, 'now_playing_title', 'Blinding Lights');
         $streamArtist = data_get($streamSettings, 'now_playing_artist', 'The Weeknd');
         $streamShowName = data_get($streamSettings, 'show_name', 'Morning Vibes');
+        $recentShows = \App\Models\Show\Show::active()
+            ->latest('created_at')
+            ->take(3)
+            ->get();
     @endphp
 
     <!-- Fixed Header -->
@@ -438,6 +442,36 @@
                         <i class="fas fa-search mr-2"></i> Search
                     </button>
                 </div>
+                @auth
+                    <div class="pt-2 space-y-2">
+                        <a href="/profile"
+                            class="block px-4 py-3 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors">
+                            <i class="fas fa-user-circle mr-2"></i> My Profile
+                        </a>
+                        <a href="/settings"
+                            class="block px-4 py-3 text-gray-700 font-medium hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full text-left px-4 py-3 text-red-600 font-medium hover:bg-red-50 rounded-lg transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <div class="pt-2 space-y-2">
+                        <a href="{{ route('login') }}"
+                            class="block px-4 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-lg transition-colors">
+                            <i class="fas fa-right-to-bracket mr-2"></i> Login
+                        </a>
+                        <a href="{{ route('register') }}"
+                            class="block px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors">
+                            <i class="fas fa-user-plus mr-2"></i> Sign Up
+                        </a>
+                    </div>
+                @endauth
                 <button type="button" @click="startLive"
                     class="block mt-4 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full text-center shadow-lg">
                     <i class="fas fa-play-circle mr-2"></i> Listen Live
@@ -618,21 +652,15 @@
                     <div class="mt-6 pt-6 border-t border-gray-800">
                         <h4 class="text-sm font-semibold mb-3 text-gray-300">Recent Shows</h4>
                         <div class="space-y-2">
-                            <a href="#"
-                                class="flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-colors text-sm">
-                                <i class="fas fa-microphone text-xs"></i>
-                                <span>Morning Vibes</span>
-                            </a>
-                            <a href="#"
-                                class="flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-colors text-sm">
-                                <i class="fas fa-microphone text-xs"></i>
-                                <span>Afternoon Drive</span>
-                            </a>
-                            <a href="#"
-                                class="flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-colors text-sm">
-                                <i class="fas fa-microphone text-xs"></i>
-                                <span>Night Grooves</span>
-                            </a>
+                            @forelse($recentShows as $show)
+                                <a href="{{ route('shows.show', $show->slug) }}"
+                                    class="flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-colors text-sm">
+                                    <i class="fas fa-microphone text-xs"></i>
+                                    <span>{{ $show->title }}</span>
+                                </a>
+                            @empty
+                                <span class="text-gray-500 text-sm">No shows yet.</span>
+                            @endforelse
                         </div>
                     </div>
                 </div>
