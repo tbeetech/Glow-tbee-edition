@@ -12,6 +12,7 @@ use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Dashboard;
 use App\Livewire\Page\AboutPage;
 use App\Livewire\Page\ContactPage;
+use App\Livewire\Page\PrivacyPolicy;
 
 // Podcast Routes
 use App\Livewire\Admin\Podcast\Manage as PodcastManage;
@@ -70,6 +71,7 @@ use App\Livewire\Admin\Show\OapForm as AdminShowOapForm;
 Route::get('/', HomePage::class)->name('home');
 Route::get('/about', AboutPage::class)->name('about');
 Route::get('/contact', ContactPage::class)->name('contact');
+Route::get('/privacy-policy', PrivacyPolicy::class)->name('privacy.policy');
 Route::get('/contact/success', ContactSuccess::class)->name('contact.success');
 Route::get('/shows', ShowPage::class)->name('shows.index');
 Route::get('/shows/{slug}', ShowDetail::class)->name('shows.show');
