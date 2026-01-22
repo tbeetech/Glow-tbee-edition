@@ -8,13 +8,25 @@
     <title>{{ $title ?? 'Glow FM 99.1 - Your Voice, Your Music' }}</title>
     <meta name="google-adsense-account" content="ca-pub-3970534274644088">
     
+    @php
+        $stationSettings = \App\Models\Setting::get('station', []);
+        $defaultMetaImage = data_get($stationSettings, 'logo_url', '');
+        $metaImage = $meta_image ?? $defaultMetaImage;
+        if (!empty($metaImage) && !\Illuminate\Support\Str::startsWith($metaImage, ['http://', 'https://'])) {
+            $metaImage = url($metaImage);
+        }
+    @endphp
     <meta name="description"
         content="{{ $meta_description ?? 'Glow FM 99.1 - The heartbeat of the city. Listen to the best music, engaging shows, and stay connected with your community.' }}">
     <meta property="og:title" content="{{ $meta_title ?? ($title ?? 'Glow FM 99.1') }}">
     <meta property="og:description" content="{{ $meta_description ?? 'Glow FM 99.1 - The heartbeat of the city.' }}">
-    <meta property="og:image" content="{{ $meta_image ?? '' }}">
+    <meta property="og:image" content="{{ $metaImage }}">
     <meta property="og:url" content="{{ request()->url() }}">
     <meta property="og:type" content="{{ $meta_type ?? 'website' }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $meta_title ?? ($title ?? 'Glow FM 99.1') }}">
+    <meta name="twitter:description" content="{{ $meta_description ?? 'Glow FM 99.1 - The heartbeat of the city.' }}">
+    <meta name="twitter:image" content="{{ $metaImage }}">
 
     <style>[x-cloak]{display:none!important;}</style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])

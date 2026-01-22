@@ -5,6 +5,7 @@ namespace App\Livewire\Podcast;
 use App\Models\Podcast\Show;
 use App\Models\Podcast\Subscription;
 use App\Models\Podcast\Review;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class ShowDetail extends Component
@@ -127,6 +128,11 @@ class ShowDetail extends Component
         return view('livewire.podcast.show-detail', [
             'episodes' => $this->episodes,
             'seasons' => $this->seasons,
-        ])->layout('layouts.app', ['title' => $this->show->title . ' - Podcast - Glow FM']);
+        ])->layout('layouts.app', [
+            'title' => $this->show->title . ' - Podcast - Glow FM',
+            'meta_title' => $this->show->title . ' - Podcast - Glow FM',
+            'meta_description' => Str::limit(strip_tags($this->show->description ?? ''), 180),
+            'meta_image' => $this->show->cover_image,
+        ]);
     }
 }

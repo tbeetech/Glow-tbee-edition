@@ -3,6 +3,7 @@
 namespace App\Livewire\Page;
 
 use App\Models\Event\Event;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class EventDetail extends Component
@@ -134,11 +135,19 @@ class EventDetail extends Component
 
     public function render()
     {
+        $excerpt = trim($this->event->excerpt ?? '');
+        if ($excerpt === '') {
+            $excerpt = Str::limit(strip_tags($this->event->content ?? ''), 180);
+        }
+
         return view('livewire.page.event-detail', [
             'relatedEvents' => $this->relatedEvents,
             'reactions' => $this->event->getAllReactionCounts(),
         ])->layout('layouts.app', [
-            'title' => $this->event->title . ' - Glow FM Events'
+            'title' => $this->event->title . ' - Glow FM Events',
+            'meta_title' => $this->event->title . ' - Glow FM Events',
+            'meta_description' => $excerpt,
+            'meta_image' => $this->event->featured_image,
         ]);
     }
 }

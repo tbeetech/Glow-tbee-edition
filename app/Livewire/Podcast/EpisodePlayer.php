@@ -5,6 +5,7 @@ namespace App\Livewire\Podcast;
 use App\Models\Podcast\Episode;
 use App\Models\Podcast\Comment;
 use App\Models\Podcast\ListeningHistory;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class EpisodePlayer extends Component
@@ -143,6 +144,11 @@ class EpisodePlayer extends Component
     {
         return view('livewire.podcast.episode-player', [
             'relatedEpisodes' => $this->relatedEpisodes,
-        ])->layout('layouts.app', ['title' => $this->episode->title . ' - ' . $this->episode->show->title]);
+        ])->layout('layouts.app', [
+            'title' => $this->episode->title . ' - ' . $this->episode->show->title,
+            'meta_title' => $this->episode->title . ' - ' . $this->episode->show->title,
+            'meta_description' => Str::limit(strip_tags($this->episode->description ?? ''), 180),
+            'meta_image' => $this->episode->cover_image ?? $this->episode->show->cover_image,
+        ]);
     }
 }

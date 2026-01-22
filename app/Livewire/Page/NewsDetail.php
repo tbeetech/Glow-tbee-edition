@@ -142,11 +142,19 @@ class NewsDetail extends Component
 
     public function render()
     {
+        $excerpt = trim($this->news->excerpt ?? '');
+        if ($excerpt === '') {
+            $excerpt = Str::limit(strip_tags($this->news->content ?? ''), 180);
+        }
+
         return view('livewire.page.news-detail', [
             'relatedNews' => $this->relatedNews,
             'reactions' => $this->news->getAllReactionCounts(),
         ])->layout('layouts.app', [
-            'title' => $this->news->title . ' - Glow FM News'
+            'title' => $this->news->title . ' - Glow FM News',
+            'meta_title' => $this->news->title . ' - Glow FM News',
+            'meta_description' => $excerpt,
+            'meta_image' => $this->news->featured_image,
         ]);
     }
 }

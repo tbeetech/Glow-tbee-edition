@@ -201,12 +201,20 @@ class BlogDetail extends Component
 
     public function render()
     {
+        $excerpt = trim($this->post->excerpt ?? '');
+        if ($excerpt === '') {
+            $excerpt = Str::limit(strip_tags($this->post->content ?? ''), 180);
+        }
+
         return view('livewire.page.blog-detail', [
             'relatedPosts' => $this->relatedPosts,
             'seriesPosts' => $this->seriesPosts,
             'reactions' => $this->post->getAllReactionCounts(),
         ])->layout('layouts.app', [
-            'title' => $this->post->title . ' - Glow FM Blog'
+            'title' => $this->post->title . ' - Glow FM Blog',
+            'meta_title' => $this->post->title . ' - Glow FM Blog',
+            'meta_description' => $excerpt,
+            'meta_image' => $this->post->featured_image,
         ]);
     }
 }

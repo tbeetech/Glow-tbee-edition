@@ -4,6 +4,7 @@ namespace App\Livewire\Page;
 
 use App\Models\Show\Show;
 use App\Models\Show\Review;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class ShowDetail extends Component
@@ -85,7 +86,10 @@ class ShowDetail extends Component
             'upcomingSlots' => $this->upcomingSlots,
             'reviews' => $this->show->reviews()->latest()->with('user')->get(),
         ])->layout('layouts.app', [
-            'title' => $this->show->title . ' - Glow FM'
+            'title' => $this->show->title . ' - Glow FM',
+            'meta_title' => $this->show->title . ' - Glow FM',
+            'meta_description' => Str::limit(strip_tags($this->show->description ?? ''), 180),
+            'meta_image' => $this->show->cover_image,
         ]);
     }
 }
