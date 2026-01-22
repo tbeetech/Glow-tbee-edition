@@ -109,17 +109,24 @@ class EpisodePlayer extends Component
     {
         $this->episode->increment('shares');
         
-        $url = url()->current();
+        $rawUrl = url()->current();
+        $url = urlencode($rawUrl);
         $title = $this->episode->title;
+        $textWithUrl = urlencode($title . ' ' . $rawUrl);
+        $encodedTitle = urlencode($title);
         
         $shareUrls = [
-            'twitter' => "https://twitter.com/intent/tweet?url={$url}&text={$title}",
+            'x' => "https://x.com/intent/post?text={$textWithUrl}",
+            'twitter' => "https://x.com/intent/post?text={$textWithUrl}",
             'facebook' => "https://www.facebook.com/sharer/sharer.php?u={$url}",
             'linkedin' => "https://www.linkedin.com/sharing/share-offsite/?url={$url}",
-            'whatsapp' => "https://wa.me/?text={$title} {$url}",
+            'whatsapp' => "https://wa.me/?text={$textWithUrl}",
+            'telegram' => "https://t.me/share/url?url={$url}&text={$encodedTitle}",
+            'reddit' => "https://www.reddit.com/submit?url={$url}&title={$encodedTitle}",
+            'email' => "mailto:?subject={$encodedTitle}&body={$textWithUrl}",
         ];
 
-        return redirect()->away($shareUrls[$platform] ?? $url);
+        return redirect()->away($shareUrls[$platform] ?? $rawUrl);
     }
 
     public function getRelatedEpisodesProperty()

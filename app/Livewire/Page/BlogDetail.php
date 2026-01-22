@@ -4,6 +4,7 @@ namespace App\Livewire\Page;
 
 use App\Models\Blog\Post;
 use App\Models\Blog\Comment;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class BlogDetail extends Component
@@ -148,15 +149,28 @@ class BlogDetail extends Component
     {
         $this->post->trackShare($platform);
         
-        $url = urlencode(route('blog.show', $this->post->slug));
-        $title = urlencode($this->post->title);
+        $rawUrl = route('blog.show', $this->post->slug);
+        $url = urlencode($rawUrl);
+        $title = $this->post->title;
+        $excerpt = trim($this->post->excerpt ?? '');
+        if ($excerpt === '') {
+            $excerpt = Str::limit(strip_tags($this->post->content ?? ''), 180);
+        }
+        $shareText = trim($title . ' - ' . $excerpt);
+        $textWithUrl = urlencode($shareText . ' ' . $rawUrl);
+        $encodedTitle = urlencode($title);
+        $encodedShareText = urlencode($shareText);
+        $redditTitle = urlencode(Str::limit($shareText, 200));
         
         $shareUrls = [
-            'twitter' => "https://twitter.com/intent/tweet?url={$url}&text={$title}",
+            'x' => "https://x.com/intent/post?text={$textWithUrl}",
+            'twitter' => "https://x.com/intent/post?text={$textWithUrl}",
             'facebook' => "https://www.facebook.com/sharer/sharer.php?u={$url}",
             'linkedin' => "https://www.linkedin.com/sharing/share-offsite/?url={$url}",
-            'whatsapp' => "https://wa.me/?text={$title} {$url}",
-            'telegram' => "https://t.me/share/url?url={$url}&text={$title}",
+            'whatsapp' => "https://wa.me/?text={$textWithUrl}",
+            'telegram' => "https://t.me/share/url?url={$url}&text={$encodedShareText}",
+            'reddit' => "https://www.reddit.com/submit?url={$url}&title={$redditTitle}",
+            'email' => "mailto:?subject={$encodedTitle}&body={$textWithUrl}",
         ];
 
         $this->dispatch('open-share-url', url: $shareUrls[$platform] ?? route('blog.show', $this->post->slug));

@@ -95,21 +95,37 @@
                             </button>
                             <div
                                 class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                <button wire:click="shareEpisode('twitter')"
+                                <button wire:click="shareEpisode('x')"
                                     class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-t-lg flex items-center">
-                                    <i class="fab fa-twitter text-sky-500 mr-2"></i>Twitter
+                                    <i class="fab fa-x-twitter text-gray-900 mr-2"></i>X
                                 </button>
                                 <button wire:click="shareEpisode('facebook')"
                                     class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
                                     <i class="fab fa-facebook text-blue-600 mr-2"></i>Facebook
                                 </button>
+                                <button wire:click="shareEpisode('linkedin')"
+                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                    <i class="fab fa-linkedin text-blue-700 mr-2"></i>LinkedIn
+                                </button>
                                 <button wire:click="shareEpisode('whatsapp')"
                                     class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
                                     <i class="fab fa-whatsapp text-green-500 mr-2"></i>WhatsApp
                                 </button>
-                                <button wire:click="shareEpisode('linkedin')"
+                                <button wire:click="shareEpisode('telegram')"
+                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                    <i class="fab fa-telegram text-blue-400 mr-2"></i>Telegram
+                                </button>
+                                <button wire:click="shareEpisode('reddit')"
+                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                    <i class="fab fa-reddit-alien text-orange-500 mr-2"></i>Reddit
+                                </button>
+                                <button wire:click="shareEpisode('email')"
+                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                    <i class="fas fa-envelope text-gray-600 mr-2"></i>Email
+                                </button>
+                                <button type="button" data-copy-link="{{ url()->current() }}"
                                     class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-b-lg flex items-center">
-                                    <i class="fab fa-linkedin text-blue-700 mr-2"></i>LinkedIn
+                                    <i class="fas fa-link text-gray-600 mr-2"></i><span data-copy-text>Copy link</span>
                                 </button>
                             </div>
                         </div>

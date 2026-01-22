@@ -135,17 +135,29 @@
                         </button>
                         <div class="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
                             <div class="bg-white rounded-lg shadow-xl p-3 space-y-2 whitespace-nowrap">
-                                <button wire:click="shareNews('twitter')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
-                                    <i class="fab fa-twitter text-sky-500"></i><span class="text-sm">Twitter</span>
+                                <button wire:click="shareNews('x')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
+                                    <i class="fab fa-x-twitter text-gray-900"></i><span class="text-sm">X</span>
                                 </button>
                                 <button wire:click="shareNews('facebook')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
                                     <i class="fab fa-facebook text-blue-600"></i><span class="text-sm">Facebook</span>
+                                </button>
+                                <button wire:click="shareNews('linkedin')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
+                                    <i class="fab fa-linkedin text-blue-700"></i><span class="text-sm">LinkedIn</span>
                                 </button>
                                 <button wire:click="shareNews('whatsapp')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
                                     <i class="fab fa-whatsapp text-green-500"></i><span class="text-sm">WhatsApp</span>
                                 </button>
                                 <button wire:click="shareNews('telegram')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
                                     <i class="fab fa-telegram text-blue-400"></i><span class="text-sm">Telegram</span>
+                                </button>
+                                <button wire:click="shareNews('reddit')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
+                                    <i class="fab fa-reddit-alien text-orange-500"></i><span class="text-sm">Reddit</span>
+                                </button>
+                                <button wire:click="shareNews('email')" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
+                                    <i class="fas fa-envelope text-gray-600"></i><span class="text-sm">Email</span>
+                                </button>
+                                <button type="button" data-copy-link="{{ url()->current() }}" class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 rounded w-full text-left">
+                                    <i class="fas fa-link text-gray-600"></i><span class="text-sm" data-copy-text>Copy link</span>
                                 </button>
                             </div>
                         </div>
@@ -241,25 +253,37 @@
                         <div class="mb-12 pb-8 border-b border-gray-200">
                             <h3 class="text-lg font-bold text-gray-900 mb-4">Share this story</h3>
                             <div class="flex flex-wrap gap-3">
-                                <button wire:click="shareNews('twitter')" 
-                                        class="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors flex items-center space-x-2">
-                                    <i class="fab fa-twitter"></i><span>Twitter</span>
+                                <button wire:click="shareNews('x')" 
+                                    class="px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-lg transition-colors flex items-center space-x-2">
+                                    <i class="fab fa-x-twitter"></i><span>X</span>
                                 </button>
                                 <button wire:click="shareNews('facebook')" 
-                                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2">
+                                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2">
                                     <i class="fab fa-facebook"></i><span>Facebook</span>
                                 </button>
                                 <button wire:click="shareNews('linkedin')" 
-                                        class="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg transition-colors flex items-center space-x-2">
+                                    class="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg transition-colors flex items-center space-x-2">
                                     <i class="fab fa-linkedin"></i><span>LinkedIn</span>
                                 </button>
                                 <button wire:click="shareNews('whatsapp')" 
-                                        class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center space-x-2">
+                                    class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center space-x-2">
                                     <i class="fab fa-whatsapp"></i><span>WhatsApp</span>
                                 </button>
                                 <button wire:click="shareNews('telegram')" 
-                                        class="px-6 py-3 bg-blue-400 hover:bg-blue-500 text-white rounded-lg transition-colors flex items-center space-x-2">
+                                    class="px-6 py-3 bg-blue-400 hover:bg-blue-500 text-white rounded-lg transition-colors flex items-center space-x-2">
                                     <i class="fab fa-telegram"></i><span>Telegram</span>
+                                </button>
+                                <button wire:click="shareNews('reddit')" 
+                                    class="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors flex items-center space-x-2">
+                                    <i class="fab fa-reddit-alien"></i><span>Reddit</span>
+                                </button>
+                                <button wire:click="shareNews('email')" 
+                                    class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors flex items-center space-x-2">
+                                    <i class="fas fa-envelope"></i><span>Email</span>
+                                </button>
+                                <button type="button" data-copy-link="{{ url()->current() }}" 
+                                    class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors flex items-center space-x-2">
+                                    <i class="fas fa-link"></i><span data-copy-text>Copy link</span>
                                 </button>
                             </div>
                         </div>

@@ -14,8 +14,6 @@ class NewsIndex extends Component
     public $search = '';
     public $filterCategory = '';
     public $filterStatus = '';
-    public $showDeleteModal = false;
-    public $newsToDelete = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -38,29 +36,18 @@ class NewsIndex extends Component
         $this->resetPage();
     }
 
-    public function confirmDelete($newsId)
+    public function deleteNews($newsId)
     {
-        $this->newsToDelete = $newsId;
-        $this->showDeleteModal = true;
-    }
+        $news = News::find($newsId);
 
-    public function deleteNews()
-    {
-        if ($this->newsToDelete) {
-            $news = News::find($this->newsToDelete);
-            
-            if ($news) {
-                // Delete associated data
-                $news->comments()->delete();
-                $news->interactions()->delete();
-                $news->delete();
-                
-                session()->flash('success', 'News article deleted successfully!');
-            }
+        if ($news) {
+            // Delete associated data
+            $news->comments()->delete();
+            $news->interactions()->delete();
+            $news->delete();
+
+            session()->flash('success', 'News article deleted successfully!');
         }
-
-        $this->showDeleteModal = false;
-        $this->newsToDelete = null;
     }
 
     public function togglePublish($newsId)

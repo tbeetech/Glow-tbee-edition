@@ -16,6 +16,7 @@
     <meta property="og:url" content="{{ request()->url() }}">
     <meta property="og:type" content="{{ $meta_type ?? 'website' }}">
 
+    <style>[x-cloak]{display:none!important;}</style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     @livewireStyles
@@ -27,8 +28,23 @@
     scrolled: false,
     playerOpen: true,
     audioPlaying: false,
-    consentBannerOpen: true,
+    consentBannerOpen: false,
     consentChoice: null,
+    init() {
+        try {
+            const storedConsent = localStorage.getItem('cmp_consent');
+            if (storedConsent) {
+                const parsedConsent = JSON.parse(storedConsent);
+                this.consentChoice = parsedConsent.choice || null;
+                this.consentBannerOpen = false;
+            } else {
+                this.consentBannerOpen = true;
+            }
+        } catch (e) {}
+        window.addEventListener('scroll', () => {
+            this.scrolled = window.pageYOffset > 20;
+        });
+    },
     toggleLive() {
         const audio = this.$refs.liveAudio;
         if (!audio || !audio.src) return;
@@ -57,19 +73,7 @@
             }));
         } catch (e) {}
     }
-}" x-init="
-    try {
-        const storedConsent = localStorage.getItem('cmp_consent');
-        if (storedConsent) {
-            const parsedConsent = JSON.parse(storedConsent);
-            consentChoice = parsedConsent.choice || null;
-            consentBannerOpen = false;
-        }
-    } catch (e) {}
-    window.addEventListener('scroll', () => {
-        scrolled = window.pageYOffset > 20
-    })
-">
+}" x-init="init()">
     @php
         $stationSettings = \App\Models\Setting::get('station', []);
         $stationName = data_get($stationSettings, 'name', 'Glow FM');
@@ -123,8 +127,8 @@
                             <a href="{{ data_get($stationSocials, 'facebook', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Facebook">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
-                            <a href="{{ data_get($stationSocials, 'twitter', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Twitter">
-                                <i class="fab fa-twitter"></i>
+                            <a href="{{ data_get($stationSocials, 'x', data_get($stationSocials, 'twitter', '#')) }}" class="hover:text-emerald-100 transition-colors" aria-label="X">
+                                <i class="fab fa-x-twitter"></i>
                             </a>
                             <a href="{{ data_get($stationSocials, 'instagram', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Instagram">
                                 <i class="fab fa-instagram"></i>
@@ -496,9 +500,9 @@
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="{{ data_get($stationSocials, 'twitter', '#') }}"
+                        <a href="{{ data_get($stationSocials, 'x', data_get($stationSocials, 'twitter', '#')) }}"
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
-                            <i class="fab fa-twitter"></i>
+                            <i class="fab fa-x-twitter"></i>
                         </a>
                         <a href="{{ data_get($stationSocials, 'instagram', '#') }}"
                             class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-lg flex items-center justify-center transition-colors duration-300">
@@ -654,35 +658,35 @@
     <div x-show="playerOpen" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-full" x-transition:enter-end="opacity-100 translate-y-0"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 translate-y-full" class="fixed bottom-6 right-6 z-50">
-        <div class="bg-gray-900 text-white rounded-2xl shadow-2xl overflow-hidden max-w-sm">
+        x-transition:leave-end="opacity-0 translate-y-full" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
+        <div class="bg-gray-900 text-white rounded-2xl shadow-2xl overflow-hidden max-w-[18rem] sm:max-w-sm">
             <!-- Player Header -->
-            <div class="bg-emerald-600 px-4 py-2 flex items-center justify-between">
+            <div class="bg-emerald-600 px-3 py-1.5 sm:px-4 sm:py-2 flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <span class="relative flex h-2.5 w-2.5">
+                    <span class="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                         <span class="absolute inline-flex h-full w-full rounded-full bg-white opacity-60"
                             :class="audioPlaying ? 'animate-ping' : ''"></span>
                         <span class="relative inline-flex h-2.5 w-2.5 rounded-full"
                             :class="audioPlaying ? 'bg-lime-300' : 'bg-white'"></span>
                     </span>
-                    <span class="text-sm font-semibold" x-text="audioPlaying ? 'STREAMING LIVE' : 'LIVE NOW'"></span>
+                    <span class="text-xs sm:text-sm font-semibold" x-text="audioPlaying ? 'STREAMING LIVE' : 'LIVE NOW'"></span>
                 </div>
                 <button @click="playerOpen = false" class="text-white hover:text-gray-200 transition-colors">
-                    <i class="fas fa-times"></i>
+                    <i class="fas fa-times text-sm sm:text-base"></i>
                 </button>
             </div>
 
             <!-- Player Content -->
-            <div class="p-4">
-                <div class="flex items-center space-x-4 mb-4">
+            <div class="p-3 sm:p-4">
+                <div class="flex items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
                     <div class="flex-shrink-0">
                         <div
-                            class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg shadow-lg flex items-center justify-center">
-                            <i class="fas fa-music text-white text-2xl"></i>
+                            class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg shadow-lg flex items-center justify-center">
+                            <i class="fas fa-music text-white text-xl sm:text-2xl"></i>
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-semibold text-sm truncate">{{ $streamTitle }}</h4>
+                        <h4 class="font-semibold text-xs sm:text-sm truncate">{{ $streamTitle }}</h4>
                         <p class="text-xs text-gray-400 truncate">{{ $streamArtist }}</p>
                         <div class="flex items-center space-x-2 mt-1">
                             <i class="fas fa-microphone text-emerald-400 text-xs"></i>
@@ -700,17 +704,17 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
                         <button type="button" @click="toggleLive"
-                            class="w-10 h-10 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center transition-colors">
-                            <i class="fas text-white" :class="audioPlaying ? 'fa-pause' : 'fa-play'"></i>
+                            class="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fas text-white text-sm sm:text-base" :class="audioPlaying ? 'fa-pause' : 'fa-play'"></i>
                         </button>
                         <button
-                            class="w-8 h-8 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors">
-                            <i class="fas fa-volume-up text-white text-sm"></i>
+                            class="w-7 h-7 sm:w-8 sm:h-8 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fas fa-volume-up text-white text-xs sm:text-sm"></i>
                         </button>
                     </div>
-                    <span class="text-xs text-gray-400">{{ $streamStatusMessage }}</span>
+                    <span class="text-[11px] sm:text-xs text-gray-400">{{ $streamStatusMessage }}</span>
                     <a href="{{ $stationStreamUrl }}" target="_blank" rel="noopener"
-                        class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg transition-colors">
+                        class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800 hover:bg-gray-700 text-white text-[11px] sm:text-xs font-medium rounded-lg transition-colors">
                         Full Player
                     </a>
                 </div>
@@ -732,36 +736,75 @@
         </div>
     @endif
 
-    <div x-show="consentBannerOpen" x-transition:enter="transition ease-out duration-300"
+    <div x-cloak x-show="consentBannerOpen" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-6" x-transition:enter-end="opacity-100 translate-y-0"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 translate-y-6"
-        class="fixed bottom-4 right-4 left-4 md:left-auto z-50 max-w-2xl bg-white border border-gray-200 shadow-2xl rounded-2xl p-5">
-        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-            <div>
-                <p class="text-sm font-semibold text-gray-900">Consent needed for ads in the EEA, UK, and Switzerland</p>
-                <p class="text-sm text-gray-600 mt-1">
-                    We use a Google-certified consent management platform (CMP) to request your permission for ads and
-                    measurement. Please choose an option to continue.
-                </p>
-                <a href="#" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium mt-2 inline-flex items-center">
-                    Learn more about your choices
-                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
-                </a>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <button type="button" @click="setConsent('reject')"
-                    class="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-full hover:bg-gray-50 transition-colors">
-                    Reject non-essential
-                </button>
-                <button type="button" @click="setConsent('accept')"
-                    class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-full shadow-sm transition-colors">
-                    Accept all
-                </button>
+        class="js-cookie-consent cookie-consent fixed hover:uppercase bottom-0 inset-x-0 pb-2 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="p-2 rounded-lg bg-indigo-100">
+                <div class="flex flex-col sm:flex-row items-center justify-between flex-wrap">
+                    <div class="w-full sm:w-auto flex-1 items-center mb-2 sm:mb-0">
+                        <p class="ml-3 text-black cookie-consent__message">
+                            We use cookies to improve your experience.
+                        </p>
+                        <a href="{{ route('privacy.policy') }}" class="ml-3 text-xs text-blue-800 hover:text-blue-900 underline">
+                            Privacy Policy
+                        </a>
+                    </div>
+                    <div class="mt-2 flex-shrink-0 sm:mt-0 sm:ml-2 sm:order-last">
+                        <button type="button" @click="setConsent('accept')"
+                            class="js-cookie-consent-agree cookie-consent__agree cursor-pointer flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white hover:text-black bg-blue-800 hover:bg-blue-300">
+                            {{ trans('Agree') }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <script>
+        document.addEventListener('click', async (event) => {
+            const button = event.target.closest('[data-copy-link]');
+            if (!button) return;
+
+            event.preventDefault();
+            const link = button.getAttribute('data-copy-link') || '';
+            if (!link) return;
+
+            const textTarget = button.querySelector('[data-copy-text]');
+            const originalText = textTarget ? textTarget.textContent : '';
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(link);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = link;
+                    textarea.setAttribute('readonly', '');
+                    textarea.style.position = 'absolute';
+                    textarea.style.left = '-9999px';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    textarea.remove();
+                }
+                if (textTarget) {
+                    textTarget.textContent = 'Copied!';
+                    setTimeout(() => {
+                        textTarget.textContent = originalText;
+                    }, 1500);
+                }
+            } catch (e) {
+                if (textTarget) {
+                    textTarget.textContent = 'Copy failed';
+                    setTimeout(() => {
+                        textTarget.textContent = originalText;
+                    }, 1500);
+                }
+            }
+        });
+    </script>
     @livewireScripts
 </body>
 
