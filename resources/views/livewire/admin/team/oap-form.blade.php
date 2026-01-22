@@ -61,8 +61,12 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Profile Photo URL</label>
-                <input type="text" wire:model="profile_photo"
+                <input type="text" wire:model.live.debounce.300ms="profile_photo"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                @if ($profile_photo && !$profile_photo_upload)
+                    <img src="{{ $profile_photo }}" alt="Profile preview"
+                        class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
+                @endif
             </div>
             <div
                 x-data="{

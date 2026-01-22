@@ -47,8 +47,12 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Photo URL</label>
-                <input type="text" wire:model="photo_url"
+                <input type="text" wire:model.live.debounce.300ms="photo_url"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                @if ($photo_url && !$photo_upload)
+                    <img src="{{ $photo_url }}" alt="Staff preview"
+                        class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
+                @endif
             </div>
             <div
                 x-data="{

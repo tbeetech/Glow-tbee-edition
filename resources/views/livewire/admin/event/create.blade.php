@@ -282,7 +282,7 @@
                     <div class="text-center text-sm text-gray-500 mb-4">OR</div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                        <input type="url" wire:model="featured_image_url"
+                        <input type="url" wire:model.live.debounce.300ms="featured_image_url"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-amber-500 transition-colors"
                             placeholder="https://example.com/image.jpg">
                         @error('featured_image_url') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror

@@ -140,8 +140,12 @@
                         class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
                     <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
                 @endif
-                <input type="url" wire:model="cover_url" placeholder="https://example.com/image.jpg"
+                <input type="url" wire:model.live.debounce.300ms="cover_url" placeholder="https://example.com/image.jpg"
                     class="mt-3 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                @if ($cover_url && !$cover_image)
+                    <img src="{{ $cover_url }}" alt="Cover preview"
+                        class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
+                @endif
             </div>
             <div class="md:col-span-2 flex items-center space-x-2">
                 <input type="checkbox" wire:model="is_featured" class="rounded border-gray-300">

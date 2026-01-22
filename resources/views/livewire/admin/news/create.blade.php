@@ -279,7 +279,7 @@
                             Image URL
                         </label>
                         <input type="url" 
-                               wire:model="featured_image_url"
+                               wire:model.live.debounce.300ms="featured_image_url"
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors"
                                placeholder="https://example.com/image.jpg">
                         @error('featured_image_url') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror

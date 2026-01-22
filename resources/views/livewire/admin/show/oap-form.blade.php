@@ -87,8 +87,12 @@
                         class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
                     <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
                 @endif
-                <input type="url" wire:model="profile_photo" placeholder="https://example.com/photo.jpg"
+                <input type="url" wire:model.live.debounce.300ms="profile_photo" placeholder="https://example.com/photo.jpg"
                     class="mt-3 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                @if ($profile_photo && !$profile_photo_upload)
+                    <img src="{{ $profile_photo }}" alt="Profile preview"
+                        class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
+                @endif
             </div>
         </div>
 
