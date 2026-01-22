@@ -69,20 +69,24 @@ class ShowDetail extends Component
 
     public function submitReview()
     {
-        if (!auth()->check()) {
-            session()->flash('error', 'Please login to review');
-            return redirect()->route('login');
-        }
-
         $this->validate([
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'nullable|max:500',
         ]);
 
-        Review::updateOrCreate(
-            ['user_id' => auth()->id(), 'show_id' => $this->show->id],
-            ['rating' => $this->rating, 'review' => $this->review]
-        );
+        if (auth()->check()) {
+            Review::updateOrCreate(
+                ['user_id' => auth()->id(), 'show_id' => $this->show->id],
+                ['rating' => $this->rating, 'review' => $this->review]
+            );
+        } else {
+            Review::create([
+                'user_id' => null,
+                'show_id' => $this->show->id,
+                'rating' => $this->rating,
+                'review' => $this->review ?: null,
+            ]);
+        }
 
         $this->showReviewForm = false;
         $this->reset(['rating', 'review']);

@@ -313,65 +313,54 @@
                     </h2>
 
                     <!-- Comment Form -->
-                    @auth
-                        <form wire:submit.prevent="submitComment" class="mb-8">
-                            <div class="bg-purple-50 rounded-xl p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <label class="font-semibold text-gray-900">Leave a Comment</label>
-                                    @if($commentTimestamp)
-                                        <button type="button" wire:click="$set('commentTimestamp', null)"
-                                            class="text-sm text-purple-600 hover:text-purple-700">
-                                            <i class="fas fa-times mr-1"></i>Clear timestamp
-                                        </button>
-                                    @endif
-                                </div>
-
+                    <form wire:submit.prevent="submitComment" class="mb-8">
+                        <div class="bg-purple-50 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <label class="font-semibold text-gray-900">Leave a Comment</label>
                                 @if($commentTimestamp)
-                                    <div class="mb-3 text-sm text-purple-600">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        Comment will be posted at {{ gmdate('H:i:s', $commentTimestamp) }}
-                                    </div>
+                                    <button type="button" wire:click="$set('commentTimestamp', null)"
+                                        class="text-sm text-purple-600 hover:text-purple-700">
+                                        <i class="fas fa-times mr-1"></i>Clear timestamp
+                                    </button>
                                 @endif
-
-                                <textarea wire:model="comment" rows="4"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                                    placeholder="Share your thoughts..."></textarea>
-                                @error('comment') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
-
-                                <div class="mt-4 flex items-center justify-between">
-                                    <button type="button" onclick="addTimestamp()"
-                                        class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
-                                        <i class="fas fa-clock mr-1"></i>Add Current Timestamp
-                                    </button>
-                                    <button type="submit"
-                                        class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
-                                        <i class="fas fa-paper-plane mr-2"></i>Post Comment
-                                    </button>
-                                </div>
                             </div>
-                        </form>
-                    @else
-                        <div class="mb-8 p-6 bg-purple-50 rounded-xl text-center">
-                            <i class="fas fa-lock text-4xl text-purple-600 mb-3"></i>
-                            <p class="text-gray-700 mb-4">Login to join the conversation</p>
-                            <a href="{{ route('login') }}"
-                                class="inline-block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
-                                Login to Comment
-                            </a>
+
+                            @if($commentTimestamp)
+                                <div class="mb-3 text-sm text-purple-600">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Comment will be posted at {{ gmdate('H:i:s', $commentTimestamp) }}
+                                </div>
+                            @endif
+
+                            <textarea wire:model="comment" rows="4"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                                placeholder="Share your thoughts..."></textarea>
+                            @error('comment') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+
+                            <div class="mt-4 flex items-center justify-between">
+                                <button type="button" onclick="addTimestamp()"
+                                    class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
+                                    <i class="fas fa-clock mr-1"></i>Add Current Timestamp
+                                </button>
+                                <button type="submit"
+                                    class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                                    <i class="fas fa-paper-plane mr-2"></i>Post Comment
+                                </button>
+                            </div>
                         </div>
-                    @endauth
+                    </form>
 
                     <!-- Comments List -->
                     <div class="space-y-6">
                         @forelse($episode->comments as $comment)
                             <div class="bg-gray-50 rounded-xl p-6">
                                 <div class="flex items-start space-x-4">
-                                    <img src="{{ $comment->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user->name) }}"
+                                    <img src="{{ $comment->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user?->name ?? 'Anonymous') }}"
                                         class="w-12 h-12 rounded-full">
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between mb-2">
                                             <div>
-                                                <h4 class="font-bold text-gray-900">{{ $comment->user->name }}</h4>
+                                                <h4 class="font-bold text-gray-900">{{ $comment->user?->name ?? 'Anonymous' }}</h4>
                                                 <p class="text-sm text-gray-500">
                                                     {{ $comment->created_at->diffForHumans() }}
                                                     @if($comment->timestamp)
@@ -389,10 +378,10 @@
                                             <div class="mt-4 pl-4 border-l-2 border-purple-200 space-y-4">
                                                 @foreach($comment->replies as $reply)
                                                     <div class="flex items-start space-x-3">
-                                                        <img src="{{ $reply->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($reply->user->name) }}"
+                                                        <img src="{{ $reply->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($reply->user?->name ?? 'Anonymous') }}"
                                                             class="w-10 h-10 rounded-full">
                                                         <div class="flex-1">
-                                                            <h5 class="font-semibold text-gray-900">{{ $reply->user->name }}</h5>
+                                                            <h5 class="font-semibold text-gray-900">{{ $reply->user?->name ?? 'Anonymous' }}</h5>
                                                             <p class="text-xs text-gray-500 mb-1">
                                                                 {{ $reply->created_at->diffForHumans() }}</p>
                                                             <p class="text-gray-700">{{ $reply->comment }}</p>

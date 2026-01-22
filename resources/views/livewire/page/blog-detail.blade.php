@@ -326,7 +326,6 @@
                             </h3>
 
                             <!-- Comment Form -->
-                            @auth
                             <form wire:submit.prevent="submitComment" class="mb-8">
                                 <div class="bg-gray-50 rounded-xl p-6">
                                     <textarea wire:model="comment" 
@@ -343,15 +342,6 @@
                                     </div>
                                 </div>
                             </form>
-                            @else
-                            <div class="mb-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl text-center border-2 border-purple-200">
-                                <i class="fas fa-lock text-4xl text-purple-600 mb-3"></i>
-                                <p class="text-gray-700 mb-4">Login to join the conversation</p>
-                                <a href="{{ route('login') }}" class="inline-block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
-                                    Login to Comment
-                                </a>
-                            </div>
-                            @endauth
 
                             <!-- Flash Messages -->
                             @if (session()->has('success'))
@@ -366,13 +356,13 @@
                                 @forelse($post->comments()->approved()->get() as $comment)
                                 <div class="bg-gray-50 rounded-xl p-6">
                                     <div class="flex items-start space-x-4">
-                                        <img src="{{ $comment->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user->name) }}" 
+                                        <img src="{{ $comment->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user?->name ?? 'Anonymous') }}" 
                                              class="w-12 h-12 rounded-full">
                                         <div class="flex-1">
                                             <div class="flex items-center justify-between mb-2">
                                                 <div>
                                                     <h4 class="font-bold text-gray-900">
-                                                        {{ $comment->user->name }}
+                                                        {{ $comment->user?->name ?? 'Anonymous' }}
                                                         @if($comment->is_pinned)
                                                         <i class="fas fa-thumbtack text-purple-600 ml-2" title="Pinned"></i>
                                                         @endif

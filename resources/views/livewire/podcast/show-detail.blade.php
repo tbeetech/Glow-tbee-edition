@@ -124,7 +124,7 @@
     </section>
 
     <!-- Review Form -->
-    @if($showReviewForm && auth()->check())
+    @if($showReviewForm)
     <section class="py-8 bg-white border-b">
         <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto">
@@ -291,12 +291,12 @@
                     @foreach($show->reviews()->where('is_approved', true)->latest()->take(5)->get() as $review)
                     <div class="bg-white rounded-xl p-6 shadow-md">
                         <div class="flex items-start space-x-4">
-                            <img src="{{ $review->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($review->user->name) }}" 
+                            <img src="{{ $review->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($review->user?->name ?? 'Anonymous') }}" 
                                  class="w-12 h-12 rounded-full">
                             <div class="flex-1">
                                 <div class="flex items-center justify-between mb-2">
                                     <div>
-                                        <h4 class="font-bold text-gray-900">{{ $review->user->name }}</h4>
+                                        <h4 class="font-bold text-gray-900">{{ $review->user?->name ?? 'Anonymous' }}</h4>
                                         <div class="flex items-center space-x-1 text-yellow-400">
                                             @for($i = 1; $i <= 5; $i++)
                                             <i class="fas fa-star {{ $i <= $review->rating ? '' : 'text-gray-300' }}"></i>

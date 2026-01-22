@@ -147,10 +147,10 @@
                                 @forelse($reviews as $listenerReview)
                                     <div class="p-4 bg-gray-50 rounded-xl">
                                         <div class="flex items-center justify-between">
-                                            <div>
-                                                <p class="font-semibold text-gray-900">{{ $listenerReview->user?->name ?? 'Listener' }}</p>
-                                                <p class="text-xs text-gray-500">{{ $listenerReview->created_at->format('M d, Y') }}</p>
-                                            </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-900">{{ $listenerReview->user?->name ?? 'Anonymous' }}</p>
+                                            <p class="text-xs text-gray-500">{{ $listenerReview->created_at->format('M d, Y') }}</p>
+                                        </div>
                                             <span class="text-sm font-semibold text-emerald-700">
                                                 {{ $listenerReview->rating }}/5
                                             </span>

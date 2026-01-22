@@ -114,11 +114,6 @@ class BlogDetail extends Component
 
     public function submitComment()
     {
-        if (!auth()->check()) {
-            session()->flash('error', 'Please login to comment');
-            return redirect()->route('login');
-        }
-
         $this->validate();
 
         if ($this->replyTo) {

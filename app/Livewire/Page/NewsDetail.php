@@ -80,11 +80,6 @@ class NewsDetail extends Component
 
     public function submitComment()
     {
-        if (!auth()->check()) {
-            session()->flash('error', 'Please login to comment');
-            return redirect()->route('login');
-        }
-
         $this->validate(['comment' => 'required|min:3|max:500']);
 
         $this->news->comments()->create([

@@ -50,27 +50,32 @@ class ShowDetail extends Component
 
     public function submitReview()
     {
-        if (!auth()->check()) {
-            $this->addError('rating', 'Please sign in to leave a review.');
-            return;
-        }
-
         $this->validate([
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'nullable|string|max:1000',
         ]);
 
-        Review::updateOrCreate(
-            [
+        if (auth()->check()) {
+            Review::updateOrCreate(
+                [
+                    'show_id' => $this->show->id,
+                    'user_id' => auth()->id(),
+                ],
+                [
+                    'rating' => $this->rating,
+                    'review' => $this->review ?: null,
+                    'is_approved' => true,
+                ]
+            );
+        } else {
+            Review::create([
                 'show_id' => $this->show->id,
-                'user_id' => auth()->id(),
-            ],
-            [
+                'user_id' => null,
                 'rating' => $this->rating,
                 'review' => $this->review ?: null,
                 'is_approved' => true,
-            ]
-        );
+            ]);
+        }
 
         $averageRating = $this->show->reviews()->avg('rating');
         $this->show->average_rating = $averageRating ?: 0;
