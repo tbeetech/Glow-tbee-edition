@@ -6,6 +6,7 @@ use App\Models\Staff\StaffMember;
 use App\Models\Team\Department;
 use App\Models\Team\Role as TeamRole;
 use App\Support\CloudinaryUploader;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -17,6 +18,7 @@ class StaffForm extends Component
     public $staffId = null;
     public $isEditing = false;
 
+    public $user_id = '';
     public $name = '';
     public $role = '';
     public $department = '';
@@ -32,6 +34,7 @@ class StaffForm extends Component
     public $joined_date = '';
     public $departments = [];
     public $teamRoles = [];
+    public $users = [];
 
     public $social_links = [
         'facebook' => '',
@@ -41,6 +44,7 @@ class StaffForm extends Component
     ];
 
     protected $rules = [
+        'user_id' => 'nullable|exists:users,id',
         'name' => 'required|min:3|max:255',
         'role' => 'nullable|max:255',
         'department' => 'nullable|max:255',
@@ -57,6 +61,7 @@ class StaffForm extends Component
 
     public function mount($staffId = null)
     {
+        $this->loadUsers($staffId);
         $this->departments = Department::query()
             ->where('is_active', true)
             ->orderBy('name')
@@ -66,6 +71,7 @@ class StaffForm extends Component
             $staff = StaffMember::findOrFail($staffId);
             $this->staffId = $staff->id;
             $this->isEditing = true;
+            $this->user_id = $staff->user_id;
             $this->name = $staff->name;
             $this->role = $staff->role;
             $this->department = $staff->department;
@@ -90,6 +96,50 @@ class StaffForm extends Component
             ->get();
     }
 
+    private function loadUsers($staffId = null)
+    {
+        $query = User::query()->orderBy('name');
+
+        if ($staffId) {
+            $query->where(function ($query) use ($staffId) {
+                $query->whereDoesntHave('staffMember')
+                    ->orWhereHas('staffMember', function ($staffQuery) use ($staffId) {
+                        $staffQuery->where('id', $staffId);
+                    });
+            });
+        } else {
+            $query->whereDoesntHave('staffMember');
+        }
+
+        $this->users = $query->get();
+    }
+
+    public function updatedUserId()
+    {
+        if (!$this->user_id) {
+            return;
+        }
+
+        $user = User::find($this->user_id);
+        if (!$user) {
+            return;
+        }
+
+        $this->name = $user->name ?: $this->name;
+        $this->email = $user->email ?: $this->email;
+        $this->photo_url = $user->avatar ?: $this->photo_url;
+        $this->department_id = $user->department_id ?: $this->department_id;
+        $this->team_role_id = $user->team_role_id ?: $this->team_role_id;
+
+        if ($this->department_id) {
+            $this->teamRoles = TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get();
+        }
+    }
+
     public function updatedDepartmentId()
     {
         $this->team_role_id = '';
@@ -109,7 +159,9 @@ class StaffForm extends Component
 
     public function save()
     {
-        $this->validate();
+        $rules = $this->rules;
+        $rules['user_id'] = 'nullable|exists:users,id|unique:staff_members,user_id' . ($this->staffId ? ',' . $this->staffId . ',id' : '');
+        $this->validate($rules);
 
         $validRole = TeamRole::query()
             ->where('id', $this->team_role_id)
@@ -142,6 +194,7 @@ class StaffForm extends Component
         $roleName = TeamRole::find($this->team_role_id)?->name;
 
         $data = [
+            'user_id' => $this->user_id ?: null,
             'name' => $this->name,
             'slug' => $slug,
             'role' => $roleName ?? $this->role,

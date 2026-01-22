@@ -14,6 +14,7 @@ class StaffMember extends Model
     protected $table = 'staff_members';
 
     protected $fillable = [
+        'user_id',
         'name',
         'slug',
         'role',
@@ -39,6 +40,11 @@ class StaffMember extends Model
     public function departmentRelation()
     {
         return $this->belongsTo(\App\Models\Team\Department::class, 'department_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 
     public function teamRole()

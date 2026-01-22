@@ -70,4 +70,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Models\Team\Role::class, 'team_role_id');
     }
+
+    public function staffMember()
+    {
+        return $this->hasOne(\App\Models\Staff\StaffMember::class, 'user_id');
+    }
 }
