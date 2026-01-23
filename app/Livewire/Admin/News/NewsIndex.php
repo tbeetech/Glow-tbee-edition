@@ -124,19 +124,22 @@ class NewsIndex extends Component
             return;
         }
 
-        $news->approval_status = $action;
-        $news->approval_reason = $reason ?: null;
-        $news->reviewed_by = auth()->id();
-        $news->reviewed_at = now();
+        $update = [
+            'approval_status' => $action,
+            'approval_reason' => $reason ?: null,
+            'reviewed_by' => auth()->id(),
+            'reviewed_at' => now(),
+        ];
 
         if (in_array($action, ['flagged', 'rejected'], true)) {
-            $news->is_published = false;
-            $news->published_at = null;
+            $update['is_published'] = false;
+            $update['published_at'] = null;
         } elseif ($news->is_published && !$news->published_at) {
-            $news->published_at = now();
+            $update['published_at'] = now();
         }
 
-        $news->save();
+        News::where('id', $newsId)->update($update);
+        $news->refresh();
 
         if ($news->author) {
             $news->author->notify(new ContentApprovalUpdated(
