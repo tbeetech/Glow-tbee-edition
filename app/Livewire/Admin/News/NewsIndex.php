@@ -134,8 +134,9 @@ class NewsIndex extends Component
         if (in_array($action, ['flagged', 'rejected'], true)) {
             $update['is_published'] = false;
             $update['published_at'] = null;
-        } elseif ($news->is_published && !$news->published_at) {
-            $update['published_at'] = now();
+        } elseif ($action === 'approved') {
+            $update['is_published'] = true;
+            $update['published_at'] = $news->published_at ?: now();
         }
 
         News::where('id', $newsId)->update($update);
