@@ -156,7 +156,8 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-500">
                                     <div><i class="fas fa-eye mr-1"></i> {{ number_format($article->views) }}</div>
-                                    <div><i class="fas fa-heart mr-1"></i> {{ number_format($article->likes) }}</div>
+                                    <div><i class="fas fa-comment mr-1"></i> {{ number_format($article->comments_count) }}</div>
+                                    <div><i class="fas fa-heart mr-1"></i> {{ number_format($article->reactions_count) }}</div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
