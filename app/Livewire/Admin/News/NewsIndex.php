@@ -211,6 +211,12 @@ class NewsIndex extends Component
     public function getNewsProperty()
     {
         $query = News::with(['category', 'author'])
+            ->withCount([
+                'comments',
+                'interactions as reactions_count' => function ($query) {
+                    $query->where('type', 'reaction');
+                },
+            ])
             ->latest('created_at');
 
         if (!empty($this->search)) {
