@@ -28,6 +28,21 @@
         $metaType = $meta_type ?? 'website';
         $locale = str_replace('-', '_', app()->getLocale());
         $twitterSite = $twitter_site ?? data_get($stationSettings, 'twitter_handle', '');
+        $structuredData = [
+            '@context' => 'https://schema.org',
+            '@type' => 'RadioStation',
+            'name' => $stationName,
+            'url' => $canonicalUrl,
+            'logo' => $stationLogoUrl,
+            'slogan' => $stationTagline,
+            'sameAs' => array_values(array_filter([
+                data_get($stationSettings, 'socials.facebook'),
+                data_get($stationSettings, 'socials.x'),
+                data_get($stationSettings, 'socials.twitter'),
+                data_get($stationSettings, 'socials.instagram'),
+                data_get($stationSettings, 'socials.youtube'),
+            ])),
+        ];
     @endphp
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="robots" content="{{ $metaRobots }}">
@@ -50,21 +65,7 @@
         <link rel="icon" href="{{ $stationLogoUrl }}">
     @endif
     <script type="application/ld+json">
-        @json([
-            '@context' => 'https://schema.org',
-            '@type' => 'RadioStation',
-            'name' => $stationName,
-            'url' => $canonicalUrl,
-            'logo' => $stationLogoUrl,
-            'slogan' => $stationTagline,
-            'sameAs' => array_values(array_filter([
-                data_get($stationSettings, 'socials.facebook'),
-                data_get($stationSettings, 'socials.x'),
-                data_get($stationSettings, 'socials.twitter'),
-                data_get($stationSettings, 'socials.instagram'),
-                data_get($stationSettings, 'socials.youtube'),
-            ])),
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+        @json($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
     </script>
 
     <style>[x-cloak]{display:none!important;}</style>
