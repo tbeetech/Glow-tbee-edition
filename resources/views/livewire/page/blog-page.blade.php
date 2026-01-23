@@ -209,7 +209,7 @@
                                     {{ collect($categories)->firstWhere('slug', $selectedCategory)['name'] ?? 'Blog' }}
                                 @endif
                             </h2>
-                            <p class="text-gray-600 mt-1">{{ count($posts) }} articles found</p>
+                            <p class="text-gray-600 mt-1">{{ $posts->total() }} articles found</p>
                         </div>
 
                         @if($searchQuery || $selectedCategory !== 'all')
@@ -308,23 +308,8 @@
                             @endforeach
                         </div>
 
-                        <!-- Pagination Placeholder -->
                         <div class="mt-12 flex justify-center">
-                            <div class="flex items-center space-x-2">
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:text-purple-600 transition-colors">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg">1</button>
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:text-purple-600 transition-colors">2</button>
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:text-purple-600 transition-colors">3</button>
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:text-purple-600 transition-colors">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
+                            {{ $posts->links() }}
                         </div>
                     @else
                         <!-- No Results -->

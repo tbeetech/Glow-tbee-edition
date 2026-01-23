@@ -1,4 +1,8 @@
 <div>
+    @php
+        $glowPosterName = 'Glow FM';
+        $glowPosterLogo = asset('glowfm logo.jpeg');
+    @endphp
     <!-- Page Header -->
     <section
         class="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 text-white py-20 overflow-hidden">
@@ -60,15 +64,14 @@
                             <p class="text-gray-300 text-lg mb-6 leading-relaxed">{{ $featuredNews['excerpt'] }}</p>
 
                             <div class="flex items-center space-x-4 mb-6">
-                                <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $featuredNews['author']['id']]) }}" class="flex items-center space-x-4">
-                                    <img src="{{ $featuredNews['author']['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($featuredNews['author']['name']) . '&length=2' }}"
-                                        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($featuredNews['author']['name']) }}&length=2';"
-                                        alt="{{ $featuredNews['author']['name'] }}"
-                                        class="w-12 h-12 rounded-full border-2 border-emerald-500">
+                                <a href="{{ url('/') }}" class="flex items-center space-x-4">
+                                    <img src="{{ $glowPosterLogo }}"
+                                        alt="{{ $glowPosterName }}"
+                                        class="w-12 h-12 rounded-full border-2 border-emerald-500 object-cover">
                                 </a>
                                 <div>
-                                    <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $featuredNews['author']['id']]) }}" class="font-semibold hover:text-emerald-200 transition-colors">
-                                        {{ $featuredNews['author']['name'] }}
+                                    <a href="{{ url('/') }}" class="font-semibold hover:text-emerald-200 transition-colors">
+                                        {{ $glowPosterName }}
                                     </a>
                                     <p class="text-sm text-gray-400">
                                         {{ \Carbon\Carbon::parse($featuredNews['published_at'])->format('M d, Y') }}</p>
@@ -209,7 +212,7 @@
                                     {{ collect($categories)->firstWhere('slug', $selectedCategory)['name'] ?? 'News' }}
                                 @endif
                             </h2>
-                            <p class="text-gray-600 mt-1">{{ count($newsArticles) }} articles found</p>
+                            <p class="text-gray-600 mt-1">{{ $newsArticles->total() }} articles found</p>
                         </div>
 
                         @if($searchQuery || $selectedCategory !== 'all')
@@ -272,15 +275,14 @@
                                         <!-- Author & Actions -->
                                         <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                                             <div class="flex items-center space-x-3">
-                                                <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $article['author']['id']]) }}">
-                                                    <img src="{{ $article['author']['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($article['author']['name']) . '&length=2' }}"
-                                                        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($article['author']['name']) }}&length=2';"
-                                                        alt="{{ $article['author']['name'] }}" class="w-10 h-10 rounded-full">
+                                                <a href="{{ url('/') }}">
+                                                    <img src="{{ $glowPosterLogo }}"
+                                                        alt="{{ $glowPosterName }}" class="w-10 h-10 rounded-full object-cover">
                                                 </a>
                                                 <div>
-                                                    <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $article['author']['id']]) }}" class="text-sm font-semibold text-gray-900 hover:text-emerald-600 transition-colors">
-                                                        {{ $article['author']['name'] }}</a>
-                                                    <p class="text-xs text-gray-500">{{ $article['author']['role'] }}</p>
+                                                    <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-900 hover:text-emerald-600 transition-colors">
+                                                        {{ $glowPosterName }}</a>
+                                                    <p class="text-xs text-gray-500">{{ $glowPosterName }}</p>
                                                 </div>
                                             </div>
 
@@ -302,21 +304,7 @@
 
                         <!-- Pagination Placeholder -->
                         <div class="mt-12 flex justify-center">
-                            <div class="flex items-center space-x-2">
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-emerald-500 hover:text-emerald-600 transition-colors">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg">1</button>
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-emerald-500 hover:text-emerald-600 transition-colors">2</button>
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-emerald-500 hover:text-emerald-600 transition-colors">3</button>
-                                <button
-                                    class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-emerald-500 hover:text-emerald-600 transition-colors">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
+                            {{ $newsArticles->links() }}
                         </div>
                     @else
                         <!-- No Results -->

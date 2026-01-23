@@ -297,8 +297,9 @@
                                 </h3>
                                 <p class="text-gray-600 mb-4 line-clamp-3">{{ $news['excerpt'] }}</p>
                                 <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                                    <span class="text-sm text-gray-600">
-                                        <i class="fas fa-user-circle mr-1"></i> {{ $news['author'] }}
+                                    <span class="inline-flex items-center space-x-2 text-sm text-gray-600">
+                                        <img src="{{ asset('glowfm logo.jpeg') }}" alt="Glow FM" class="w-5 h-5 rounded-full object-cover">
+                                        <span>Glow FM</span>
                                     </span>
                                     <a href="/news/{{ $news['slug'] }}" class="inline-flex items-center space-x-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
                                         <span>Read More</span>
