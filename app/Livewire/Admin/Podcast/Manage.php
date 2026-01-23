@@ -4,6 +4,8 @@ namespace App\Livewire\Admin\Podcast;
 
 use App\Models\Podcast\Show;
 use App\Models\Podcast\Episode;
+use App\Models\Setting;
+use App\Notifications\ContentApprovalUpdated;
 use App\Support\CloudinaryUploader;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -24,6 +26,10 @@ class Manage extends Component
     public $modalType = 'show';
     public $editMode = false;
     public $itemId = null;
+    public $showApprovalModal = false;
+    public $approvalTargetId = null;
+    public $approvalAction = '';
+    public $approvalReason = '';
 
     // Show form
     public $show_title = '';
@@ -404,11 +410,95 @@ class Manage extends Component
     {
         $episode = Episode::find($id);
         if ($episode) {
+            if ($episode->status !== 'published' && $episode->approval_status !== 'approved') {
+                session()->flash('error', 'This episode must be approved before publishing.');
+                return;
+            }
+
             $episode->status = $episode->status === 'published' ? 'draft' : 'published';
             $episode->published_at = $episode->status === 'published' ? now() : null;
             $episode->save();
             session()->flash('success', 'Status updated!');
         }
+    }
+
+    public function openApprovalModal($episodeId, $action)
+    {
+        if (!$this->canReview()) {
+            session()->flash('error', 'You do not have permission to review content.');
+            return;
+        }
+
+        $this->approvalTargetId = $episodeId;
+        $this->approvalAction = $action;
+        $this->approvalReason = '';
+        $this->showApprovalModal = true;
+    }
+
+    public function submitApproval()
+    {
+        if (!$this->canReview() || !$this->approvalTargetId) {
+            session()->flash('error', 'Unable to update approval status.');
+            return;
+        }
+
+        $requiresReason = in_array($this->approvalAction, ['flagged', 'rejected'], true);
+
+        $this->validate([
+            'approvalReason' => $requiresReason ? 'required|min:5|max:1000' : 'nullable|max:1000',
+        ]);
+
+        $episode = Episode::with('show.host')->find($this->approvalTargetId);
+        if (!$episode) {
+            session()->flash('error', 'Episode not found.');
+            return;
+        }
+
+        $episode->approval_status = $this->approvalAction;
+        $episode->approval_reason = $this->approvalReason ?: null;
+        $episode->reviewed_by = auth()->id();
+        $episode->reviewed_at = now();
+
+        if (in_array($this->approvalAction, ['flagged', 'rejected'], true)) {
+            $episode->status = 'draft';
+            $episode->published_at = null;
+        } elseif ($episode->status === 'published' && !$episode->published_at) {
+            $episode->published_at = now();
+        }
+
+        $episode->save();
+
+        $host = $episode->show?->host;
+        if ($host) {
+            $host->notify(new ContentApprovalUpdated(
+                'podcast episode',
+                $episode->title,
+                $this->approvalAction,
+                $this->approvalReason ?: null
+            ));
+        }
+
+        $this->showApprovalModal = false;
+        $this->approvalTargetId = null;
+        $this->approvalReason = '';
+        $this->approvalAction = '';
+
+        session()->flash('success', 'Approval status updated successfully.');
+    }
+
+    private function canReview(): bool
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        $approverId = Setting::get('system.content_approver_id');
+        return $approverId && $user->staffMember && $user->staffMember->id === (int) $approverId;
     }
 
     public function closeModal()

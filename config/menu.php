@@ -252,29 +252,6 @@ return [
                     ],
                 ]
             ],
-            [
-                'title' => 'Jingles & Ads',
-                'icon' => 'fas fa-bullhorn',
-                'route' => 'admin.ads.index',
-                'active' => 'admin.ads.*',
-                'children' => [
-                    [
-                        'title' => 'Station Jingles',
-                        'route' => 'admin.ads.index',
-                        'active' => 'admin.ads.index'
-                    ],
-                    [
-                        'title' => 'Commercials',
-                        'route' => 'admin.ads.index',
-                        'active' => 'admin.ads.index'
-                    ],
-                    [
-                        'title' => 'Ad Schedule',
-                        'route' => 'admin.ads.index',
-                        'active' => 'admin.ads.index'
-                    ],
-                ]
-            ],
         ]
     ],
     [
@@ -375,8 +352,31 @@ return [
         ]
     ],
     [
-        'group' => 'Team Management',
+        'group' => 'Administrative Stuff',
         'items' => [
+            [
+                'title' => 'Jingles & Ads',
+                'icon' => 'fas fa-bullhorn',
+                'route' => 'admin.ads.index',
+                'active' => 'admin.ads.*',
+                'children' => [
+                    [
+                        'title' => 'Station Jingles',
+                        'route' => 'admin.ads.index',
+                        'active' => 'admin.ads.index'
+                    ],
+                    [
+                        'title' => 'Commercials',
+                        'route' => 'admin.ads.index',
+                        'active' => 'admin.ads.index'
+                    ],
+                    [
+                        'title' => 'Ad Schedule',
+                        'route' => 'admin.ads.index',
+                        'active' => 'admin.ads.index'
+                    ],
+                ]
+            ],
             [
                 'title' => 'OAPs & Hosts',
                 'icon' => 'fas fa-user-tie',
@@ -441,11 +441,6 @@ return [
                     ],
                 ]
             ],
-        ]
-    ],
-    [
-        'group' => 'Marketing',
-        'items' => [
             [
                 'title' => 'Advertisers',
                 'icon' => 'fas fa-handshake',
@@ -515,11 +510,6 @@ return [
                     ],
                 ]
             ],
-        ]
-    ],
-    [
-        'group' => 'Settings',
-        'items' => [
             [
                 'title' => 'Station Settings',
                 'icon' => 'fas fa-cog',

@@ -18,6 +18,7 @@ class Episode extends Model
         'show_id', 'title', 'slug', 'description', 'show_notes', 'cover_image',
         'audio_file', 'audio_format', 'video_url', 'video_type', 'duration', 'file_size', 
         'episode_number', 'season_number', 'episode_type', 'published_at', 'status', 
+        'approval_status', 'approval_reason', 'reviewed_by', 'reviewed_at',
         'is_featured', 'explicit', 'guests', 'chapters', 'transcript', 'plays', 'downloads',
         'shares', 'average_listen_duration', 'tags',
         'spotify_url', 'apple_url', 'youtube_music_url', 'audiomack_url', 
@@ -26,6 +27,7 @@ class Episode extends Model
 
     protected $casts = [
         'published_at' => 'datetime',
+        'reviewed_at' => 'datetime',
         'is_featured' => 'boolean',
         'explicit' => 'boolean',
         'guests' => 'array',
@@ -49,6 +51,11 @@ class Episode extends Model
     public function show()
     {
         return $this->belongsTo(Show::class, 'show_id');
+    }
+
+    public function reviewedBy()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function plays()
@@ -75,7 +82,13 @@ class Episode extends Model
     public function scopePublished($query)
     {
         return $query->where('status', 'published')
+            ->where('approval_status', 'approved')
             ->where('published_at', '<=', now());
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
     }
 
     public function scopeFeatured($query)

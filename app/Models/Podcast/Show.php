@@ -54,6 +54,7 @@ class Show extends Model
     {
         return $this->hasMany(Episode::class, 'show_id')
             ->where('status', 'published')
+            ->where('approval_status', 'approved')
             ->where('published_at', '<=', now());
     }
 

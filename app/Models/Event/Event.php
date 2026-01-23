@@ -16,6 +16,7 @@ class Event extends Model
         'venue_name', 'venue_address', 'city', 'state', 'country',
         'ticket_url', 'registration_url', 'capacity', 'price',
         'published_at', 'views', 'shares', 'is_featured', 'is_published',
+        'approval_status', 'approval_reason', 'reviewed_by', 'reviewed_at',
         'allow_comments', 'meta_description', 'meta_keywords', 'tags',
     ];
 
@@ -26,6 +27,7 @@ class Event extends Model
         'is_featured' => 'boolean',
         'is_published' => 'boolean',
         'allow_comments' => 'boolean',
+        'reviewed_at' => 'datetime',
         'views' => 'integer',
         'shares' => 'integer',
         'tags' => 'array',
@@ -59,6 +61,11 @@ class Event extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    public function reviewedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(EventComment::class)->latest();
@@ -72,10 +79,16 @@ class Event extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
+                    ->where('approval_status', 'approved')
                     ->where(function ($q) {
                         $q->whereNull('published_at')
                           ->orWhere('published_at', '<=', now());
                     });
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
     }
 
     public function scopeFeatured($query)

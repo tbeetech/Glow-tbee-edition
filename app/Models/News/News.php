@@ -14,6 +14,7 @@ class News extends Model
         'title', 'slug', 'excerpt', 'content', 'featured_image', 'gallery', 'video_url',
         'category_id', 'author_id', 'published_at', 'read_time', 'views', 'likes', 'shares',
         'is_featured', 'featured_position', 'is_published', 'breaking', 'breaking_until',
+        'approval_status', 'approval_reason', 'reviewed_by', 'reviewed_at',
         'meta_description', 'meta_keywords', 'tags',
     ];
 
@@ -22,6 +23,7 @@ class News extends Model
         'breaking_until' => 'datetime',
         'is_featured' => 'boolean',
         'is_published' => 'boolean',
+        'reviewed_at' => 'datetime',
         'views' => 'integer',
         'likes' => 'integer',
         'shares' => 'integer',
@@ -63,6 +65,11 @@ class News extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    public function reviewedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(NewsComment::class)->latest();
@@ -77,7 +84,13 @@ class News extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
+                    ->where('approval_status', 'approved')
                     ->where('published_at', '<=', now());
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
     }
 
     public function scopeFeatured($query)

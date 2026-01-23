@@ -16,6 +16,7 @@ class Post extends Model
         'title', 'slug', 'excerpt', 'content', 'featured_image', 'gallery', 
         'video_url', 'audio_url', 'category_id', 'author_id', 'published_at', 
         'read_time', 'views', 'shares', 'is_featured', 'is_published', 
+        'approval_status', 'approval_reason', 'reviewed_by', 'reviewed_at',
         'meta_description', 'meta_keywords', 'tags', 'series', 'series_order', 
         'allow_comments'
     ];
@@ -25,6 +26,7 @@ class Post extends Model
         'is_featured' => 'boolean',
         'is_published' => 'boolean',
         'allow_comments' => 'boolean',
+        'reviewed_at' => 'datetime',
         'views' => 'integer',
         'shares' => 'integer',
         'gallery' => 'array',
@@ -65,6 +67,11 @@ class Post extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    public function reviewedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class, 'post_id')->latest();
@@ -87,10 +94,16 @@ class Post extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
+                    ->where('approval_status', 'approved')
                     ->where(function ($q) {
                         $q->whereNull('published_at')
                           ->orWhere('published_at', '<=', now());
                     });
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
     }
 
     public function scopeFeatured($query)

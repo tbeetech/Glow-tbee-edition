@@ -4,6 +4,8 @@ namespace App\Livewire\Admin\News;
 
 use App\Models\News\News;
 use App\Models\News\NewsCategory;
+use App\Models\Setting;
+use App\Notifications\ContentApprovalUpdated;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,6 +16,10 @@ class NewsIndex extends Component
     public $search = '';
     public $filterCategory = '';
     public $filterStatus = '';
+    public $showApprovalModal = false;
+    public $approvalTargetId = null;
+    public $approvalAction = '';
+    public $approvalReason = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -55,6 +61,11 @@ class NewsIndex extends Component
         $news = News::find($newsId);
         
         if ($news) {
+            if (!$news->is_published && $news->approval_status !== 'approved') {
+                session()->flash('error', 'This article must be approved before publishing.');
+                return;
+            }
+
             $news->is_published = !$news->is_published;
             
             if ($news->is_published && !$news->published_at) {
@@ -66,6 +77,84 @@ class NewsIndex extends Component
             $status = $news->is_published ? 'published' : 'unpublished';
             session()->flash('success', "News article {$status} successfully!");
         }
+    }
+
+    public function openApprovalModal($newsId, $action)
+    {
+        if (!$this->canReview()) {
+            session()->flash('error', 'You do not have permission to review content.');
+            return;
+        }
+
+        $this->approvalTargetId = $newsId;
+        $this->approvalAction = $action;
+        $this->approvalReason = '';
+        $this->showApprovalModal = true;
+    }
+
+    public function submitApproval()
+    {
+        if (!$this->canReview() || !$this->approvalTargetId) {
+            session()->flash('error', 'Unable to update approval status.');
+            return;
+        }
+
+        $requiresReason = in_array($this->approvalAction, ['flagged', 'rejected'], true);
+
+        $this->validate([
+            'approvalReason' => $requiresReason ? 'required|min:5|max:1000' : 'nullable|max:1000',
+        ]);
+
+        $news = News::find($this->approvalTargetId);
+        if (!$news) {
+            session()->flash('error', 'Article not found.');
+            return;
+        }
+
+        $news->approval_status = $this->approvalAction;
+        $news->approval_reason = $this->approvalReason ?: null;
+        $news->reviewed_by = auth()->id();
+        $news->reviewed_at = now();
+
+        if (in_array($this->approvalAction, ['flagged', 'rejected'], true)) {
+            $news->is_published = false;
+            $news->published_at = null;
+        } elseif ($news->is_published && !$news->published_at) {
+            $news->published_at = now();
+        }
+
+        $news->save();
+
+        if ($news->author) {
+            $news->author->notify(new ContentApprovalUpdated(
+                'news article',
+                $news->title,
+                $this->approvalAction,
+                $this->approvalReason ?: null
+            ));
+        }
+
+        $this->showApprovalModal = false;
+        $this->approvalTargetId = null;
+        $this->approvalReason = '';
+        $this->approvalAction = '';
+
+        session()->flash('success', 'Approval status updated successfully.');
+    }
+
+    private function canReview(): bool
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        $approverId = Setting::get('system.content_approver_id');
+        return $approverId && $user->staffMember && $user->staffMember->id === (int) $approverId;
     }
 
     public function toggleFeatured($newsId)
@@ -122,6 +211,14 @@ class NewsIndex extends Component
             $query->where('is_published', false);
         } elseif ($this->filterStatus === 'featured') {
             $query->where('is_featured', true);
+        } elseif ($this->filterStatus === 'pending') {
+            $query->where('approval_status', 'pending');
+        } elseif ($this->filterStatus === 'approved') {
+            $query->where('approval_status', 'approved');
+        } elseif ($this->filterStatus === 'flagged') {
+            $query->where('approval_status', 'flagged');
+        } elseif ($this->filterStatus === 'rejected') {
+            $query->where('approval_status', 'rejected');
         }
 
         return $query->paginate(10);
