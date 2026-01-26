@@ -45,6 +45,12 @@ class BlogIndex extends Component
 
     public function confirmDelete($postId)
     {
+        $post = Post::find($postId);
+        if ($post && !$this->canManagePost($post)) {
+            session()->flash('error', 'You do not have permission to delete this post.');
+            return;
+        }
+
         $this->postToDelete = $postId;
         $this->showDeleteModal = true;
     }
@@ -55,6 +61,13 @@ class BlogIndex extends Component
             $post = Post::find($this->postToDelete);
             
             if ($post) {
+                if (!$this->canManagePost($post)) {
+                    session()->flash('error', 'You do not have permission to delete this post.');
+                    $this->showDeleteModal = false;
+                    $this->postToDelete = null;
+                    return;
+                }
+
                 // Delete associated data
                 $post->comments()->delete();
                 $post->interactions()->delete();
@@ -73,6 +86,16 @@ class BlogIndex extends Component
         $post = Post::find($postId);
         
         if ($post) {
+            if (!$this->canReview()) {
+                session()->flash('error', 'You do not have permission to publish this post.');
+                return;
+            }
+
+            if (!$this->canManagePost($post)) {
+                session()->flash('error', 'You do not have permission to update this post.');
+                return;
+            }
+
             if (!$post->is_published && $post->approval_status !== 'approved') {
                 session()->flash('error', 'This post must be approved before publishing.');
                 return;
@@ -182,11 +205,35 @@ class BlogIndex extends Component
         return $user->staffMember && in_array($user->staffMember->id, $approverIds, true);
     }
 
+    public function canManagePost(Post $post): bool
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($this->canReview()) {
+            return true;
+        }
+
+        return (int) $post->author_id === (int) $user->id;
+    }
+
     public function toggleFeatured($postId)
     {
         $post = Post::find($postId);
         
         if ($post) {
+            if (!$this->canReview()) {
+                session()->flash('error', 'You do not have permission to feature this post.');
+                return;
+            }
+
+            if (!$this->canManagePost($post)) {
+                session()->flash('error', 'You do not have permission to update this post.');
+                return;
+            }
+
             // If making this featured, unfeatured all others
             if (!$post->is_featured) {
                 Post::where('is_featured', true)->update(['is_featured' => false]);

@@ -45,13 +45,15 @@ class NewsIndex extends Component
     {
         $news = News::find($newsId);
 
-        if ($news) {
+        if ($news && $this->canManageNews($news)) {
             // Delete associated data
             $news->comments()->delete();
             $news->interactions()->delete();
             $news->delete();
 
             session()->flash('success', 'News article deleted successfully!');
+        } elseif ($news) {
+            session()->flash('error', 'You do not have permission to delete this article.');
         }
     }
 
@@ -60,6 +62,16 @@ class NewsIndex extends Component
         $news = News::find($newsId);
         
         if ($news) {
+            if (!$this->canReview()) {
+                session()->flash('error', 'You do not have permission to publish this article.');
+                return;
+            }
+
+            if (!$this->canManageNews($news)) {
+                session()->flash('error', 'You do not have permission to update this article.');
+                return;
+            }
+
             if (!$news->is_published && $news->approval_status !== 'approved') {
                 session()->flash('error', 'This article must be approved before publishing.');
                 return;
@@ -173,11 +185,35 @@ class NewsIndex extends Component
         return $user->staffMember && in_array($user->staffMember->id, $approverIds, true);
     }
 
+    public function canManageNews(News $news): bool
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($this->canReview()) {
+            return true;
+        }
+
+        return (int) $news->author_id === (int) $user->id;
+    }
+
     public function toggleFeatured($newsId)
     {
         $news = News::find($newsId);
         
         if ($news) {
+            if (!$this->canReview()) {
+                session()->flash('error', 'You do not have permission to feature this article.');
+                return;
+            }
+
+            if (!$this->canManageNews($news)) {
+                session()->flash('error', 'You do not have permission to update this article.');
+                return;
+            }
+
             // If making this featured, unfeatured all others
             if (!$news->is_featured) {
                 News::where('is_featured', true)->update(['is_featured' => false]);
@@ -194,6 +230,16 @@ class NewsIndex extends Component
     {
         $news = News::find($newsId);
         if (!$news) {
+            return;
+        }
+
+        if (!$this->canReview()) {
+            session()->flash('error', 'You do not have permission to feature this article.');
+            return;
+        }
+
+        if (!$this->canManageNews($news)) {
+            session()->flash('error', 'You do not have permission to update this article.');
             return;
         }
 

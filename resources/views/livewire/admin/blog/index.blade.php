@@ -123,6 +123,10 @@
                         $canReview = $this->canReview();
                     @endphp
                     @forelse($posts as $post)
+                        @php
+                            $canManage = $this->canManagePost($post);
+                            $showView = $post->approval_status === 'approved';
+                        @endphp
                         <tr class="hover:bg-gray-50 transition-colors duration-150">
                             <td class="px-6 py-4">
                                 <div class="flex items-center space-x-3">
@@ -162,11 +166,18 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex flex-col space-y-1">
-                                    <button wire:click="togglePublish({{ $post->id }})" 
-                                        class="inline-flex items-center px-2 py-1 text-xs font-medium rounded {{ $post->is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700' }}">
-                                        <i class="fas {{ $post->is_published ? 'fa-check-circle' : 'fa-clock' }} mr-1"></i>
-                                        {{ $post->is_published ? 'Published' : 'Draft' }}
-                                    </button>
+                                    @if($canReview)
+                                        <button wire:click="togglePublish({{ $post->id }})" 
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium rounded {{ $post->is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700' }}">
+                                            <i class="fas {{ $post->is_published ? 'fa-check-circle' : 'fa-clock' }} mr-1"></i>
+                                            {{ $post->is_published ? 'Published' : 'Draft' }}
+                                        </button>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded {{ $post->is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700' }}">
+                                            <i class="fas {{ $post->is_published ? 'fa-check-circle' : 'fa-clock' }} mr-1"></i>
+                                            {{ $post->is_published ? 'Published' : 'Draft' }}
+                                        </span>
+                                    @endif
                                     @php
                                         $approvalClass = match ($post->approval_status) {
                                             'approved' => 'bg-emerald-100 text-emerald-700',
@@ -182,7 +193,7 @@
                                     @if($post->approval_reason)
                                         <span class="text-xs text-gray-500 line-clamp-2">Reason: {{ $post->approval_reason }}</span>
                                     @endif
-                                    @if($post->is_featured)
+                                    @if($canReview && $post->is_featured)
                                         <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-pink-100 text-pink-700">
                                             <i class="fas fa-star mr-1"></i> Featured
                                         </span>
@@ -197,12 +208,14 @@
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end">
                                     <div class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-50">
-                                        <div class="flex items-center gap-2 px-2 py-1">
-                                            <a href="{{ route('admin.blog.preview', $post->slug) }}" target="_blank"
-                                                class="text-blue-600 hover:text-blue-900" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </div>
+                                        @if($showView)
+                                            <div class="flex items-center gap-2 px-2 py-1">
+                                                <a href="{{ route('admin.blog.preview', $post->slug) }}" target="_blank"
+                                                    class="text-blue-600 hover:text-blue-900" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        @endif
                                         @if($canReview)
                                             <span class="mx-1 h-4 w-px bg-gray-200"></span>
                                             <div class="flex items-center gap-2 px-2 py-1">
@@ -220,21 +233,25 @@
                                                 </button>
                                             </div>
                                         @endif
-                                        <span class="mx-1 h-4 w-px bg-gray-200"></span>
-                                        <div class="flex items-center gap-2 px-2 py-1">
-                                            <a href="{{ route('admin.blog.edit', $post->id) }}"
-                                                class="text-purple-600 hover:text-purple-900" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button wire:click="toggleFeatured({{ $post->id }})"
-                                                class="text-pink-600 hover:text-pink-900" title="Toggle Featured">
-                                                <i class="fas fa-star"></i>
-                                            </button>
-                                            <button wire:click="confirmDelete({{ $post->id }})"
-                                                class="text-red-600 hover:text-red-900" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
+                                        @if($canManage)
+                                            <span class="mx-1 h-4 w-px bg-gray-200"></span>
+                                            <div class="flex items-center gap-2 px-2 py-1">
+                                                <a href="{{ route('admin.blog.edit', $post->id) }}"
+                                                    class="text-purple-600 hover:text-purple-900" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if($canReview)
+                                                    <button wire:click="toggleFeatured({{ $post->id }})"
+                                                        class="text-pink-600 hover:text-pink-900" title="Toggle Featured">
+                                                        <i class="fas fa-star"></i>
+                                                    </button>
+                                                @endif
+                                                <button wire:click="confirmDelete({{ $post->id }})"
+                                                    class="text-red-600 hover:text-red-900" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

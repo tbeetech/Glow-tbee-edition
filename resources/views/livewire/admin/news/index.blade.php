@@ -126,6 +126,10 @@
                         $canReview = $this->canReview();
                     @endphp
                     @forelse($newsArticles as $article)
+                        @php
+                            $canManage = $this->canManageNews($article);
+                            $showView = $article->approval_status === 'approved';
+                        @endphp
                         <tr class="hover:bg-gray-50 transition-colors duration-150">
                             <td class="px-6 py-4">
                                 <div class="flex items-center space-x-3">
@@ -165,11 +169,18 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex flex-col space-y-1">
-                                    <button wire:click="togglePublish({{ $article->id }})" 
-                                        class="inline-flex items-center px-2 py-1 text-xs font-medium rounded {{ $article->is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700' }}">
-                                        <i class="fas {{ $article->is_published ? 'fa-check-circle' : 'fa-clock' }} mr-1"></i>
-                                        {{ $article->is_published ? 'Published' : 'Draft' }}
-                                    </button>
+                                    @if($canReview)
+                                        <button wire:click="togglePublish({{ $article->id }})" 
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium rounded {{ $article->is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700' }}">
+                                            <i class="fas {{ $article->is_published ? 'fa-check-circle' : 'fa-clock' }} mr-1"></i>
+                                            {{ $article->is_published ? 'Published' : 'Draft' }}
+                                        </button>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded {{ $article->is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700' }}">
+                                            <i class="fas {{ $article->is_published ? 'fa-check-circle' : 'fa-clock' }} mr-1"></i>
+                                            {{ $article->is_published ? 'Published' : 'Draft' }}
+                                        </span>
+                                    @endif
                                     @php
                                         $approvalClass = match ($article->approval_status) {
                                             'approved' => 'bg-emerald-100 text-emerald-700',
@@ -185,7 +196,7 @@
                                     @if($article->approval_reason)
                                         <span class="text-xs text-gray-500 line-clamp-2">Reason: {{ $article->approval_reason }}</span>
                                     @endif
-                                    @if($article->is_featured)
+                                    @if($canReview && $article->is_featured)
                                         <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-purple-100 text-purple-700">
                                             <i class="fas fa-star mr-1"></i> Featured
                                         </span>
@@ -193,23 +204,31 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <select wire:change="setFeaturedPlacement({{ $article->id }}, $event.target.value)"
-                                    class="px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                                    <option value="none" {{ $article->featured_position === 'none' ? 'selected' : '' }}>None</option>
-                                    <option value="hero" {{ $article->featured_position === 'hero' ? 'selected' : '' }}>Hero</option>
-                                    <option value="secondary" {{ $article->featured_position === 'secondary' ? 'selected' : '' }}>Secondary</option>
-                                    <option value="sidebar" {{ $article->featured_position === 'sidebar' ? 'selected' : '' }}>Sidebar</option>
-                                </select>
+                                @if($canReview)
+                                    <select wire:change="setFeaturedPlacement({{ $article->id }}, $event.target.value)"
+                                        class="px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                        <option value="none" {{ $article->featured_position === 'none' ? 'selected' : '' }}>None</option>
+                                        <option value="hero" {{ $article->featured_position === 'hero' ? 'selected' : '' }}>Hero</option>
+                                        <option value="secondary" {{ $article->featured_position === 'secondary' ? 'selected' : '' }}>Secondary</option>
+                                        <option value="sidebar" {{ $article->featured_position === 'sidebar' ? 'selected' : '' }}>Sidebar</option>
+                                    </select>
+                                @else
+                                    <span class="text-xs text-gray-500">
+                                        {{ ucfirst($article->featured_position ?? 'none') }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end">
                                     <div class="inline-flex items-center rounded-lg border border-gray-200 bg-gray-50">
-                                        <div class="flex items-center gap-2 px-2 py-1">
-                                            <a href="{{ route('news.show', $article->slug) }}" target="_blank"
-                                                class="text-blue-600 hover:text-blue-900" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </div>
+                                        @if($showView)
+                                            <div class="flex items-center gap-2 px-2 py-1">
+                                                <a href="{{ route('news.show', $article->slug) }}" target="_blank"
+                                                    class="text-blue-600 hover:text-blue-900" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        @endif
                                         @if($canReview)
                                             <span class="mx-1 h-4 w-px bg-gray-200"></span>
                                             <div class="flex items-center gap-2 px-2 py-1">
@@ -227,22 +246,26 @@
                                                 </button>
                                             </div>
                                         @endif
-                                        <span class="mx-1 h-4 w-px bg-gray-200"></span>
-                                        <div class="flex items-center gap-2 px-2 py-1">
-                                            <a href="{{ route('admin.news.edit', $article->id) }}"
-                                                class="text-emerald-600 hover:text-emerald-900" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button wire:click="toggleFeatured({{ $article->id }})"
-                                                class="text-purple-600 hover:text-purple-900" title="Toggle Featured">
-                                                <i class="fas fa-star"></i>
-                                            </button>
-                                            <button wire:click="deleteNews({{ $article->id }})"
-                                                onclick="if (!confirm('Delete this article? This action cannot be undone.')) { event.stopImmediatePropagation(); return false; }"
-                                                class="text-red-600 hover:text-red-900" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
+                                        @if($canManage)
+                                            <span class="mx-1 h-4 w-px bg-gray-200"></span>
+                                            <div class="flex items-center gap-2 px-2 py-1">
+                                                <a href="{{ route('admin.news.edit', $article->id) }}"
+                                                    class="text-emerald-600 hover:text-emerald-900" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if($canReview)
+                                                    <button wire:click="toggleFeatured({{ $article->id }})"
+                                                        class="text-purple-600 hover:text-purple-900" title="Toggle Featured">
+                                                        <i class="fas fa-star"></i>
+                                                    </button>
+                                                @endif
+                                                <button wire:click="deleteNews({{ $article->id }})"
+                                                    onclick="if (!confirm('Delete this article? This action cannot be undone.')) { event.stopImmediatePropagation(); return false; }"
+                                                    class="text-red-600 hover:text-red-900" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
