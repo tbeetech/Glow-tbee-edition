@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'name',
@@ -41,9 +42,14 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff';
+    }
+
     public function isDj(): bool
     {
-        return $this->role === 'dj';
+        return $this->isStaff();
     }
 
     public function isUser(): bool

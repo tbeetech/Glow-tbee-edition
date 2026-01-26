@@ -29,7 +29,7 @@ class Form extends Component
         $rules = [
             'name' => 'required|min:3|max:255',
             'email' => 'required|email|unique:users,email',
-            'role' => 'required|in:admin,dj,user',
+            'role' => 'required|in:admin,staff,user',
             'department_id' => 'required|exists:team_departments,id',
             'team_role_id' => 'required|exists:team_roles,id',
             'is_active' => 'boolean',
@@ -111,11 +111,18 @@ class Form extends Component
         }
 
         if ($this->isEditing) {
-            User::findOrFail($this->userId)->update($data);
+            $user = User::findOrFail($this->userId);
+            $user->update($data);
             $message = 'User updated successfully.';
         } else {
-            User::create($data);
+            $user = User::create($data);
             $message = 'User created successfully.';
+        }
+
+        if (in_array($this->role, ['admin', 'staff'], true)) {
+            $user->syncRoles([$this->role]);
+        } else {
+            $user->syncRoles([]);
         }
 
         return redirect()->route('admin.users.index')->with('success', $message);

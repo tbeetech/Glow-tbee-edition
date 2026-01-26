@@ -112,7 +112,7 @@ Route::middleware('guest')->group(function () {
 
 
 // Admin Blog Routes
-Route::middleware(['auth', 'admin'])->prefix('admin/blog')->name('admin.blog.')->group(function () {
+Route::middleware(['auth', 'role:admin|staff'])->prefix('admin/blog')->name('admin.blog.')->group(function () {
     Route::get('/', \App\Livewire\Admin\Blog\BlogIndex::class)->name('index');
     Route::get('/analytics', \App\Livewire\Admin\Blog\Analytics::class)->name('analytics');
     Route::get('/create', \App\Livewire\Admin\Blog\BlogForm::class)->name('create');
@@ -121,7 +121,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin/blog')->name('admin.blog.')-
     Route::get('/{slug}/preview', \App\Livewire\Page\BlogDetail::class)->name('preview');
 });
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'role:admin|staff'])->group(function () {
     Route::prefix('admin/listeners')->name('admin.listeners.')->group(function () {
         Route::get('/', \App\Livewire\Admin\Community\Placeholder::class)->name('index')
             ->defaults('title', 'Listeners')
@@ -200,7 +200,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 // Admin Event Routes
-Route::middleware(['auth', 'admin'])->prefix('admin/events')->name('admin.events.')->group(function () {
+Route::middleware(['auth', 'role:admin|staff'])->prefix('admin/events')->name('admin.events.')->group(function () {
     Route::get('/', AdminEventIndex::class)->name('index');
     Route::get('/create', AdminEventForm::class)->name('create');
     Route::get('/categories', AdminEventCategories::class)->name('categories');
@@ -227,8 +227,8 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 });
 
-// Admin-only routes
-Route::middleware(['auth', 'admin'])->group(function () {
+// Admin dashboard routes (role restricted inside)
+Route::middleware(['auth', 'role:admin|staff'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/admin/profile', AdminProfileForm::class)->name('admin.profile');
 
@@ -243,6 +243,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/podcasts', PodcastManage::class)->name('admin.podcasts.manage');
     Route::get('/admin/podcasts/analytics', PodcastAnalytics::class)->name('admin.podcasts.analytics');
 
+    Route::get('/admin/messages', AdminContactInbox::class)->name('admin.messages.inbox');
+    Route::get('/admin/comms-analytics', \App\Livewire\Admin\Analytics\CommsAnalytics::class)->name('admin.comms.analytics');
+
+    Route::middleware('role:admin')->group(function () {
     Route::prefix('admin/shows')->name('admin.shows.')->group(function () {
         Route::get('/', ShowManage::class)->name('index');
         Route::get('/create', AdminShowForm::class)->name('create');
@@ -297,9 +301,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/{adId}/edit', AdminAdsForm::class)->name('edit');
     });
 
-    Route::get('/admin/messages', AdminContactInbox::class)->name('admin.messages.inbox');
     Route::get('/admin/newsletter/subscribers', AdminNewsletterSubscriptions::class)->name('admin.newsletter.subscribers');
-    Route::get('/admin/comms-analytics', \App\Livewire\Admin\Analytics\CommsAnalytics::class)->name('admin.comms.analytics');
     Route::get('/admin/stream', AdminLiveStream::class)->name('admin.stream');
 
 
@@ -345,7 +347,5 @@ Route::get('/download-database', function () {
     return response()->download($filePath)->deleteFileAfterSend(true);
 });
 
-
-
-
+    });
 });

@@ -3,12 +3,19 @@
 return [
     [
         'group' => 'Main',
+        'roles' => ['admin', 'staff'],
         'items' => [
             [
                 'title' => 'Dashboard',
                 'icon' => 'fas fa-home',
                 'route' => 'dashboard',
                 'active' => 'dashboard'
+            ],
+            [
+                'title' => 'My Profile',
+                'icon' => 'fas fa-user-circle',
+                'route' => 'admin.profile',
+                'active' => 'admin.profile'
             ],
             [
                 'title' => 'Analytics',
@@ -42,6 +49,7 @@ return [
     ],
     [
         'group' => 'Content Management',
+        'roles' => ['admin', 'staff'],
         'items' => [
             [
                 'title' => 'News & Updates',
@@ -142,8 +150,107 @@ return [
             ],
         ]
     ],
+     [
+        'group' => 'Community',
+        'roles' => ['admin', 'staff'],
+        'items' => [
+            [
+                'title' => 'Listeners',
+                'icon' => 'fas fa-users',
+                'route' => 'admin.listeners.index',
+                'active' => 'admin.listeners.*',
+                'children' => [
+                    [
+                        'title' => 'All Listeners',
+                        'route' => 'admin.listeners.index',
+                        'active' => 'admin.listeners.index'
+                    ],
+                    [
+                        'title' => 'Demographics',
+                        'route' => 'admin.listeners.demographics',
+                        'active' => 'admin.listeners.demographics'
+                    ],
+                    [
+                        'title' => 'Feedback',
+                        'route' => 'admin.listeners.feedback',
+                        'active' => 'admin.listeners.feedback'
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Requests',
+                'icon' => 'fas fa-headphones',
+                'route' => 'admin.requests.songs',
+                'active' => 'admin.requests.*',
+                'children' => [
+                    [
+                        'title' => 'Song Requests',
+                        'route' => 'admin.requests.songs',
+                        'active' => 'admin.requests.songs'
+                    ],
+                    [
+                        'title' => 'Dedications',
+                        'route' => 'admin.requests.dedications',
+                        'active' => 'admin.requests.dedications'
+                    ],
+                    [
+                        'title' => 'Request Settings',
+                        'route' => 'admin.requests.settings',
+                        'active' => 'admin.requests.settings'
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Contests & Giveaways',
+                'icon' => 'fas fa-gift',
+                'route' => 'admin.contests.active',
+                'active' => 'admin.contests.*',
+                'children' => [
+                    [
+                        'title' => 'Active Contests',
+                        'route' => 'admin.contests.active',
+                        'active' => 'admin.contests.active'
+                    ],
+                    [
+                        'title' => 'Past Contests',
+                        'route' => 'admin.contests.past',
+                        'active' => 'admin.contests.past'
+                    ],
+                    [
+                        'title' => 'Winners',
+                        'route' => 'admin.contests.winners',
+                        'active' => 'admin.contests.winners'
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Messages',
+                'icon' => 'fas fa-comments',
+                'route' => 'admin.messages.inbox',
+                'active' => 'admin.messages.*',
+                'children' => [
+                    [
+                        'title' => 'Inbox',
+                        'route' => 'admin.messages.inbox',
+                        'active' => 'admin.messages.inbox'
+                    ],
+                    [
+                        'title' => 'Text Line',
+                        'route' => 'admin.messages.textline',
+                        'active' => 'admin.messages.textline'
+                    ],
+                    [
+                        'title' => 'Social Messages',
+                        'route' => 'admin.messages.social',
+                        'active' => 'admin.messages.social'
+                    ],
+                ]
+            ],
+        ]
+    ],
     [
         'group' => 'Broadcasting',
+        'roles' => ['admin'],
         'items' => [
             [
                 'title' => 'Live Stream',
@@ -259,105 +366,10 @@ return [
             ],
         ]
     ],
-    [
-        'group' => 'Community',
-        'items' => [
-            [
-                'title' => 'Listeners',
-                'icon' => 'fas fa-users',
-                'route' => 'admin.listeners.index',
-                'active' => 'admin.listeners.*',
-                'children' => [
-                    [
-                        'title' => 'All Listeners',
-                        'route' => 'admin.listeners.index',
-                        'active' => 'admin.listeners.index'
-                    ],
-                    [
-                        'title' => 'Demographics',
-                        'route' => 'admin.listeners.demographics',
-                        'active' => 'admin.listeners.demographics'
-                    ],
-                    [
-                        'title' => 'Feedback',
-                        'route' => 'admin.listeners.feedback',
-                        'active' => 'admin.listeners.feedback'
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Requests',
-                'icon' => 'fas fa-headphones',
-                'route' => 'admin.requests.songs',
-                'active' => 'admin.requests.*',
-                'children' => [
-                    [
-                        'title' => 'Song Requests',
-                        'route' => 'admin.requests.songs',
-                        'active' => 'admin.requests.songs'
-                    ],
-                    [
-                        'title' => 'Dedications',
-                        'route' => 'admin.requests.dedications',
-                        'active' => 'admin.requests.dedications'
-                    ],
-                    [
-                        'title' => 'Request Settings',
-                        'route' => 'admin.requests.settings',
-                        'active' => 'admin.requests.settings'
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Contests & Giveaways',
-                'icon' => 'fas fa-gift',
-                'route' => 'admin.contests.active',
-                'active' => 'admin.contests.*',
-                'children' => [
-                    [
-                        'title' => 'Active Contests',
-                        'route' => 'admin.contests.active',
-                        'active' => 'admin.contests.active'
-                    ],
-                    [
-                        'title' => 'Past Contests',
-                        'route' => 'admin.contests.past',
-                        'active' => 'admin.contests.past'
-                    ],
-                    [
-                        'title' => 'Winners',
-                        'route' => 'admin.contests.winners',
-                        'active' => 'admin.contests.winners'
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Messages',
-                'icon' => 'fas fa-comments',
-                'route' => 'admin.messages.inbox',
-                'active' => 'admin.messages.*',
-                'children' => [
-                    [
-                        'title' => 'Inbox',
-                        'route' => 'admin.messages.inbox',
-                        'active' => 'admin.messages.inbox'
-                    ],
-                    [
-                        'title' => 'Text Line',
-                        'route' => 'admin.messages.textline',
-                        'active' => 'admin.messages.textline'
-                    ],
-                    [
-                        'title' => 'Social Messages',
-                        'route' => 'admin.messages.social',
-                        'active' => 'admin.messages.social'
-                    ],
-                ]
-            ],
-        ]
-    ],
+   
     [
         'group' => 'Administrative Stuff',
+        'roles' => ['admin'],
         'items' => [
             [
                 'title' => 'Content Approvers',
@@ -365,12 +377,7 @@ return [
                 'route' => 'admin.approvals',
                 'active' => 'admin.approvals'
             ],
-            [
-                'title' => 'My Profile',
-                'icon' => 'fas fa-user-circle',
-                'route' => 'admin.profile',
-                'active' => 'admin.profile'
-            ],
+            
             [
                 'title' => 'Jingles & Ads',
                 'icon' => 'fas fa-bullhorn',
@@ -458,52 +465,7 @@ return [
                     ],
                 ]
             ],
-            [
-                'title' => 'Advertisers',
-                'icon' => 'fas fa-handshake',
-                'route' => '#',
-                'active' => 'advertisers*',
-                'children' => [
-                    [
-                        'title' => 'All Advertisers',
-                        'route' => '#',
-                        'active' => 'advertisers.index'
-                    ],
-                    [
-                        'title' => 'Campaigns',
-                        'route' => '#',
-                        'active' => 'advertisers.campaigns'
-                    ],
-                    [
-                        'title' => 'Invoices',
-                        'route' => '#',
-                        'active' => 'advertisers.invoices'
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Social Media',
-                'icon' => 'fas fa-share-alt',
-                'route' => '#',
-                'active' => 'social*',
-                'children' => [
-                    [
-                        'title' => 'Posts',
-                        'route' => '#',
-                        'active' => 'social.posts'
-                    ],
-                    [
-                        'title' => 'Schedule',
-                        'route' => '#',
-                        'active' => 'social.schedule'
-                    ],
-                    [
-                        'title' => 'Connected Accounts',
-                        'route' => '#',
-                        'active' => 'social.accounts'
-                    ],
-                ]
-            ],
+         
             [
                 'title' => 'Email Campaigns',
                 'icon' => 'fas fa-envelope',

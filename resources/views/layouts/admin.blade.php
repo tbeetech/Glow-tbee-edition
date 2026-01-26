@@ -37,13 +37,32 @@
 
             <!-- Scrollable Menu -->
             <nav class="flex-1 min-h-0 overflow-auto px-4 py-6 space-y-6">
+                @php
+                    $user = auth()->user();
+                @endphp
                 @foreach(config('menu') as $section)
+                    @php
+                        $sectionRoles = $section['roles'] ?? [];
+                        $showSection = empty($sectionRoles) || ($user && (
+                            (method_exists($user, 'hasAnyRole') && $user->hasAnyRole($sectionRoles)) ||
+                            (isset($user->role) && in_array($user->role, $sectionRoles, true))
+                        ));
+                    @endphp
+                    @continue(!$showSection)
                     <div>
                         <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                             {{ $section['group'] }}
                         </h3>
                         <div class="space-y-1">
                             @foreach($section['items'] as $item)
+                                @php
+                                    $itemRoles = $item['roles'] ?? [];
+                                    $showItem = empty($itemRoles) || ($user && (
+                                        (method_exists($user, 'hasAnyRole') && $user->hasAnyRole($itemRoles)) ||
+                                        (isset($user->role) && in_array($user->role, $itemRoles, true))
+                                    ));
+                                @endphp
+                                @continue(!$showItem)
                                 @if(isset($item['children']))
                                     <details class="group">
                                         <summary class="flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-colors duration-150 cursor-pointer">
