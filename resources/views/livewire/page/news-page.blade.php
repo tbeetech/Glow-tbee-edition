@@ -23,67 +23,82 @@
     </section>
 
     <!-- Featured News -->
-    @if($featuredNews)
+    @if($featuredHero)
         <section class="py-12 bg-white">
             <div class="container mx-auto px-4">
-                <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl overflow-hidden shadow-2xl">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                        <!-- Image -->
-                        <div class="relative h-96 lg:h-auto">
-                            <a href="{{ route('news.show', $featuredNews['slug']) }}">
-                                <img src="{{ $featuredNews['featured_image'] }}" alt="{{ $featuredNews['title'] }}"
-                                    class="w-full h-full object-cover">
-                            </a>
-                            <div class="absolute top-6 left-6">
-                                <span class="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-full shadow-lg">
-                                    <i class="fas fa-star mr-1"></i> FEATURED
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Content -->
-                        <div class="p-8 lg:p-12 text-white flex flex-col justify-center">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full">
-                                    {{ $featuredNews['category']['name'] }}
-                                </span>
-                                <span class="text-emerald-300 text-sm">
-                                    <i class="fas fa-clock mr-1"></i> {{ $featuredNews['read_time'] }}
-                                </span>
-                                <span class="text-emerald-300 text-sm">
-                                    <i class="fas fa-eye mr-1"></i> {{ number_format($featuredNews['views']) }} views
-                                </span>
-                            </div>
-
-                            <h2 class="text-3xl lg:text-4xl font-bold mb-4 leading-tight">
-                                <a href="{{ route('news.show', $featuredNews['slug']) }}" class="hover:text-emerald-200 transition-colors">
-                                    {{ $featuredNews['title'] }}
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Hero -->
+                    <div class="lg:col-span-2 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                            <div class="relative h-80 lg:h-auto">
+                                <a href="{{ route('news.show', $featuredHero['slug']) }}">
+                                    <img src="{{ $featuredHero['featured_image'] }}" alt="{{ $featuredHero['title'] }}"
+                                        class="w-full h-full object-cover">
                                 </a>
-                            </h2>
-
-                            <p class="text-gray-300 text-lg mb-6 leading-relaxed">{{ $featuredNews['excerpt'] }}</p>
-
-                            <div class="flex items-center space-x-4 mb-6">
-                                <a href="{{ url('/') }}" class="flex items-center space-x-4">
-                                    <img src="{{ $glowPosterLogo }}"
-                                        alt="{{ $glowPosterName }}"
-                                        class="w-12 h-12 rounded-full border-2 border-emerald-500 object-cover">
-                                </a>
-                                <div>
-                                    <a href="{{ url('/') }}" class="font-semibold hover:text-emerald-200 transition-colors">
-                                        {{ $glowPosterName }}
-                                    </a>
-                                    <p class="text-sm text-gray-400">
-                                        {{ \Carbon\Carbon::parse($featuredNews['published_at'])->format('M d, Y') }}</p>
+                                <div class="absolute top-6 left-6">
+                                    <span class="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-full shadow-lg">
+                                        <i class="fas fa-star mr-1"></i> HERO
+                                    </span>
                                 </div>
                             </div>
-
-                            <a href="/news/{{ $featuredNews['slug'] }}"
-                                class="inline-flex items-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-all duration-300 w-fit">
-                                <span>Read Full Story</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
+                            <div class="p-8 lg:p-10 text-white flex flex-col justify-center">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full">
+                                        {{ $featuredHero['category']['name'] }}
+                                    </span>
+                                    <span class="text-emerald-300 text-sm">
+                                        <i class="fas fa-clock mr-1"></i> {{ $featuredHero['read_time'] }}
+                                    </span>
+                                    <span class="text-emerald-300 text-sm">
+                                        <i class="fas fa-eye mr-1"></i> {{ number_format($featuredHero['views']) }} views
+                                    </span>
+                                </div>
+                                <h2 class="text-3xl lg:text-4xl font-bold mb-4 leading-tight">
+                                    <a href="{{ route('news.show', $featuredHero['slug']) }}" class="hover:text-emerald-200 transition-colors">
+                                        {{ $featuredHero['title'] }}
+                                    </a>
+                                </h2>
+                                <p class="text-gray-300 text-lg mb-6 leading-relaxed">{{ $featuredHero['excerpt'] }}</p>
+                                <a href="/news/{{ $featuredHero['slug'] }}"
+                                    class="inline-flex items-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full transition-all duration-300 w-fit">
+                                    <span>Read Full Story</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Secondary -->
+                    <div class="space-y-6">
+                        @foreach($featuredSecondary as $secondary)
+                            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group border border-gray-100">
+                                <div class="relative h-44 overflow-hidden">
+                                    <a href="{{ route('news.show', $secondary['slug']) }}">
+                                        <img src="{{ $secondary['featured_image'] }}" alt="{{ $secondary['title'] }}"
+                                            class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                                    </a>
+                                    <div class="absolute top-3 left-3">
+                                        <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full">
+                                            SECONDARY
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex items-center space-x-3 text-xs text-gray-500 mb-2">
+                                        <span class="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-full">
+                                            {{ $secondary['category']['name'] }}
+                                        </span>
+                                        <span><i class="fas fa-clock mr-1"></i>{{ $secondary['read_time'] }}</span>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                                        <a href="{{ route('news.show', $secondary['slug']) }}" class="hover:text-emerald-600 transition-colors">
+                                            {{ $secondary['title'] }}
+                                        </a>
+                                    </h3>
+                                    <p class="text-sm text-gray-600 line-clamp-2">{{ $secondary['excerpt'] }}</p>
+                                </div>
+                            </article>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -133,6 +148,31 @@
                             @endforeach
                         </div>
                     </div>
+
+                    @if(count($featuredSidebar) > 0)
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-star text-emerald-600 mr-2"></i>
+                                Featured Picks
+                            </h3>
+                            <div class="space-y-4">
+                                @foreach($featuredSidebar as $sidebarItem)
+                                    <a href="{{ route('news.show', $sidebarItem['slug']) }}" class="flex items-start space-x-3 group">
+                                        <img src="{{ $sidebarItem['featured_image'] }}" alt="{{ $sidebarItem['title'] }}"
+                                            class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+                                        <div class="flex-1">
+                                            <h4 class="text-sm font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">
+                                                {{ $sidebarItem['title'] }}
+                                            </h4>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                <i class="fas fa-clock mr-1"></i> {{ $sidebarItem['read_time'] }}
+                                            </p>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Trending News -->
                     <div class="bg-white rounded-2xl shadow-lg p-6">

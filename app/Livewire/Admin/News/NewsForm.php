@@ -30,7 +30,7 @@ class NewsForm extends Component
     public $new_category_description = '';
     public $is_published = false;
     public $is_featured = false;
-    public $featured_position = 'none';
+    public $featured_position = 'hero';
     public $published_at = '';
     public $meta_description = '';
     public $meta_keywords = '';
@@ -91,7 +91,7 @@ class NewsForm extends Component
         $this->category_choice = $this->news->category_id;
         $this->is_published = $this->news->is_published;
         $this->is_featured = $this->news->is_featured;
-        $this->featured_position = $this->news->featured_position ?? 'none';
+        $this->featured_position = $this->news->featured_position ?: ($this->news->is_featured ? 'hero' : 'none');
         $this->published_at = $this->news->published_at ? 
             $this->news->published_at->format('Y-m-d\TH:i') : '';
         $this->meta_description = $this->news->meta_description;
@@ -165,6 +165,20 @@ class NewsForm extends Component
             $tagsArray = array_map('trim', explode(',', $this->tags));
         }
 
+        $featuredPosition = $this->featured_position ?: 'hero';
+        $isFeatured = $this->is_featured;
+
+        if (!$this->canFeature()) {
+            $isFeatured = false;
+            $featuredPosition = 'none';
+        }
+
+        if (!$isFeatured) {
+            $featuredPosition = 'none';
+        } elseif ($featuredPosition === 'none') {
+            $featuredPosition = 'hero';
+        }
+
         return [
             'title' => $this->title,
             'slug' => $this->slug ?: Str::slug($this->title),
@@ -173,8 +187,8 @@ class NewsForm extends Component
             'featured_image' => $imagePath,
             'category_id' => $this->category_id,
             'is_published' => $this->is_published,
-            'is_featured' => $this->is_featured,
-            'featured_position' => $this->featured_position ?? 'none',
+            'is_featured' => $isFeatured,
+            'featured_position' => $featuredPosition,
             'published_at' => $this->is_published && $this->published_at ? 
                 $this->published_at : null,
             'meta_description' => $this->meta_description,
@@ -183,6 +197,34 @@ class NewsForm extends Component
             'breaking' => $this->breaking,
             'breaking_until' => $this->breaking_until ?: null,
         ];
+    }
+
+    public function updatedIsFeatured($value)
+    {
+        if (!$this->canFeature()) {
+            $this->is_featured = false;
+            $this->featured_position = 'none';
+            return;
+        }
+
+        if ($value && $this->featured_position === 'none') {
+            $this->featured_position = 'hero';
+        }
+    }
+
+    public function canFeature(): bool
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        $approverIds = \App\Models\Setting::get('content_approvers.ids', []);
+        return $user->staffMember && in_array($user->staffMember->id, $approverIds, true);
     }
 
     public function createCategory()

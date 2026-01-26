@@ -297,33 +297,38 @@
                 <!-- Settings Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Settings</h3>
+                    @php
+                        $canFeature = $this->canFeature();
+                    @endphp
                     
-                    <!-- Featured Toggle -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-3">
-                        <div>
-                            <p class="font-medium text-gray-900">Featured Article</p>
-                            <p class="text-sm text-gray-600">Show on homepage</p>
+                    @if($canFeature)
+                        <!-- Featured Toggle -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-3">
+                            <div>
+                                <p class="font-medium text-gray-900">Featured Article</p>
+                                <p class="text-sm text-gray-600">Show on homepage</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" 
+                                       wire:model="is_featured"
+                                       class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
                         </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" 
-                                   wire:model="is_featured"
-                                   class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                        </label>
-                    </div>
-                    <div class="mb-3">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Featured Placement
-                        </label>
-                        <select wire:model="featured_position"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors">
-                            <option value="none">None</option>
-                            <option value="hero">Hero</option>
-                            <option value="secondary">Secondary</option>
-                            <option value="sidebar">Sidebar</option>
-                        </select>
-                    </div>
-
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Featured Placement
+                            </label>
+                            <select wire:model="featured_position"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors">
+                                <option value="hero">Hero</option>
+                                <option value="secondary">Secondary</option>
+                                <option value="sidebar">Sidebar</option>
+                                <option value="none">None</option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">Default is hero when featuring.</p>
+                        </div>
+                    @endif
                     <!-- Breaking News -->
                     <div class="mb-3">
                         <label class="block text-sm font-medium text-gray-700 mb-2">

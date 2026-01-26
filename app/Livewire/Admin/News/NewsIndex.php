@@ -220,6 +220,11 @@ class NewsIndex extends Component
             }
             
             $news->is_featured = !$news->is_featured;
+            if ($news->is_featured && ($news->featured_position === 'none' || !$news->featured_position)) {
+                $news->featured_position = 'hero';
+            } elseif (!$news->is_featured) {
+                $news->featured_position = 'none';
+            }
             $news->save();
             
             session()->flash('success', 'Featured status updated successfully!');
@@ -240,6 +245,10 @@ class NewsIndex extends Component
 
         if (!$this->canManageNews($news)) {
             session()->flash('error', 'You do not have permission to update this article.');
+            return;
+        }
+
+        if (!in_array($placement, ['none', 'hero', 'secondary', 'sidebar'], true)) {
             return;
         }
 

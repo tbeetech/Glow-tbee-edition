@@ -65,15 +65,82 @@ class NewsPage extends Component
         return $query->paginate(9);
     }
 
-    public function getFeaturedNewsProperty()
+    public function getFeaturedHeroProperty()
     {
-        $news = News::with(['category', 'author'])
+        $query = News::with(['category', 'author'])
             ->published()
-            ->featured()
+            ->featured();
+
+        $hero = (clone $query)
+            ->where('featured_position', 'hero')
             ->latest('published_at')
             ->first();
-            
-        return $news ? $this->formatNewsItem($news) : null;
+
+        if (!$hero) {
+            $hero = (clone $query)->latest('published_at')->first();
+        }
+
+        return $hero ? $this->formatNewsItem($hero) : null;
+    }
+
+    public function getFeaturedSecondaryProperty()
+    {
+        $query = News::with(['category', 'author'])
+            ->published()
+            ->featured();
+
+        $secondary = $query->where('featured_position', 'secondary')
+            ->latest('published_at')
+            ->take(2)
+            ->get();
+
+        if ($secondary->count() < 2) {
+            $excludeIds = $secondary->pluck('id')->toArray();
+            if ($this->featuredHero) {
+                $excludeIds[] = $this->featuredHero['id'];
+            }
+
+            $fallback = News::with(['category', 'author'])
+                ->published()
+                ->featured()
+                ->whereNotIn('id', $excludeIds)
+                ->latest('published_at')
+                ->take(2 - $secondary->count())
+                ->get();
+
+            $secondary = $secondary->concat($fallback);
+        }
+
+        return $secondary->map(fn ($news) => $this->formatNewsItem($news));
+    }
+
+    public function getFeaturedSidebarProperty()
+    {
+        $query = News::with(['category', 'author'])
+            ->published()
+            ->featured();
+
+        $sidebar = $query->where('featured_position', 'sidebar')
+            ->latest('published_at')
+            ->take(4)
+            ->get();
+
+        if ($sidebar->isEmpty()) {
+            $excludeIds = $this->featuredSecondary->pluck('id')->toArray();
+            if ($this->featuredHero) {
+                $excludeIds[] = $this->featuredHero['id'];
+            }
+
+            $sidebar = News::with(['category', 'author'])
+                ->published()
+                ->featured()
+                ->whereNotIn('id', $excludeIds)
+                ->latest('published_at')
+                ->take(4)
+                ->get();
+        }
+
+        return $sidebar->map(fn ($news) => $this->formatNewsItem($news));
     }
 
     public function getBreakingNewsProperty()
@@ -121,7 +188,9 @@ class NewsPage extends Component
     {
         return view('livewire.page.news-page', [
             'newsArticles' => $this->newsArticles,
-            'featuredNews' => $this->featuredNews,
+            'featuredHero' => $this->featuredHero,
+            'featuredSecondary' => $this->featuredSecondary,
+            'featuredSidebar' => $this->featuredSidebar,
             'breakingNews' => $this->breakingNews,
             'trendingNews' => $this->trendingNews,
             'categories' => $this->categories->map(function ($cat) {
