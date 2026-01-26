@@ -56,7 +56,7 @@ class OapForm extends Component
                 Rule::unique('oaps', 'staff_member_id')->ignore($this->oapId),
             ],
             'name' => 'required|min:3|max:255',
-            'bio' => 'required|min:10',
+            'bio' => 'nullable|min:10',
             'profile_photo' => 'nullable|url',
             'profile_photo_upload' => 'nullable|image|max:5120',
             'voice_sample_url' => 'nullable|url',

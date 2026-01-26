@@ -227,7 +227,7 @@
                                 <p class="text-xs text-gray-500 mt-0.5">{{ auth()->user()->email ?? 'admin@glowfm.com' }}</p>
                             </div>
                             <div class="py-2">
-                                <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <a href="{{ route('admin.profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                     <i class="fas fa-user w-5"></i>
                                     <span class="ml-2">My Profile</span>
                                 </a>

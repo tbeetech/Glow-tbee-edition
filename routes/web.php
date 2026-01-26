@@ -60,6 +60,7 @@ use App\Livewire\Admin\Users\Form as AdminUsersForm;
 use App\Livewire\Admin\Ads\Index as AdminAdsIndex;
 use App\Livewire\Admin\Ads\Form as AdminAdsForm;
 use App\Livewire\Admin\Approvals\ApproverSettings;
+use App\Livewire\Admin\Profile\ProfileForm as AdminProfileForm;
 
 use App\Livewire\Admin\Show\Manage as ShowManage;
 use App\Livewire\Admin\Show\ShowForm as AdminShowForm;
@@ -229,6 +230,7 @@ Route::middleware('auth')->group(function () {
 // Admin-only routes
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/admin/profile', AdminProfileForm::class)->name('admin.profile');
 
     // Admin News Routes
     Route::prefix('admin/news')->name('admin.news.')->group(function () {

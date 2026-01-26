@@ -366,6 +366,12 @@ return [
                 'active' => 'admin.approvals'
             ],
             [
+                'title' => 'My Profile',
+                'icon' => 'fas fa-user-circle',
+                'route' => 'admin.profile',
+                'active' => 'admin.profile'
+            ],
+            [
                 'title' => 'Jingles & Ads',
                 'icon' => 'fas fa-bullhorn',
                 'route' => 'admin.ads.index',
