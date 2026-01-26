@@ -51,8 +51,15 @@
                                     {{ $user->is_active ? 'Active' : 'Inactive' }}
                                 </button>
                             </td>
-                            <td class="px-6 py-4 text-right text-sm">
+                            <td class="px-6 py-4 text-right text-sm space-x-3">
                                 <a href="{{ route('admin.users.edit', $user->id) }}" class="text-emerald-600 hover:text-emerald-800">Edit</a>
+                                <button
+                                    wire:click="deleteUser({{ $user->id }})"
+                                    onclick="return confirm('Delete this user? This cannot be undone.') || event.stopImmediatePropagation()"
+                                    class="text-red-600 hover:text-red-800"
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     @empty

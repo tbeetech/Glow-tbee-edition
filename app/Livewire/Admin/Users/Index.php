@@ -33,6 +33,21 @@ class Index extends Component
         session()->flash('success', 'User status updated.');
     }
 
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === auth()->id()) {
+            session()->flash('error', 'You cannot delete your own account.');
+            return;
+        }
+
+        $user->delete();
+
+        session()->flash('success', 'User deleted successfully.');
+        $this->resetPage();
+    }
+
     public function getUsersProperty()
     {
         return User::query()
