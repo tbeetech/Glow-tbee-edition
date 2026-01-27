@@ -7,6 +7,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Glow FM 99.1 - Your Voice, Your Music' }}</title>
     <meta name="google-adsense-account" content="ca-pub-3970534274644088">
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SEVJRFYBL8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SEVJRFYBL8');
+</script>
     
     @php
         $stationSettings = \App\Models\Setting::get('station', []);
