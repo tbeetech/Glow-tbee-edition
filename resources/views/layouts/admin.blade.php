@@ -115,6 +115,21 @@
                         </p>
                     </div>
                 </div>
+                <div class="mt-3 px-3 py-2 bg-gray-50 rounded-lg text-xs text-gray-600 flex items-center justify-between"
+                     x-data="{
+                        now: '',
+                        init() {
+                            const format = () => {
+                                const d = new Date();
+                                this.now = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                            };
+                            format();
+                            setInterval(format, 1000);
+                        }
+                     }">
+                    <span class="font-medium text-gray-700">Current Time</span>
+                    <span class="tabular-nums" x-text="now"></span>
+                </div>
             </div>
         </aside>
 

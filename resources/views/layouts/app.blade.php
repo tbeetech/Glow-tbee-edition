@@ -177,6 +177,20 @@
                             <span class="font-medium" x-text="audioPlaying ? 'LIVE STREAMING' : '{{ $streamIsLive ? 'LIVE NOW' : 'OFFLINE' }}'"></span>
                             <span class="text-emerald-200">•</span>
                             <span class="font-medium">{{ $streamShowName }}</span>
+                            <span class="text-emerald-200">•</span>
+                            <span class="font-medium tabular-nums"
+                                  x-data="{
+                                    now: '',
+                                    init() {
+                                        const format = () => {
+                                            const d = new Date();
+                                            this.now = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        };
+                                        format();
+                                        setInterval(format, 1000);
+                                    }
+                                  }"
+                                  x-text="now"></span>
                         </span>
                         <div class="flex items-center space-x-3">
                             <a href="{{ data_get($stationSocials, 'facebook', '#') }}" class="hover:text-emerald-100 transition-colors" aria-label="Facebook">
