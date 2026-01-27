@@ -59,6 +59,74 @@ class ShowPage extends Component
             case 'latest':
                 $query->latest();
                 break;
+            case 'title_asc':
+                $query->orderBy('title');
+                break;
+            case 'title_desc':
+                $query->orderBy('title', 'desc');
+                break;
+            case 'duration_asc':
+                $query->orderBy('typical_duration');
+                break;
+            case 'duration_desc':
+                $query->orderBy('typical_duration', 'desc');
+                break;
+            case 'format_asc':
+                $query->orderBy('format');
+                break;
+            case 'format_desc':
+                $query->orderBy('format', 'desc');
+                break;
+            case 'category_asc':
+            case 'category_desc':
+                $query->leftJoin('show_categories', 'shows.category_id', '=', 'show_categories.id')
+                    ->select('shows.*');
+                if ($this->sortBy === 'category_asc') {
+                    $query->orderBy('show_categories.name');
+                } else {
+                    $query->orderBy('show_categories.name', 'desc');
+                }
+                break;
+            case 'host_asc':
+            case 'host_desc':
+                $query->leftJoin('oaps', 'shows.primary_host_id', '=', 'oaps.id')
+                    ->select('shows.*')
+                    ->orderByRaw('oaps.name is null');
+                if ($this->sortBy === 'host_asc') {
+                    $query->orderBy('oaps.name');
+                } else {
+                    $query->orderBy('oaps.name', 'desc');
+                }
+                break;
+            case 'day_asc':
+            case 'day_desc':
+                $dayOrder = "case schedule_slots.day_of_week
+                    when 'monday' then 1
+                    when 'tuesday' then 2
+                    when 'wednesday' then 3
+                    when 'thursday' then 4
+                    when 'friday' then 5
+                    when 'saturday' then 6
+                    when 'sunday' then 7
+                    else 99 end";
+                $slotSub = \App\Models\Show\ScheduleSlot::select('show_id')
+                    ->selectRaw("min($dayOrder) as min_day_order")
+                    ->selectRaw('min(start_time) as min_start_time')
+                    ->where('status', 'active')
+                    ->groupBy('show_id');
+                $query->leftJoinSub($slotSub, 'slot_sort', function ($join) {
+                        $join->on('shows.id', '=', 'slot_sort.show_id');
+                    })
+                    ->select('shows.*')
+                    ->orderByRaw('slot_sort.min_day_order is null');
+                if ($this->sortBy === 'day_asc') {
+                    $query->orderBy('slot_sort.min_day_order')
+                        ->orderBy('slot_sort.min_start_time');
+                } else {
+                    $query->orderBy('slot_sort.min_day_order', 'desc')
+                        ->orderBy('slot_sort.min_start_time', 'desc');
+                }
+                break;
             default:
                 $query->orderBy('is_featured', 'desc')->orderBy('title');
         }

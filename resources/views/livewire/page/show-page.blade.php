@@ -110,6 +110,18 @@
                             <option value="featured">Featured</option>
                             <option value="latest">Latest</option>
                             <option value="popular">Most Listened</option>
+                            <option value="title_asc">Title (A–Z)</option>
+                            <option value="title_desc">Title (Z–A)</option>
+                            <option value="host_asc">Host (A–Z)</option>
+                            <option value="host_desc">Host (Z–A)</option>
+                            <option value="day_asc">Day & Time (Earliest)</option>
+                            <option value="day_desc">Day & Time (Latest)</option>
+                            <option value="duration_asc">Duration (Shortest)</option>
+                            <option value="duration_desc">Duration (Longest)</option>
+                            <option value="category_asc">Category (A–Z)</option>
+                            <option value="category_desc">Category (Z–A)</option>
+                            <option value="format_asc">Format (A–Z)</option>
+                            <option value="format_desc">Format (Z–A)</option>
                         </select>
                     </div>
 

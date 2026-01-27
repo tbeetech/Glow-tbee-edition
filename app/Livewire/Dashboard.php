@@ -27,6 +27,7 @@ class Dashboard extends Component
     public $currentShow = null;
     public $nowPlayingProgress = 0;
     public $recentReviews = [];
+    public $todaySchedule = [];
 
     public function mount()
     {
@@ -143,9 +144,9 @@ class Dashboard extends Component
 
         if ($currentSlot) {
             $this->currentShow = [
-                'title' => $currentSlot->show?->title ?? 'Untitled Show',
-                'host' => $currentSlot->oap?->name ?? 'TBA',
-                'time' => $currentSlot->time_range,
+                'title' => $currentSlot->show?->title ?? 'Unknown',
+                'host' => $currentSlot->oap?->name ?? 'Unknown',
+                'time' => $currentSlot->time_range ?? 'Unknown',
                 'status' => 'On Air',
             ];
 
@@ -156,11 +157,15 @@ class Dashboard extends Component
             $this->nowPlayingProgress = $total > 0 ? min(100, max(0, ($elapsed / $total) * 100)) : 0;
         } else {
             $stream = Setting::get('stream', []);
+            $streamShowName = $stream['show_name'] ?? null;
+            $streamShowHost = $stream['show_host'] ?? ($stream['now_playing_artist'] ?? null);
+            $streamShowTime = $stream['show_time'] ?? null;
+            $programIsUnknown = empty($streamShowName);
             $this->currentShow = [
-                'title' => $stream['show_name'] ?? 'Show not scheduled',
-                'host' => $stream['now_playing_artist'] ?? 'Host not set',
-                'time' => $stream['show_time'] ?? 'Time not set',
-                'status' => ($stream['is_live'] ?? false) ? 'Live' : 'Offline',
+                'title' => $streamShowName ?: 'Unknown',
+                'host' => $streamShowHost ?: 'Unknown',
+                'time' => $streamShowTime ?: 'Unknown',
+                'status' => $programIsUnknown ? 'Unknown' : (($stream['is_live'] ?? false) ? 'Live' : 'Offline'),
             ];
             $this->nowPlayingProgress = 0;
         }
@@ -175,9 +180,30 @@ class Dashboard extends Component
             ->get()
             ->map(function ($slot) {
                 return [
-                    'title' => $slot->show?->title ?? 'Untitled Show',
-                    'host' => $slot->oap?->name ?? 'TBA',
-                    'time' => $slot->time_range,
+                    'title' => $slot->show?->title ?? 'Unknown',
+                    'host' => $slot->oap?->name ?? 'Unknown',
+                    'time' => $slot->time_range ?? 'Unknown',
+                ];
+            })
+            ->values()
+            ->all();
+
+        $this->todaySchedule = ScheduleSlot::query()
+            ->with(['show', 'oap'])
+            ->active()
+            ->forDay($day)
+            ->orderBy('start_time')
+            ->get()
+            ->filter(function ($slot) use ($now) {
+                return $slot->isActiveOn($now);
+            })
+            ->map(function ($slot) use ($time) {
+                $isCurrent = $slot->start_time <= $time && $slot->end_time > $time;
+                return [
+                    'title' => $slot->show?->title ?? 'Unknown',
+                    'host' => $slot->oap?->name ?? 'Unknown',
+                    'time' => $slot->time_range ?? 'Unknown',
+                    'status' => $isCurrent ? 'On Air' : 'Upcoming',
                 ];
             })
             ->values()

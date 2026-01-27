@@ -85,11 +85,11 @@
                 <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg flex items-center justify-center">
                     <i class="fas fa-microphone-alt text-white text-3xl"></i>
                 </div>
-                <h4 class="text-xl font-bold text-gray-900 mb-1">{{ $currentShow['title'] ?? 'No show scheduled' }}</h4>
-                <p class="text-sm text-gray-600 mb-2">{{ $currentShow['host'] ?? 'Host not set' }}</p>
+                <h4 class="text-xl font-bold text-gray-900 mb-1">{{ $currentShow['title'] ?? 'Unknown' }}</h4>
+                <p class="text-sm text-gray-600 mb-2">{{ $currentShow['host'] ?? 'Unknown' }}</p>
                 <span class="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
                     <i class="fas fa-clock mr-1"></i>
-                    {{ $currentShow['time'] ?? 'Time not set' }}
+                    {{ $currentShow['time'] ?? 'Unknown' }}
                 </span>
             </div>
 
@@ -174,6 +174,36 @@
                 <a href="{{ route('admin.news.index') }}" class="w-full mt-6 py-2 px-4 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 rounded-lg transition-colors duration-150 inline-flex items-center justify-center">
                     Manage News
                 </a>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Today's Schedule</h3>
+                    <a href="{{ route('admin.shows.schedule') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                        View Schedule
+                    </a>
+                </div>
+
+                <div class="space-y-3">
+                    @forelse($todaySchedule as $slot)
+                        <div class="flex items-start justify-between gap-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ $slot['title'] ?? 'Unknown' }}</p>
+                                <p class="text-xs text-gray-600 truncate">{{ $slot['host'] ?? 'Unknown' }}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    {{ $slot['time'] ?? 'Unknown' }}
+                                </p>
+                            </div>
+                            <span class="text-[11px] font-semibold px-2 py-1 rounded-full {{ ($slot['status'] ?? '') === 'On Air' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $slot['status'] ?? 'Unknown' }}
+                            </span>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500">No programs scheduled for today.</p>
+                    @endforelse
+                </div>
             </div>
 
             <!-- Show Performance -->

@@ -140,7 +140,28 @@
         $streamStatusMessage = data_get($streamSettings, 'status_message', 'Broadcasting live now');
         $streamTitle = data_get($streamSettings, 'now_playing_title', 'Blinding Lights');
         $streamArtist = data_get($streamSettings, 'now_playing_artist', 'The Weeknd');
-        $streamShowName = data_get($streamSettings, 'show_name', 'Morning Vibes');
+        $streamShowName = data_get($streamSettings, 'show_name');
+        $streamShowHost = data_get($streamSettings, 'show_host');
+        $streamShowTime = data_get($streamSettings, 'show_time');
+        $now = now();
+        $day = strtolower($now->format('l'));
+        $time = $now->format('H:i:s');
+        $currentSlot = \App\Models\Show\ScheduleSlot::query()
+            ->with(['show', 'oap'])
+            ->active()
+            ->forDay($day)
+            ->where('start_time', '<=', $time)
+            ->where('end_time', '>', $time)
+            ->orderBy('start_time', 'desc')
+            ->first();
+
+        if ($currentSlot && !$currentSlot->isActiveOn($now)) {
+            $currentSlot = null;
+        }
+
+        $currentProgramTitle = $currentSlot?->show?->title ?: ($streamShowName ?: 'Unknown');
+        $currentProgramHost = $currentSlot?->oap?->name ?: ($streamShowHost ?: ($streamArtist ?: 'Unknown'));
+        $currentProgramTime = $currentSlot?->time_range ?: ($streamShowTime ?: 'Unknown');
         $recentShows = \App\Models\Show\Show::active()
             ->latest('created_at')
             ->take(3)
@@ -176,7 +197,7 @@
                             </span>
                             <span class="font-medium" x-text="audioPlaying ? 'LIVE STREAMING' : '{{ $streamIsLive ? 'LIVE NOW' : 'OFFLINE' }}'"></span>
                             <span class="text-emerald-200">•</span>
-                            <span class="font-medium">{{ $streamShowName }}</span>
+                            <span class="font-medium">{{ $currentProgramTitle }}</span>
                             <span class="text-emerald-200">•</span>
                             <span class="font-medium tabular-nums"
                                   x-data="{
@@ -793,7 +814,15 @@
                         <p class="text-xs text-gray-400 truncate">{{ $streamArtist }}</p>
                         <div class="flex items-center space-x-2 mt-1">
                             <i class="fas fa-microphone text-emerald-400 text-xs"></i>
-                            <span class="text-xs text-gray-400">{{ $streamShowName }}</span>
+                            <span class="text-xs text-gray-400 truncate">{{ $currentProgramTitle }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <i class="fas fa-user text-emerald-400 text-[10px]"></i>
+                            <span class="text-[11px] text-gray-400 truncate">{{ $currentProgramHost }}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <i class="fas fa-clock text-emerald-400 text-[10px]"></i>
+                            <span class="text-[11px] text-gray-400">{{ $currentProgramTime }}</span>
                         </div>
                     </div>
                     <div class="flex items-end space-x-1" x-show="audioPlaying">
