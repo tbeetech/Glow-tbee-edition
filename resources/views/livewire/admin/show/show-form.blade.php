@@ -135,10 +135,19 @@
                     <p class="text-xs text-red-600">Upload failed. Try a smaller image or a different format.</p>
                 </div>
                 @error('cover_image') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                @if ($cover_image)
+                @php
+                    $coverImageIsPreviewable = false;
+                    if ($cover_image) {
+                        $coverImageExtension = strtolower($cover_image->getClientOriginalExtension() ?: $cover_image->extension());
+                        $coverImageIsPreviewable = !in_array($coverImageExtension, ['avif'], true);
+                    }
+                @endphp
+                @if ($cover_image && $coverImageIsPreviewable)
                     <img src="{{ $cover_image->temporaryUrl() }}" alt="Cover preview"
                         class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
                     <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
+                @elseif ($cover_image)
+                    <p class="mt-3 text-xs text-gray-500">Preview not available for this file type.</p>
                 @endif
                 <input type="url" wire:model.live.debounce.300ms="cover_url" placeholder="https://example.com/image.jpg"
                     class="mt-3 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">

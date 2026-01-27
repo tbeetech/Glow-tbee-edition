@@ -290,6 +290,17 @@
 
             <!-- Main Content -->
             <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                @if (session()->has('error'))
+                    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <p class="font-semibold">Please fix the errors below.</p>
+                        <p class="mt-1">{{ $errors->first() }}</p>
+                    </div>
+                @endif
                 {{ $slot }}
             </main>
         </div>

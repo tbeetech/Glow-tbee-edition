@@ -876,6 +876,19 @@
 
     <audio x-ref="liveAudio" src="{{ $stationStreamUrl }}" preload="none"></audio>
 
+    @if ($errors->any())
+        @php
+            $errorCount = $errors->count();
+        @endphp
+        <div class="fixed bottom-4 left-4 z-50 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm">
+            <p class="text-sm font-semibold">Please check the form.</p>
+            <p class="text-xs mt-1">{{ $errors->first() }}</p>
+            @if ($errorCount > 1)
+                <p class="text-[11px] mt-1 opacity-90">+{{ $errorCount - 1 }} more</p>
+            @endif
+        </div>
+    @endif
+
     @if (session()->has('newsletter_success'))
         <div class="fixed bottom-4 left-4 z-50 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg">
             {{ session('newsletter_success') }}

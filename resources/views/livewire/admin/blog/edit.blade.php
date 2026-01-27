@@ -289,12 +289,21 @@
                         </div>
                         @error('featured_image') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
 
-                        @if ($featured_image)
+                        @php
+                            $featuredImageIsPreviewable = false;
+                            if ($featured_image) {
+                                $featuredImageExtension = strtolower($featured_image->getClientOriginalExtension() ?: $featured_image->extension());
+                                $featuredImageIsPreviewable = !in_array($featuredImageExtension, ['avif'], true);
+                            }
+                        @endphp
+                        @if ($featured_image && $featuredImageIsPreviewable)
                             <div class="mt-3">
                                 <img src="{{ $featured_image->temporaryUrl() }}"
                                     class="w-full h-48 object-cover rounded-lg">
                             </div>
                             <p class="mt-1 text-xs text-purple-600">Upload ready.</p>
+                        @elseif ($featured_image)
+                            <p class="mt-3 text-xs text-gray-500">Preview not available for this file type.</p>
                         @endif
                     </div>
 

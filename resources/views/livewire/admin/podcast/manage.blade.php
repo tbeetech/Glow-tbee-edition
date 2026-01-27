@@ -455,10 +455,19 @@
                                 </div>
                                 @error('show_cover') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                                 
-                                @if($show_cover)
+                                @php
+                                    $showCoverIsPreviewable = false;
+                                    if ($show_cover) {
+                                        $showCoverExtension = strtolower($show_cover->getClientOriginalExtension() ?: $show_cover->extension());
+                                        $showCoverIsPreviewable = !in_array($showCoverExtension, ['avif'], true);
+                                    }
+                                @endphp
+                                @if($show_cover && $showCoverIsPreviewable)
                                 <div class="mt-3">
                                     <img src="{{ $show_cover->temporaryUrl() }}" class="w-48 h-48 object-cover rounded-lg">
                                 </div>
+                                @elseif($show_cover)
+                                <p class="mt-3 text-xs text-gray-500">Preview not available for this file type.</p>
                                 @elseif($show_cover_url)
                                 <div class="mt-3">
                                     <img src="{{ $show_cover_url }}" class="w-48 h-48 object-cover rounded-lg">
@@ -749,10 +758,19 @@
         </div>
         @error('episode_cover') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         
-        @if($episode_cover)
+        @php
+            $episodeCoverIsPreviewable = false;
+            if ($episode_cover) {
+                $episodeCoverExtension = strtolower($episode_cover->getClientOriginalExtension() ?: $episode_cover->extension());
+                $episodeCoverIsPreviewable = !in_array($episodeCoverExtension, ['avif'], true);
+            }
+        @endphp
+        @if($episode_cover && $episodeCoverIsPreviewable)
         <div class="mt-3">
             <img src="{{ $episode_cover->temporaryUrl() }}" class="w-48 h-48 object-cover rounded-lg">
         </div>
+        @elseif($episode_cover)
+        <p class="mt-3 text-xs text-gray-500">Preview not available for this file type.</p>
         @elseif($existing_episode_cover)
         <div class="mt-3">
             <img src="{{ $existing_episode_cover }}" class="w-48 h-48 object-cover rounded-lg">

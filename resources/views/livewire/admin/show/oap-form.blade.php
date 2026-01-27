@@ -82,10 +82,19 @@
                     <p class="text-xs text-red-600">Upload failed. Try a smaller image or a different format.</p>
                 </div>
                 @error('profile_photo_upload') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                @if ($profile_photo_upload)
+                @php
+                    $profilePhotoIsPreviewable = false;
+                    if ($profile_photo_upload) {
+                        $profilePhotoExtension = strtolower($profile_photo_upload->getClientOriginalExtension() ?: $profile_photo_upload->extension());
+                        $profilePhotoIsPreviewable = !in_array($profilePhotoExtension, ['avif'], true);
+                    }
+                @endphp
+                @if ($profile_photo_upload && $profilePhotoIsPreviewable)
                     <img src="{{ $profile_photo_upload->temporaryUrl() }}" alt="Profile preview"
                         class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
                     <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
+                @elseif ($profile_photo_upload)
+                    <p class="mt-3 text-xs text-gray-500">Preview not available for this file type.</p>
                 @endif
                 <input type="url" wire:model.live.debounce.300ms="profile_photo" placeholder="https://example.com/photo.jpg"
                     class="mt-3 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">

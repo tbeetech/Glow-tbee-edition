@@ -228,10 +228,10 @@ class Manage extends Component
     private function saveShow()
     {
         $this->validate([
-            'show_title' => 'required|min:3|max:255',
-            'show_description' => 'required|min:10',
-            'show_host_name' => 'required',
-            'show_category' => 'required',
+            'show_title' => 'nullable|min:3|max:255',
+            'show_description' => 'nullable|min:10',
+            'show_host_name' => 'nullable',
+            'show_category' => 'nullable',
             'show_cover' => $this->editMode ? 'nullable|image|max:5120' : 'nullable|image|max:5120',
             'show_cover_url' => 'nullable|url',
         ]);
@@ -274,7 +274,7 @@ class Manage extends Component
         $rules = [
             'episode_show_id' => 'required|exists:podcast_shows,id',
             'episode_title' => 'required|min:3|max:255',
-            'episode_description' => 'required|min:10',
+            'episode_description' => 'nullable|min:10',
             'episode_duration' => 'required|integer|min:1',
             'episode_spotify_url' => 'nullable|url',
             'episode_apple_url' => 'nullable|url',
@@ -285,8 +285,8 @@ class Manage extends Component
 
         // Audio validation
         if (!$this->editMode) {
-            $rules['episode_audio'] = 'required_without:episode_audio_url|nullable|file|mimes:mp3,m4a,wav,aac,ogg|max:512000';
-            $rules['episode_audio_url'] = 'required_without:episode_audio|nullable|url';
+            $rules['episode_audio'] = 'nullable|file|mimes:mp3,m4a,wav,aac,ogg|max:512000';
+            $rules['episode_audio_url'] = 'nullable|url';
         } else {
             $rules['episode_audio'] = 'nullable|file|mimes:mp3,m4a,wav,aac,ogg|max:512000';
             $rules['episode_audio_url'] = 'nullable|url';

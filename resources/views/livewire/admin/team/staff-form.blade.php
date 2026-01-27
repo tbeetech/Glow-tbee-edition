@@ -94,10 +94,19 @@
                     <p class="text-xs text-red-600">Upload failed. Try a smaller image or a different format.</p>
                 </div>
                 @error('photo_upload') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                @if ($photo_upload)
+                @php
+                    $photoIsPreviewable = false;
+                    if ($photo_upload) {
+                        $photoExtension = strtolower($photo_upload->getClientOriginalExtension() ?: $photo_upload->extension());
+                        $photoIsPreviewable = !in_array($photoExtension, ['avif'], true);
+                    }
+                @endphp
+                @if ($photo_upload && $photoIsPreviewable)
                     <img src="{{ $photo_upload->temporaryUrl() }}" alt="Staff preview"
                         class="mt-3 h-32 w-32 rounded-lg object-cover border border-gray-200">
                     <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
+                @elseif ($photo_upload)
+                    <p class="mt-3 text-xs text-gray-500">Preview not available for this file type.</p>
                 @endif
             </div>
             <div>
