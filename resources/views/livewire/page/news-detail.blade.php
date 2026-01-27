@@ -62,16 +62,26 @@
 
                 <!-- Meta Info -->
                 <div class="flex flex-wrap items-center gap-6 mb-8">
+                    @php
+                        $stationSettings = \App\Models\Setting::get('station', []);
+                        $stationName = data_get($stationSettings, 'name', 'Glow FM');
+                        $stationLogoUrl = data_get($stationSettings, 'logo_url', '');
+                        if (!empty($stationLogoUrl) && !\Illuminate\Support\Str::startsWith($stationLogoUrl, ['http://', 'https://'])) {
+                            $stationLogoUrl = url($stationLogoUrl);
+                        }
+                    @endphp
                     <div class="flex items-center space-x-3">
-                        <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $news->author->id]) }}">
-                            <img src="{{ $news->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($news->author->name) }}" 
-                                 class="w-12 h-12 rounded-full border-2 border-emerald-300">
-                        </a>
+                        @if (!empty($stationLogoUrl))
+                            <img src="{{ $stationLogoUrl }}" alt="{{ $stationName }} logo"
+                                 class="w-12 h-12 rounded-full border-2 border-emerald-300 object-contain bg-white">
+                        @else
+                            <div class="w-12 h-12 rounded-full border-2 border-emerald-300 bg-emerald-600 flex items-center justify-center">
+                                <i class="fas fa-radio text-white"></i>
+                            </div>
+                        @endif
                         <div>
-                            <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $news->author->id]) }}" class="font-semibold hover:text-emerald-200 transition-colors">
-                                {{ $news->author->name }}
-                            </a>
-                            <p class="text-sm text-emerald-200">{{ ucfirst($news->author->role) }}</p>
+                            <p class="font-semibold">{{ $stationName }}</p>
+                            <p class="text-sm text-emerald-200">Official Update</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-4 text-sm text-emerald-200">
