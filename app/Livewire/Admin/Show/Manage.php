@@ -209,7 +209,7 @@ class Manage extends Component
     {
         $this->validate([
             'title' => 'required|min:3|max:255',
-            'description' => 'required|min:10',
+            'description' => 'nullable|min:10',
             'category_id' => 'required|exists:show_categories,id',
         ]);
 

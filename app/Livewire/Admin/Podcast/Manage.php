@@ -297,7 +297,7 @@ class Manage extends Component
     {
         $this->validate([
             'show_title' => 'nullable|min:3|max:255',
-            'show_description' => 'nullable|min:10',
+            'show_description' => 'nullable|string',
             'show_host_name' => 'nullable',
             'show_category' => 'nullable',
             'show_cover' => $this->editMode ? 'nullable|image|max:5120' : 'nullable|image|max:5120',
