@@ -26,8 +26,15 @@
                         <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                             <div class="p-6">
                                 <div class="flex items-center space-x-4">
-                                    <img src="{{ $oap->profile_photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($oap->name) }}"
-                                        alt="{{ $oap->name }}" class="w-16 h-16 rounded-full">
+                                    <div class="relative w-16 h-16 rounded-full overflow-hidden">
+                                        <x-initials-image
+                                            :src="$oap->profile_photo"
+                                            :title="$oap->name"
+                                            imgClass="w-full h-full object-cover"
+                                            fallbackClass="bg-slate-700/90"
+                                            textClass="text-lg font-bold text-white"
+                                        />
+                                    </div>
                                     <div class="min-w-0">
                                         <h3 class="text-lg font-bold text-gray-900 truncate">{{ $oap->name }}</h3>
                                         <p class="text-sm text-gray-500">{{ $oap->teamRole?->name ?? ($oap->employment_status ?? 'Broadcaster') }}</p>

@@ -169,9 +169,15 @@
 
                                         <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                                             <div class="flex items-center space-x-3">
-                                                <img src="{{ $show->primaryHost?->profile_photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($show->primaryHost?->name ?? $show->title) . '&length=2' }}"
-                                                    onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($show->primaryHost?->name ?? $show->title) }}&length=2';"
-                                                    alt="{{ $show->primaryHost?->name ?? $show->title }}" class="w-10 h-10 rounded-full">
+                                                <div class="relative w-10 h-10 rounded-full overflow-hidden">
+                                                    <x-initials-image
+                                                        :src="$show->primaryHost?->profile_photo"
+                                                        :title="$show->primaryHost?->name ?? $show->title"
+                                                        imgClass="w-full h-full object-cover"
+                                                        fallbackClass="bg-emerald-700/90"
+                                                        textClass="text-xs font-bold text-white"
+                                                    />
+                                                </div>
                                                 <div>
                                                     <p class="text-sm font-semibold text-gray-900">{{ $show->primaryHost?->name ?? 'Host TBA' }}</p>
                                                     <p class="text-xs text-gray-500">{{ ucfirst($show->format) }}</p>

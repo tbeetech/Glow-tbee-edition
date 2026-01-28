@@ -315,8 +315,15 @@
                         <!-- Author Bio -->
                         <div class="mb-12">
                             <div class="flex items-start space-x-6 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl">
-                                <img src="{{ $news->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($news->author->name) }}" 
-                                     class="w-20 h-20 rounded-full">
+                                <div class="relative w-20 h-20 rounded-full overflow-hidden">
+                                    <x-initials-image
+                                        :src="$news->author->avatar ?? null"
+                                        :title="$news->author->name ?? ''"
+                                        imgClass="w-full h-full object-cover"
+                                        fallbackClass="bg-emerald-700/90"
+                                        textClass="text-xl font-bold text-white"
+                                    />
+                                </div>
                                 <div class="flex-1">
                                     <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $news->author->name }}</h3>
                                     <p class="text-emerald-600 font-semibold mb-3">{{ ucfirst($news->author->role) }}</p>
@@ -363,8 +370,15 @@
                                 @forelse($news->comments()->approved()->get() as $comment)
                                 <div class="bg-gray-50 rounded-xl p-6">
                                     <div class="flex items-start space-x-4">
-                                        <img src="{{ $comment->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user?->name ?? 'Anonymous') }}" 
-                                             class="w-12 h-12 rounded-full">
+                                        <div class="relative w-12 h-12 rounded-full overflow-hidden">
+                                            <x-initials-image
+                                                :src="$comment->user?->avatar ?? null"
+                                                :title="$comment->user?->name ?? 'Anonymous'"
+                                                imgClass="w-full h-full object-cover"
+                                                fallbackClass="bg-emerald-700/90"
+                                                textClass="text-xs font-bold text-white"
+                                            />
+                                        </div>
                                         <div class="flex-1">
                                             <div class="flex items-center justify-between mb-2">
                                                 <div>

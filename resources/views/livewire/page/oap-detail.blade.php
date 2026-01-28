@@ -10,8 +10,15 @@
                 </nav>
 
                 <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
-                    <img src="{{ $oap->profile_photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($oap->name) }}"
-                        alt="{{ $oap->name }}" class="w-24 h-24 rounded-full border-2 border-white/40">
+                    <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white/40">
+                        <x-initials-image
+                            :src="$oap->profile_photo"
+                            :title="$oap->name"
+                            imgClass="w-full h-full object-cover"
+                            fallbackClass="bg-slate-700/90"
+                            textClass="text-2xl font-bold text-white"
+                        />
+                    </div>
                     <div class="mt-4 md:mt-0">
                         <h1 class="text-4xl font-bold">{{ $oap->name }}</h1>
                         <p class="text-slate-200 mt-2">{{ $oap->teamRole?->name ?? ($oap->employment_status ?? 'Broadcaster') }}</p>

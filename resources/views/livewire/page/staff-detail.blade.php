@@ -10,8 +10,15 @@
                 </nav>
 
                 <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
-                    <img src="{{ $staff->photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($staff->name) }}"
-                        alt="{{ $staff->name }}" class="w-24 h-24 rounded-full border-2 border-white/40">
+                    <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white/40">
+                        <x-initials-image
+                            :src="$staff->photo_url"
+                            :title="$staff->name"
+                            imgClass="w-full h-full object-cover"
+                            fallbackClass="bg-slate-700/90"
+                            textClass="text-2xl font-bold text-white"
+                        />
+                    </div>
                     <div class="mt-4 md:mt-0">
                         <h1 class="text-4xl font-bold">{{ $staff->name }}</h1>
                         <p class="text-emerald-200 mt-2">{{ $staff->teamRole?->name ?? ($staff->role ?? 'Staff Member') }}</p>

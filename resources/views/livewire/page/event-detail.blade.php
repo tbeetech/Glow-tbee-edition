@@ -40,8 +40,15 @@
 
                 <div class="flex flex-wrap items-center gap-6 mb-8">
                     <div class="flex items-center space-x-3">
-                        <img src="{{ $event->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($event->author->name) }}"
-                             class="w-12 h-12 rounded-full border-2 border-amber-300">
+                        <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-amber-300">
+                            <x-initials-image
+                                :src="$event->author->avatar ?? null"
+                                :title="$event->author->name ?? ''"
+                                imgClass="w-full h-full object-cover"
+                                fallbackClass="bg-amber-700/90"
+                                textClass="text-sm font-bold text-white"
+                            />
+                        </div>
                         <div>
                             <p class="font-semibold">{{ $event->author->name }}</p>
                             <p class="text-sm text-amber-200">Organizer</p>
@@ -245,8 +252,15 @@
                                     @forelse($event->comments()->approved()->get() as $comment)
                                         <div class="bg-gray-50 rounded-xl p-6">
                                             <div class="flex items-start space-x-4">
-                                                <img src="{{ $comment->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user?->name ?? 'Anonymous') }}"
-                                                     class="w-12 h-12 rounded-full">
+                                                <div class="relative w-12 h-12 rounded-full overflow-hidden">
+                                                    <x-initials-image
+                                                        :src="$comment->user?->avatar ?? null"
+                                                        :title="$comment->user?->name ?? 'Anonymous'"
+                                                        imgClass="w-full h-full object-cover"
+                                                        fallbackClass="bg-amber-700/90"
+                                                        textClass="text-xs font-bold text-white"
+                                                    />
+                                                </div>
                                                 <div class="flex-1">
                                                     <div class="flex items-center justify-between mb-2">
                                                         <div>

@@ -38,8 +38,15 @@
 
                 <div class="flex flex-wrap items-center gap-6 mb-8">
                     <div class="flex items-center space-x-3">
-                        <img src="{{ $show->primaryHost?->profile_photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($show->primaryHost?->name ?? $show->title) }}"
-                             class="w-12 h-12 rounded-full border-2 border-emerald-300">
+                        <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-300">
+                            <x-initials-image
+                                :src="$show->primaryHost?->profile_photo"
+                                :title="$show->primaryHost?->name ?? $show->title"
+                                imgClass="w-full h-full object-cover"
+                                fallbackClass="bg-emerald-700/90"
+                                textClass="text-sm font-bold text-white"
+                            />
+                        </div>
                         <div>
                             <p class="font-semibold">{{ $show->primaryHost?->name ?? 'Host TBA' }}</p>
                             <p class="text-sm text-emerald-200">{{ ucfirst($show->format) }} • {{ $show->content_rating }}</p>

@@ -67,10 +67,15 @@
 
                             <div class="flex items-center space-x-4 mb-6">
                                 <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $featuredPost['author']['id']]) }}" class="flex items-center space-x-4">
-                                    <img src="{{ $featuredPost['author']['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($featuredPost['author']['name']) . '&length=2' }}"
-                                        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($featuredPost['author']['name']) }}&length=2';"
-                                        alt="{{ $featuredPost['author']['name'] }}"
-                                        class="w-12 h-12 rounded-full border-2 border-purple-500">
+                                    <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500">
+                                        <x-initials-image
+                                            :src="$featuredPost['author']['avatar'] ?? null"
+                                            :title="$featuredPost['author']['name'] ?? ''"
+                                            imgClass="w-full h-full object-cover"
+                                            fallbackClass="bg-purple-700/90"
+                                            textClass="text-xs font-bold text-white"
+                                        />
+                                    </div>
                                 </a>
                                 <div>
                                     <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $featuredPost['author']['id']]) }}" class="font-semibold hover:text-purple-200 transition-colors">
@@ -291,9 +296,15 @@
                                         <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                                             <div class="flex items-center space-x-3">
                                                 <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $post['author']['id']]) }}">
-                                                    <img src="{{ $post['author']['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($post['author']['name']) . '&length=2' }}"
-                                                        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($post['author']['name']) }}&length=2';"
-                                                        alt="{{ $post['author']['name'] }}" class="w-10 h-10 rounded-full">
+                                                    <div class="relative w-10 h-10 rounded-full overflow-hidden">
+                                                        <x-initials-image
+                                                            :src="$post['author']['avatar'] ?? null"
+                                                            :title="$post['author']['name'] ?? ''"
+                                                            imgClass="w-full h-full object-cover"
+                                                            fallbackClass="bg-purple-700/90"
+                                                            textClass="text-xs font-bold text-white"
+                                                        />
+                                                    </div>
                                                 </a>
                                                 <div>
                                                     <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $post['author']['id']]) }}" class="text-sm font-semibold text-gray-900 hover:text-purple-600 transition-colors">

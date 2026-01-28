@@ -68,8 +68,15 @@
                 <div class="flex flex-wrap items-center gap-6 mb-8">
                     <div class="flex items-center space-x-3">
                         <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $post->author->id]) }}">
-                            <img src="{{ $post->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($post->author->name) }}" 
-                                 class="w-12 h-12 rounded-full border-2 border-purple-300">
+                            <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-purple-300">
+                                <x-initials-image
+                                    :src="$post->author->avatar ?? null"
+                                    :title="$post->author->name ?? ''"
+                                    imgClass="w-full h-full object-cover"
+                                    fallbackClass="bg-purple-700/90"
+                                    textClass="text-xs font-bold text-white"
+                                />
+                            </div>
                         </a>
                         <div>
                             <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $post->author->id]) }}" class="font-semibold hover:text-purple-200 transition-colors">
@@ -321,8 +328,15 @@
                         <!-- Author Bio -->
                         <div class="mb-12">
                             <div class="flex items-start space-x-6 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl">
-                                <img src="{{ $post->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($post->author->name) }}" 
-                                     class="w-20 h-20 rounded-full">
+                                <div class="relative w-20 h-20 rounded-full overflow-hidden">
+                                    <x-initials-image
+                                        :src="$post->author->avatar ?? null"
+                                        :title="$post->author->name ?? ''"
+                                        imgClass="w-full h-full object-cover"
+                                        fallbackClass="bg-purple-700/90"
+                                        textClass="text-xl font-bold text-white"
+                                    />
+                                </div>
                                 <div class="flex-1">
                                     <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $post->author->name }}</h3>
                                     <p class="text-purple-600 font-semibold mb-3">{{ ucfirst($post->author->role) }}</p>
@@ -370,8 +384,15 @@
                                 @forelse($post->comments()->approved()->get() as $comment)
                                 <div class="bg-gray-50 rounded-xl p-6">
                                     <div class="flex items-start space-x-4">
-                                        <img src="{{ $comment->user?->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($comment->user?->name ?? 'Anonymous') }}" 
-                                             class="w-12 h-12 rounded-full">
+                                        <div class="relative w-12 h-12 rounded-full overflow-hidden">
+                                            <x-initials-image
+                                                :src="$comment->user?->avatar ?? null"
+                                                :title="$comment->user?->name ?? 'Anonymous'"
+                                                imgClass="w-full h-full object-cover"
+                                                fallbackClass="bg-purple-700/90"
+                                                textClass="text-xs font-bold text-white"
+                                            />
+                                        </div>
                                         <div class="flex-1">
                                             <div class="flex items-center justify-between mb-2">
                                                 <div>

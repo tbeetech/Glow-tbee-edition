@@ -53,10 +53,15 @@
                             <p class="text-gray-300 text-lg mb-6 leading-relaxed">{{ $featuredEvent['excerpt'] }}</p>
 
                             <div class="flex items-center space-x-4 mb-6">
-                                <img src="{{ $featuredEvent['author']['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($featuredEvent['author']['name']) . '&length=2' }}"
-                                    onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($featuredEvent['author']['name']) }}&length=2';"
-                                    alt="{{ $featuredEvent['author']['name'] }}"
-                                    class="w-12 h-12 rounded-full border-2 border-amber-500">
+                                <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500">
+                                    <x-initials-image
+                                        :src="$featuredEvent['author']['avatar'] ?? null"
+                                        :title="$featuredEvent['author']['name'] ?? ''"
+                                        imgClass="w-full h-full object-cover"
+                                        fallbackClass="bg-amber-700/90"
+                                        textClass="text-xs font-bold text-white"
+                                    />
+                                </div>
                                 <div>
                                     <p class="font-semibold">{{ $featuredEvent['author']['name'] }}</p>
                                     <p class="text-sm text-gray-400">{{ $featuredEvent['venue_name'] ?? 'Venue TBA' }}</p>
@@ -219,9 +224,15 @@
 
                                         <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                                             <div class="flex items-center space-x-3">
-                                                <img src="{{ $event->author->avatar ?: 'https://ui-avatars.com/api/?name=' . urlencode($event->author->name) . '&length=2' }}"
-                                                    onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($event->author->name) }}&length=2';"
-                                                    alt="{{ $event->author->name }}" class="w-10 h-10 rounded-full">
+                                                <div class="relative w-10 h-10 rounded-full overflow-hidden">
+                                                    <x-initials-image
+                                                        :src="$event->author->avatar ?? null"
+                                                        :title="$event->author->name ?? ''"
+                                                        imgClass="w-full h-full object-cover"
+                                                        fallbackClass="bg-amber-700/90"
+                                                        textClass="text-xs font-bold text-white"
+                                                    />
+                                                </div>
                                                 <div>
                                                     <p class="text-sm font-semibold text-gray-900">{{ $event->author->name }}</p>
                                                     <p class="text-xs text-gray-500">{{ $event->venue_name ?? 'Venue TBA' }}</p>
