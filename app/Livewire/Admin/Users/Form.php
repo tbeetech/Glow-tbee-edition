@@ -66,23 +66,25 @@ class Form extends Component
             $this->is_active = $user->is_active;
         }
 
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->when($this->department_id, function ($query) {
-                $query->where('department_id', $this->department_id);
-            })
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     public function updatedDepartmentId()
     {
         $this->team_role_id = '';
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->where('department_id', $this->department_id)
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     public function save()

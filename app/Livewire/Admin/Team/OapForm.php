@@ -51,7 +51,7 @@ class OapForm extends Component
     {
         return [
             'staff_member_id' => [
-                'required',
+                'nullable',
                 'exists:staff_members,id',
                 Rule::unique('oaps', 'staff_member_id')->ignore($this->oapId),
             ],
@@ -61,8 +61,8 @@ class OapForm extends Component
             'profile_photo_upload' => 'nullable|image|max:5120',
             'voice_sample_url' => 'nullable|url',
             'email' => 'nullable|email',
-            'department_id' => 'required|exists:team_departments,id',
-            'team_role_id' => 'required|exists:team_roles,id',
+            'department_id' => 'nullable|exists:team_departments,id',
+            'team_role_id' => 'nullable|exists:team_roles,id',
             'joined_date' => 'nullable|date',
             'employment_status' => 'required',
             'is_active' => 'boolean',
@@ -100,13 +100,13 @@ class OapForm extends Component
 
         $this->loadStaffMembers();
 
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->when($this->department_id, function ($query) {
-                $query->where('department_id', $this->department_id);
-            })
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     private function loadStaffMembers()
@@ -169,23 +169,25 @@ class OapForm extends Component
             $this->social_media = array_merge($this->social_media, $staff->social_links);
         }
 
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->when($this->department_id, function ($query) {
-                $query->where('department_id', $this->department_id);
-            })
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     public function updatedDepartmentId()
     {
         $this->team_role_id = '';
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->where('department_id', $this->department_id)
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     public function updatedProfilePhotoUpload()
@@ -197,16 +199,26 @@ class OapForm extends Component
 
     public function save()
     {
+        $this->staff_member_id = $this->staff_member_id ?: null;
+        $this->department_id = $this->department_id ?: null;
+        $this->team_role_id = $this->team_role_id ?: null;
         $this->validate();
 
-        $validRole = TeamRole::query()
-            ->where('id', $this->team_role_id)
-            ->where('department_id', $this->department_id)
-            ->exists();
-
-        if (!$validRole) {
-            $this->addError('team_role_id', 'Selected role does not belong to the chosen department.');
+        if ($this->team_role_id && !$this->department_id) {
+            $this->addError('department_id', 'Select a department for the chosen role.');
             return;
+        }
+
+        if ($this->team_role_id && $this->department_id) {
+            $validRole = TeamRole::query()
+                ->where('id', $this->team_role_id)
+                ->where('department_id', $this->department_id)
+                ->exists();
+
+            if (!$validRole) {
+                $this->addError('team_role_id', 'Selected role does not belong to the chosen department.');
+                return;
+            }
         }
 
         $slug = Str::slug($this->name);
@@ -227,7 +239,7 @@ class OapForm extends Component
         }
 
         $data = [
-            'staff_member_id' => $this->staff_member_id,
+            'staff_member_id' => $this->staff_member_id ?: null,
             'name' => $this->name,
             'slug' => $slug,
             'bio' => $this->bio,
@@ -237,8 +249,8 @@ class OapForm extends Component
                 ? array_map('trim', explode(',', $this->specializations))
                 : null,
             'email' => $this->email,
-            'department_id' => $this->department_id,
-            'team_role_id' => $this->team_role_id,
+            'department_id' => $this->department_id ?: null,
+            'team_role_id' => $this->team_role_id ?: null,
             'phone' => $this->phone,
             'employment_status' => $this->employment_status,
             'is_active' => $this->is_active,

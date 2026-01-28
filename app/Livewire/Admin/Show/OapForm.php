@@ -31,7 +31,7 @@ class OapForm extends Component
     {
         return [
             'staff_member_id' => [
-                'required',
+                'nullable',
                 'exists:staff_members,id',
                 Rule::unique('oaps', 'staff_member_id')->ignore($this->oapId),
             ],
@@ -118,6 +118,7 @@ class OapForm extends Component
 
     public function save()
     {
+        $this->staff_member_id = $this->staff_member_id ?: null;
         $this->validate();
 
         $photoPath = $this->profile_photo;
@@ -125,10 +126,11 @@ class OapForm extends Component
             $photoPath = CloudinaryUploader::uploadImage($this->profile_photo_upload, 'oaps/photos');
         }
 
-        $staff = $this->staff_member_id ? StaffMember::find($this->staff_member_id) : null;
+        $staffMemberId = $this->staff_member_id ?: null;
+        $staff = $staffMemberId ? StaffMember::find($staffMemberId) : null;
 
         $data = [
-            'staff_member_id' => $this->staff_member_id,
+            'staff_member_id' => $staffMemberId,
             'name' => $this->name,
             'slug' => Str::slug($this->name),
             'bio' => $this->bio,

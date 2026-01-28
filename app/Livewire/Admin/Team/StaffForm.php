@@ -87,13 +87,13 @@ class StaffForm extends Component
             $this->social_links = $staff->social_links ?? $this->social_links;
         }
 
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->when($this->department_id, function ($query) {
-                $query->where('department_id', $this->department_id);
-            })
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     private function loadUsers($staffId = null)
@@ -137,17 +137,21 @@ class StaffForm extends Component
                 ->where('department_id', $this->department_id)
                 ->orderBy('name')
                 ->get();
+        } else {
+            $this->teamRoles = collect();
         }
     }
 
     public function updatedDepartmentId()
     {
         $this->team_role_id = '';
-        $this->teamRoles = TeamRole::query()
-            ->where('is_active', true)
-            ->where('department_id', $this->department_id)
-            ->orderBy('name')
-            ->get();
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
     }
 
     public function updatedPhotoUpload()
