@@ -36,7 +36,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                <select wire:model="department_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <select wire:model.live="department_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="">Select department</option>
                     @foreach($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -49,7 +49,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Team Role</label>
-                <select wire:model="team_role_id" @disabled(!$department_id)
+                <select wire:model.live="team_role_id" @disabled(!$department_id)
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
                     <option value="">Select role</option>
                     @foreach($teamRoles as $teamRole)
