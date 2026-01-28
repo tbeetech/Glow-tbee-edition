@@ -20,7 +20,25 @@
                 <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl overflow-hidden shadow-2xl">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
                         <div class="relative h-96 lg:h-auto">
-                            <img src="{{ $featuredShow->cover_image }}" alt="{{ $featuredShow->title }}" class="w-full h-full object-cover">
+                            @php
+                                $featuredInitials = collect(preg_split('/\s+/', trim($featuredShow->title)))
+                                    ->filter()
+                                    ->map(fn ($word) => strtoupper(substr($word, 0, 1)))
+                                    ->take(2)
+                                    ->implode('');
+                            @endphp
+                            @if(!empty($featuredShow->cover_image))
+                                <img src="{{ $featuredShow->cover_image }}" alt="{{ $featuredShow->title }}"
+                                     class="w-full h-full object-cover"
+                                     onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                                <div class="hidden absolute inset-0 bg-emerald-700/90 flex items-center justify-center">
+                                    <span class="text-5xl font-bold text-white">{{ $featuredInitials }}</span>
+                                </div>
+                            @else
+                                <div class="absolute inset-0 bg-emerald-700/90 flex items-center justify-center">
+                                    <span class="text-5xl font-bold text-white">{{ $featuredInitials }}</span>
+                                </div>
+                            @endif
                             <div class="absolute top-6 left-6">
                                 <span class="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-full shadow-lg">
                                     <i class="fas fa-star mr-1"></i> FEATURED
@@ -130,8 +148,25 @@
                             @foreach($shows as $show)
                                 <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                                     <div class="relative h-52 overflow-hidden">
-                                        <img src="{{ $show->cover_image }}" alt="{{ $show->title }}"
-                                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                        @php
+                                            $showInitials = collect(preg_split('/\s+/', trim($show->title)))
+                                                ->filter()
+                                                ->map(fn ($word) => strtoupper(substr($word, 0, 1)))
+                                                ->take(2)
+                                                ->implode('');
+                                        @endphp
+                                        @if(!empty($show->cover_image))
+                                            <img src="{{ $show->cover_image }}" alt="{{ $show->title }}"
+                                                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                 onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                                            <div class="hidden absolute inset-0 bg-emerald-700/90 flex items-center justify-center">
+                                                <span class="text-3xl font-bold text-white">{{ $showInitials }}</span>
+                                            </div>
+                                        @else
+                                            <div class="absolute inset-0 bg-emerald-700/90 flex items-center justify-center">
+                                                <span class="text-3xl font-bold text-white">{{ $showInitials }}</span>
+                                            </div>
+                                        @endif
                                         <div class="absolute top-4 left-4">
                                             <span class="px-3 py-1 bg-{{ $show->category?->color ?? 'emerald' }}-600 text-white text-xs font-semibold rounded-full">
                                                 {{ $show->category?->name ?? 'Show' }}

@@ -132,7 +132,7 @@ class OapForm extends Component
         $data = [
             'staff_member_id' => $staffMemberId,
             'name' => $this->name,
-            'slug' => Str::slug($this->name),
+            'slug' => $this->generateUniqueSlug($this->name),
             'bio' => $this->bio,
             'profile_photo' => $photoPath,
             'specializations' => !empty($this->specializations)
@@ -177,5 +177,29 @@ class OapForm extends Component
             ->layout('layouts.admin', [
                 'header' => $this->isEditing ? 'Edit OAP' : 'Add OAP',
             ]);
+    }
+
+    private function generateUniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        $slug = $base;
+        $counter = 1;
+
+        while ($this->slugExists($slug)) {
+            $counter++;
+            $slug = $base . '-' . $counter;
+        }
+
+        return $slug;
+    }
+
+    private function slugExists(string $slug): bool
+    {
+        return OAP::query()
+            ->where('slug', $slug)
+            ->when($this->isEditing, function ($query) {
+                $query->where('id', '!=', $this->oapId);
+            })
+            ->exists();
     }
 }

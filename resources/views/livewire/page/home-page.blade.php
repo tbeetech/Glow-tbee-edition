@@ -193,7 +193,25 @@
                 @foreach($featuredShows as $show)
                     <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
                         <a href="{{ route('shows.show', $show['slug']) }}" class="relative h-64 overflow-hidden block">
-                            <img src="{{ $show['image'] }}" alt="{{ $show['title'] }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                            @php
+                                $showInitials = collect(preg_split('/\s+/', trim($show['title'] ?? '')))
+                                    ->filter()
+                                    ->map(fn ($word) => strtoupper(substr($word, 0, 1)))
+                                    ->take(2)
+                                    ->implode('');
+                            @endphp
+                            @if(!empty($show['image']))
+                                <img src="{{ $show['image'] }}" alt="{{ $show['title'] }}"
+                                     class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                     onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                                <div class="hidden absolute inset-0 bg-emerald-700/90 flex items-center justify-center">
+                                    <span class="text-4xl font-bold text-white">{{ $showInitials }}</span>
+                                </div>
+                            @else
+                                <div class="absolute inset-0 bg-emerald-700/90 flex items-center justify-center">
+                                    <span class="text-4xl font-bold text-white">{{ $showInitials }}</span>
+                                </div>
+                            @endif
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             <div class="absolute top-4 right-4">
                                 <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full">
