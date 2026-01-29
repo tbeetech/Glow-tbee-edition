@@ -30,6 +30,7 @@ class Episode extends Model
         'reviewed_at' => 'datetime',
         'is_featured' => 'boolean',
         'explicit' => 'boolean',
+        'duration' => 'float',
         'guests' => 'array',
         'chapters' => 'array',
         'transcript' => 'array',
@@ -111,21 +112,23 @@ class Episode extends Model
     {
         $sessionId = session()->getId() . '-' . now()->timestamp;
         
+        $totalSeconds = $this->duration ? (int) round($this->duration * 60) : 0;
+
         Play::create([
             'episode_id' => $this->id,
             'user_id' => $userId,
             'session_id' => $sessionId,
             'ip_address' => request()->ip(),
             'listen_duration' => $duration,
-            'total_duration' => $this->duration,
-            'completion_rate' => $this->duration > 0 ? ($duration / $this->duration) * 100 : 0,
+            'total_duration' => $totalSeconds,
+            'completion_rate' => $totalSeconds > 0 ? ($duration / $totalSeconds) * 100 : 0,
             'last_position' => $position,
             'device_type' => $this->detectDeviceType(),
             'platform' => 'web',
             'user_agent' => request()->userAgent(),
             'started_at' => now(),
             'last_listened_at' => now(),
-            'completed' => $duration >= ($this->duration * 0.9),
+            'completed' => $totalSeconds > 0 ? $duration >= ($totalSeconds * 0.9) : false,
         ]);
 
         $this->increment('plays');
@@ -148,9 +151,10 @@ class Episode extends Model
     // Accessors
     public function getFormattedDurationAttribute()
     {
-        $hours = floor($this->duration / 3600);
-        $minutes = floor(($this->duration % 3600) / 60);
-        $seconds = $this->duration % 60;
+        $totalSeconds = $this->duration ? (int) round($this->duration * 60) : 0;
+        $hours = floor($totalSeconds / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+        $seconds = $totalSeconds % 60;
 
         if ($hours > 0) {
             return sprintf('%d:%02d:%02d', $hours, $minutes, $seconds);

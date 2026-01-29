@@ -780,10 +780,10 @@
     </div>
 
     <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Duration (seconds) *</label>
-        <input type="number" wire:model="episode_duration" 
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Duration (minutes)</label>
+        <input type="number" wire:model="episode_duration" step="0.1" min="0"
                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-               placeholder="e.g., 3600 for 1 hour">
+               placeholder="e.g., 60 or 45.5">
         @error('episode_duration') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
     </div>
 

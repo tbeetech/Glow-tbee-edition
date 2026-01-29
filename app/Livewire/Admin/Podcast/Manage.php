@@ -71,7 +71,7 @@ class Manage extends Component
     public $episode_cover;
     public $episode_cover_url = '';
     public $existing_episode_cover = '';
-    public $episode_duration = 0;
+    public $episode_duration = null;
     public $episode_number = null;
     public $episode_season = null;
     public $episode_type = 'full';
@@ -343,7 +343,7 @@ class Manage extends Component
             'episode_show_id' => 'nullable|exists:podcast_shows,id',
             'episode_title' => 'nullable|min:3|max:255',
             'episode_description' => 'nullable|min:10',
-            'episode_duration' => 'nullable|integer|min:1',
+            'episode_duration' => 'nullable|numeric|min:0',
             'episode_spotify_url' => 'nullable|url',
             'episode_apple_url' => 'nullable|url',
             'episode_youtube_music_url' => 'nullable|url',
@@ -405,6 +405,10 @@ class Manage extends Component
             $coverPath = $this->episode_cover_url;
         }
 
+        $durationMinutes = $this->episode_duration !== null && $this->episode_duration !== ''
+            ? (float) $this->episode_duration
+            : null;
+
         $data = [
             'show_id' => $this->episode_show_id,
             'title' => $this->episode_title,
@@ -416,7 +420,7 @@ class Manage extends Component
             'video_url' => $videoPath,
             'video_type' => $videoType,
             'cover_image' => $coverPath,
-            'duration' => $this->episode_duration,
+            'duration' => $durationMinutes,
             'file_size' => $fileSize,
             'episode_number' => $this->episode_number,
             'season_number' => $this->episode_season,
