@@ -340,10 +340,10 @@ class Manage extends Component
     private function saveEpisode()
     {
         $rules = [
-            'episode_show_id' => 'required|exists:podcast_shows,id',
-            'episode_title' => 'required|min:3|max:255',
+            'episode_show_id' => 'nullable|exists:podcast_shows,id',
+            'episode_title' => 'nullable|min:3|max:255',
             'episode_description' => 'nullable|min:10',
-            'episode_duration' => 'required|integer|min:1',
+            'episode_duration' => 'nullable|integer|min:1',
             'episode_spotify_url' => 'nullable|url',
             'episode_apple_url' => 'nullable|url',
             'episode_youtube_music_url' => 'nullable|url',
@@ -351,15 +351,9 @@ class Manage extends Component
             'episode_soundcloud_url' => 'nullable|url',
         ];
 
-        // Audio validation
-        $requiresAudio = !$this->editMode || empty($this->existing_episode_audio);
-        if ($requiresAudio) {
-            $rules['episode_audio'] = 'required_without:episode_audio_url|file|mimes:mp3,m4a,wav,aac,ogg|max:512000';
-            $rules['episode_audio_url'] = 'required_without:episode_audio|url';
-        } else {
-            $rules['episode_audio'] = 'nullable|file|mimes:mp3,m4a,wav,aac,ogg|max:512000';
-            $rules['episode_audio_url'] = 'nullable|url';
-        }
+        // Audio validation (optional)
+        $rules['episode_audio'] = 'nullable|file|mimes:mp3,m4a,wav,aac,ogg|max:512000';
+        $rules['episode_audio_url'] = 'nullable|url';
 
         // Video validation (optional)
         $rules['episode_video'] = 'nullable|file|mimes:mp4,mov,avi,wmv|max:1024000';
@@ -515,7 +509,7 @@ class Manage extends Component
         }
 
         $this->validate([
-            'approvalReason' => 'required|min:5|max:1000',
+            'approvalReason' => 'nullable|min:5|max:1000',
         ]);
 
         $this->applyApproval($this->approvalFormId, $this->approvalAction, $this->approvalReason);

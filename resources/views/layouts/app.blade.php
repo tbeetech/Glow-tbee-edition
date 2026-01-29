@@ -818,7 +818,7 @@
                         &copy; {{ date('Y') }} {{ $stationName }} {{ $stationFrequency }}. All rights reserved.
                     </p>
                     <div class="flex items-center space-x-6 text-sm">
-                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
+                        <a href="privacy-policy" class="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
                         <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</a>
                         <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</a>
                     </div>
