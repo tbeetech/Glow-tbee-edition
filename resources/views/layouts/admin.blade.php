@@ -9,6 +9,9 @@
         $stationName = data_get($stationSettings, 'name', 'Glow FM');
         $stationFrequency = data_get($stationSettings, 'frequency', '99.1 MHz');
         $stationLogoUrl = data_get($stationSettings, 'logo_url', '');
+        if (empty($stationLogoUrl)) {
+            $stationLogoUrl = asset('glowfm logo.jpeg');
+        }
         if (!empty($stationLogoUrl) && !\Illuminate\Support\Str::startsWith($stationLogoUrl, ['http://', 'https://'])) {
             $stationLogoUrl = url($stationLogoUrl);
         }
