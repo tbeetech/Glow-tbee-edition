@@ -103,36 +103,36 @@ Route::get('/events', EventPage::class)->name('events.index');
 Route::get('/events/{slug}', EventDetail::class)->name('events.show');
 
 Route::middleware(['auth', 'admin'])->group(function () {
-Route::get('/download-database', function () {
-    $dbName = config('database.connections.mysql.database');
-    $dbUser = config('database.connections.mysql.username');
-    $dbPass = config('database.connections.mysql.password');
-    $dbHost = config('database.connections.mysql.host');
+    Route::get('/download-database', function () {
+        $dbName = config('database.connections.mysql.database');
+        $dbUser = config('database.connections.mysql.username');
+        $dbPass = config('database.connections.mysql.password');
+        $dbHost = config('database.connections.mysql.host');
 
-    $fileName = $dbName . '_' . now()->format('Y_m_d_His') . '.sql';
-    $filePath = storage_path('app/' . $fileName);
+        $fileName = $dbName . '_' . now()->format('Y_m_d_His') . '.sql';
+        $filePath = storage_path('app/' . $fileName);
 
-    $mysqldumpPath = env('MYSQLDUMP_PATH', 'mysqldump');
+        $mysqldumpPath = env('MYSQLDUMP_PATH', 'mysqldump');
 
-    $command = [
-        $mysqldumpPath,
-        "-h{$dbHost}",
-        "-u{$dbUser}",
-        "--password={$dbPass}",
-        $dbName
-    ];
+        $command = [
+            $mysqldumpPath,
+            "-h{$dbHost}",
+            "-u{$dbUser}",
+            "--password={$dbPass}",
+            $dbName
+        ];
 
-    $process = new Process($command);
-    $process->run(function ($type, $buffer) use ($filePath) {
-        file_put_contents($filePath, $buffer, FILE_APPEND);
+        $process = new Process($command);
+        $process->run(function ($type, $buffer) use ($filePath) {
+            file_put_contents($filePath, $buffer, FILE_APPEND);
+        });
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
     });
-
-    if (!$process->isSuccessful()) {
-        throw new ProcessFailedException($process);
-    }
-
-    return response()->download($filePath)->deleteFileAfterSend(true);
-});
 });
 
 
@@ -248,10 +248,7 @@ Route::middleware(['auth', 'admin_or_staff'])->prefix('admin/events')->name('adm
 Route::middleware('auth')->group(function () {
     Route::get('/profile', ProfilePage::class)->name('profile');
     Route::get('/settings', UserSettingsPage::class)->name('settings');
-    Route::get('/podcasts', PodcastIndex::class)->name('podcasts.index');
-    Route::get('/podcasts/{slug}', PodcastShowDetail::class)->name('podcasts.show');
-    Route::get('/podcasts/{showSlug}/{episodeSlug}', EpisodePlayer::class)->name('podcasts.episode');
-    
+
     // Logout
     Route::post('/logout', function () {
         auth()->logout();
@@ -261,6 +258,9 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 });
 
+Route::get('/podcasts', PodcastIndex::class)->name('podcasts.index');
+Route::get('/podcasts/{slug}', PodcastShowDetail::class)->name('podcasts.show');
+Route::get('/podcasts/{showSlug}/{episodeSlug}', EpisodePlayer::class)->name('podcasts.episode');
 // Admin dashboard routes (role restricted inside)
 Route::middleware(['auth', 'admin_or_staff'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
@@ -282,62 +282,62 @@ Route::middleware(['auth', 'admin_or_staff'])->group(function () {
     Route::get('/admin/comms-analytics', \App\Livewire\Admin\Analytics\CommsAnalytics::class)->name('admin.comms.analytics');
 
     Route::middleware('role:admin')->group(function () {
-    Route::prefix('admin/shows')->name('admin.shows.')->group(function () {
-        Route::get('/', ShowManage::class)->name('index');
-        Route::get('/create', AdminShowForm::class)->name('create');
-        Route::get('/{showId}/edit', AdminShowForm::class)->name('edit');
-        Route::get('/reviews', AdminShowReviews::class)->name('reviews');
-        Route::get('/oaps', ShowManage::class)->name('oaps')->defaults('view', 'oaps');
-        Route::get('/oaps/create', AdminShowOapForm::class)->name('oaps.create');
-        Route::get('/oaps/{oapId}/edit', AdminShowOapForm::class)->name('oaps.edit');
-        Route::get('/schedule', ShowManage::class)->name('schedule')->defaults('view', 'schedule');
-        Route::get('/schedule/create', AdminShowScheduleForm::class)->name('schedule.create');
-        Route::get('/schedule/{slotId}/edit', AdminShowScheduleForm::class)->name('schedule.edit');
-        Route::get('/segments', ShowManage::class)->name('segments')->defaults('view', 'segments');
-        Route::get('/segments/create', AdminShowSegmentForm::class)->name('segments.create');
-        Route::get('/segments/{segmentId}/edit', AdminShowSegmentForm::class)->name('segments.edit');
-        Route::get('/categories', ShowManage::class)->name('categories')->defaults('view', 'categories');
-        Route::get('/categories/create', AdminShowCategoryForm::class)->name('categories.create');
-        Route::get('/categories/{categoryId}/edit', AdminShowCategoryForm::class)->name('categories.edit');
-    });
+        Route::prefix('admin/shows')->name('admin.shows.')->group(function () {
+            Route::get('/', ShowManage::class)->name('index');
+            Route::get('/create', AdminShowForm::class)->name('create');
+            Route::get('/{showId}/edit', AdminShowForm::class)->name('edit');
+            Route::get('/reviews', AdminShowReviews::class)->name('reviews');
+            Route::get('/oaps', ShowManage::class)->name('oaps')->defaults('view', 'oaps');
+            Route::get('/oaps/create', AdminShowOapForm::class)->name('oaps.create');
+            Route::get('/oaps/{oapId}/edit', AdminShowOapForm::class)->name('oaps.edit');
+            Route::get('/schedule', ShowManage::class)->name('schedule')->defaults('view', 'schedule');
+            Route::get('/schedule/create', AdminShowScheduleForm::class)->name('schedule.create');
+            Route::get('/schedule/{slotId}/edit', AdminShowScheduleForm::class)->name('schedule.edit');
+            Route::get('/segments', ShowManage::class)->name('segments')->defaults('view', 'segments');
+            Route::get('/segments/create', AdminShowSegmentForm::class)->name('segments.create');
+            Route::get('/segments/{segmentId}/edit', AdminShowSegmentForm::class)->name('segments.edit');
+            Route::get('/categories', ShowManage::class)->name('categories')->defaults('view', 'categories');
+            Route::get('/categories/create', AdminShowCategoryForm::class)->name('categories.create');
+            Route::get('/categories/{categoryId}/edit', AdminShowCategoryForm::class)->name('categories.edit');
+        });
 
-    Route::prefix('admin/settings')->name('admin.settings.')->group(function () {
-        Route::get('/station', AdminStationSettings::class)->name('station');
-        Route::get('/website', AdminWebsiteSettings::class)->name('website');
-        Route::get('/system', AdminSystemSettings::class)->name('system');
-    });
+        Route::prefix('admin/settings')->name('admin.settings.')->group(function () {
+            Route::get('/station', AdminStationSettings::class)->name('station');
+            Route::get('/website', AdminWebsiteSettings::class)->name('website');
+            Route::get('/system', AdminSystemSettings::class)->name('system');
+        });
 
-    Route::get('/admin/approvals', ApproverSettings::class)->name('admin.approvals');
+        Route::get('/admin/approvals', ApproverSettings::class)->name('admin.approvals');
 
-    Route::prefix('admin/team')->name('admin.team.')->group(function () {
-        Route::get('/oaps', AdminOaps::class)->name('oaps');
-        Route::get('/oaps/create', AdminOapForm::class)->name('oaps.create');
-        Route::get('/oaps/{oapId}/edit', AdminOapForm::class)->name('oaps.edit');
-        Route::get('/staff', AdminStaffIndex::class)->name('staff');
-        Route::get('/staff/create', AdminStaffForm::class)->name('staff.create');
-        Route::get('/staff/{staffId}/edit', AdminStaffForm::class)->name('staff.edit');
-        Route::get('/departments', \App\Livewire\Admin\Team\DepartmentsIndex::class)->name('departments');
-        Route::get('/departments/create', \App\Livewire\Admin\Team\DepartmentForm::class)->name('departments.create');
-        Route::get('/departments/{departmentId}/edit', \App\Livewire\Admin\Team\DepartmentForm::class)->name('departments.edit');
-        Route::get('/roles', \App\Livewire\Admin\Team\RolesIndex::class)->name('roles');
-        Route::get('/roles/create', \App\Livewire\Admin\Team\RoleForm::class)->name('roles.create');
-        Route::get('/roles/{roleId}/edit', \App\Livewire\Admin\Team\RoleForm::class)->name('roles.edit');
-    });
+        Route::prefix('admin/team')->name('admin.team.')->group(function () {
+            Route::get('/oaps', AdminOaps::class)->name('oaps');
+            Route::get('/oaps/create', AdminOapForm::class)->name('oaps.create');
+            Route::get('/oaps/{oapId}/edit', AdminOapForm::class)->name('oaps.edit');
+            Route::get('/staff', AdminStaffIndex::class)->name('staff');
+            Route::get('/staff/create', AdminStaffForm::class)->name('staff.create');
+            Route::get('/staff/{staffId}/edit', AdminStaffForm::class)->name('staff.edit');
+            Route::get('/departments', \App\Livewire\Admin\Team\DepartmentsIndex::class)->name('departments');
+            Route::get('/departments/create', \App\Livewire\Admin\Team\DepartmentForm::class)->name('departments.create');
+            Route::get('/departments/{departmentId}/edit', \App\Livewire\Admin\Team\DepartmentForm::class)->name('departments.edit');
+            Route::get('/roles', \App\Livewire\Admin\Team\RolesIndex::class)->name('roles');
+            Route::get('/roles/create', \App\Livewire\Admin\Team\RoleForm::class)->name('roles.create');
+            Route::get('/roles/{roleId}/edit', \App\Livewire\Admin\Team\RoleForm::class)->name('roles.edit');
+        });
 
-    Route::prefix('admin/users')->name('admin.users.')->group(function () {
-        Route::get('/', AdminUsersIndex::class)->name('index');
-        Route::get('/create', AdminUsersForm::class)->name('create');
-        Route::get('/{userId}/edit', AdminUsersForm::class)->name('edit');
-    });
+        Route::prefix('admin/users')->name('admin.users.')->group(function () {
+            Route::get('/', AdminUsersIndex::class)->name('index');
+            Route::get('/create', AdminUsersForm::class)->name('create');
+            Route::get('/{userId}/edit', AdminUsersForm::class)->name('edit');
+        });
 
-    Route::prefix('admin/ads')->name('admin.ads.')->group(function () {
-        Route::get('/', AdminAdsIndex::class)->name('index');
-        Route::get('/create', AdminAdsForm::class)->name('create');
-        Route::get('/{adId}/edit', AdminAdsForm::class)->name('edit');
-    });
+        Route::prefix('admin/ads')->name('admin.ads.')->group(function () {
+            Route::get('/', AdminAdsIndex::class)->name('index');
+            Route::get('/create', AdminAdsForm::class)->name('create');
+            Route::get('/{adId}/edit', AdminAdsForm::class)->name('edit');
+        });
 
-    Route::get('/admin/newsletter/subscribers', AdminNewsletterSubscriptions::class)->name('admin.newsletter.subscribers');
-    Route::get('/admin/stream', AdminLiveStream::class)->name('admin.stream');
+        Route::get('/admin/newsletter/subscribers', AdminNewsletterSubscriptions::class)->name('admin.newsletter.subscribers');
+        Route::get('/admin/stream', AdminLiveStream::class)->name('admin.stream');
 
 
 
