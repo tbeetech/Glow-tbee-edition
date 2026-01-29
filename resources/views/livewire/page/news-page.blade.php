@@ -226,7 +226,7 @@
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             @foreach($popularTags as $tag)
-                                <a href="#"
+                                <a href="{{ route('news', ['tag' => $tag]) }}"
                                     class="px-3 py-1.5 bg-gray-100 hover:bg-emerald-100 text-gray-700 hover:text-emerald-700 text-sm rounded-full transition-colors">
                                     #{{ $tag }}
                                 </a>
@@ -270,10 +270,18 @@
                                 @endif
                             </h2>
                             <p class="text-gray-600 mt-1">{{ $newsArticles->total() }} articles found</p>
+                            @if($tag)
+                                <div class="mt-2">
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700">
+                                        <i class="fas fa-tag text-[10px]"></i>
+                                        #{{ $tag }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
 
-                        @if($searchQuery || $selectedCategory !== 'all')
-                            <button wire:click="$set('searchQuery', ''); $set('selectedCategory', 'all')"
+                        @if($searchQuery || $selectedCategory !== 'all' || $tag)
+                            <button wire:click="$set('searchQuery', ''); $set('selectedCategory', 'all'); $set('tag', '')"
                                 class="flex items-center space-x-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
                                 <i class="fas fa-times"></i>
                                 <span>Clear Filters</span>

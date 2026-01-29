@@ -14,11 +14,13 @@ class NewsPage extends Component
     public $view = 'grid';
     public $selectedCategory = 'all';
     public $searchQuery = '';
+    public $tag = '';
     public $sortBy = 'latest';
 
     protected $queryString = [
         'selectedCategory' => ['except' => 'all'],
         'searchQuery' => ['except' => ''],
+        'tag' => ['except' => ''],
         'view' => ['except' => 'grid'],
         'sortBy' => ['except' => 'latest'],
     ];
@@ -29,6 +31,11 @@ class NewsPage extends Component
     }
 
     public function updatingSelectedCategory()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingTag()
     {
         $this->resetPage();
     }
@@ -49,6 +56,10 @@ class NewsPage extends Component
 
         if (!empty($this->searchQuery)) {
             $query->search($this->searchQuery);
+        }
+
+        if (!empty($this->tag)) {
+            $query->whereJsonContains('tags', $this->tag);
         }
 
         switch ($this->sortBy) {

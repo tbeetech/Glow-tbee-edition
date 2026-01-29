@@ -251,7 +251,7 @@
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($news->tags as $tag)
-                                <a href="{{ route('news') }}?search={{ urlencode($tag) }}" 
+                                <a href="{{ route('news', ['tag' => $tag]) }}" 
                                    class="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-full transition-colors">
                                     #{{ $tag }}
                                 </a>
