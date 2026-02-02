@@ -18,12 +18,12 @@
         <section class="py-12 bg-white">
             <div class="container mx-auto px-4">
                 <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl overflow-hidden shadow-2xl">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                        <div class="relative h-96 lg:h-auto">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 group">
+                        <div class="relative h-96 lg:h-auto overflow-hidden">
                             <x-initials-image
                                 :src="$featuredShow->cover_image"
                                 :title="$featuredShow->title"
-                                imgClass="w-full h-full object-cover"
+                                imgClass="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 fallbackClass="bg-emerald-700/90"
                                 textClass="text-5xl font-bold text-white"
                             />
