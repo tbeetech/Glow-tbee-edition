@@ -3,13 +3,19 @@
 namespace App\Livewire\Admin\Settings;
 
 use App\Models\Setting;
+use App\Support\CloudinaryUploader;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class WebsiteSettings extends Component
 {
+    use WithFileUploads;
+
     public $home = [];
     public $about = [];
     public $contact = [];
+    public $teamImageUploads = [];
+    public $partnerLogoUploads = [];
 
     public function mount()
     {
@@ -24,6 +30,7 @@ class WebsiteSettings extends Component
 
     public function save()
     {
+        $this->applyImageUploads();
         $this->persistSettings(true);
     }
 
@@ -119,6 +126,7 @@ class WebsiteSettings extends Component
         }
         unset($items[$index]);
         $this->about['team'] = array_values($items);
+        $this->teamImageUploads = $this->shiftUploadIndexes($this->teamImageUploads, (int) $index);
     }
 
     public function addAboutAchievement()
@@ -158,6 +166,17 @@ class WebsiteSettings extends Component
         }
         unset($items[$index]);
         $this->about['partners'] = array_values($items);
+        $this->partnerLogoUploads = $this->shiftUploadIndexes($this->partnerLogoUploads, (int) $index);
+    }
+
+    public function clearTeamImageUpload($index): void
+    {
+        unset($this->teamImageUploads[$index]);
+    }
+
+    public function clearPartnerLogoUpload($index): void
+    {
+        unset($this->partnerLogoUploads[$index]);
     }
 
     public function addAboutStat()
@@ -328,5 +347,62 @@ class WebsiteSettings extends Component
         if ($flash) {
             session()->flash('success', 'Website settings updated successfully.');
         }
+    }
+
+    private function applyImageUploads(): void
+    {
+        $this->validate([
+            'teamImageUploads.*' => 'nullable|image|max:5120',
+            'partnerLogoUploads.*' => 'nullable|image|max:5120',
+        ]);
+
+        foreach ($this->teamImageUploads as $index => $file) {
+            if (!$file || !isset($this->about['team'][$index])) {
+                continue;
+            }
+
+            $path = CloudinaryUploader::uploadImage($file, 'website/team');
+            if ($path) {
+                $this->about['team'][$index]['image'] = $path;
+            }
+        }
+
+        foreach ($this->partnerLogoUploads as $index => $file) {
+            if (!$file || !isset($this->about['partners'][$index])) {
+                continue;
+            }
+
+            $path = CloudinaryUploader::uploadImage($file, 'website/partners');
+            if ($path) {
+                $this->about['partners'][$index]['logo'] = $path;
+            }
+        }
+    }
+
+    private function shiftUploadIndexes(array $uploads, int $index): array
+    {
+        if (!$uploads) {
+            return $uploads;
+        }
+
+        $shifted = [];
+        foreach ($uploads as $key => $file) {
+            $numericKey = is_int($key) ? $key : (ctype_digit((string) $key) ? (int) $key : null);
+            if ($numericKey === null) {
+                $shifted[$key] = $file;
+                continue;
+            }
+
+            if ($numericKey === $index) {
+                continue;
+            }
+
+            $newKey = $numericKey > $index ? $numericKey - 1 : $numericKey;
+            $shifted[$newKey] = $file;
+        }
+
+        ksort($shifted);
+
+        return $shifted;
     }
 }

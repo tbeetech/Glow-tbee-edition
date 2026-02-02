@@ -261,8 +261,47 @@
                             class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Name">
                         <input type="text" wire:model="about.team.{{ $index }}.position"
                             class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Position">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Image Upload</label>
+                            <input type="file" wire:model="teamImageUploads.{{ $index }}" accept="image/*"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            @error("teamImageUploads.$index") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+
+                            @php
+                                $teamImageUpload = $teamImageUploads[$index] ?? null;
+                                $teamImageUploadPreviewable = false;
+                                if ($teamImageUpload) {
+                                    $teamImageExtension = strtolower($teamImageUpload->getClientOriginalExtension() ?: $teamImageUpload->extension());
+                                    $teamImageUploadPreviewable = !in_array($teamImageExtension, ['avif'], true);
+                                }
+                            @endphp
+                            @if ($teamImageUpload && $teamImageUploadPreviewable)
+                                <div class="mt-2">
+                                    <img src="{{ $teamImageUpload->temporaryUrl() }}" class="w-24 h-24 object-cover rounded-lg">
+                                </div>
+                                <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
+                            @elseif ($teamImageUpload)
+                                <p class="mt-2 text-xs text-gray-500">Preview not available for this file type.</p>
+                            @endif
+
+                            @if ($teamImageUpload)
+                                <button type="button" wire:click="clearTeamImageUpload({{ $index }})"
+                                    class="mt-2 inline-flex items-center text-xs font-semibold text-gray-600 hover:text-gray-700">
+                                    <i class="fas fa-times mr-1"></i>Remove selected image
+                                </button>
+                            @endif
+
+                            @if (!empty($member['image']))
+                                <div class="mt-3">
+                                    <p class="text-xs text-gray-500">Current image:</p>
+                                    <img src="{{ $member['image'] }}" class="mt-1 w-24 h-24 object-cover rounded-lg">
+                                </div>
+                            @endif
+                            <p class="mt-2 text-xs text-gray-500">Upload overrides the URL on save.</p>
+                        </div>
                         <input type="text" wire:model="about.team.{{ $index }}.image"
-                            class="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Image URL">
+                            class="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            placeholder="Image URL (optional)">
                         <textarea rows="2" wire:model="about.team.{{ $index }}.bio"
                             class="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Bio"></textarea>
                         <input type="text" wire:model="about.team.{{ $index }}.social.linkedin"
@@ -309,8 +348,47 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg">
                         <input type="text" wire:model="about.partners.{{ $index }}.name"
                             class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Name">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Logo Upload</label>
+                            <input type="file" wire:model="partnerLogoUploads.{{ $index }}" accept="image/*"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            @error("partnerLogoUploads.$index") <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+
+                            @php
+                                $partnerLogoUpload = $partnerLogoUploads[$index] ?? null;
+                                $partnerLogoUploadPreviewable = false;
+                                if ($partnerLogoUpload) {
+                                    $partnerLogoExtension = strtolower($partnerLogoUpload->getClientOriginalExtension() ?: $partnerLogoUpload->extension());
+                                    $partnerLogoUploadPreviewable = !in_array($partnerLogoExtension, ['avif'], true);
+                                }
+                            @endphp
+                            @if ($partnerLogoUpload && $partnerLogoUploadPreviewable)
+                                <div class="mt-2">
+                                    <img src="{{ $partnerLogoUpload->temporaryUrl() }}" class="w-24 h-24 object-contain rounded-lg bg-gray-50">
+                                </div>
+                                <p class="mt-1 text-xs text-emerald-600">Upload ready.</p>
+                            @elseif ($partnerLogoUpload)
+                                <p class="mt-2 text-xs text-gray-500">Preview not available for this file type.</p>
+                            @endif
+
+                            @if ($partnerLogoUpload)
+                                <button type="button" wire:click="clearPartnerLogoUpload({{ $index }})"
+                                    class="mt-2 inline-flex items-center text-xs font-semibold text-gray-600 hover:text-gray-700">
+                                    <i class="fas fa-times mr-1"></i>Remove selected logo
+                                </button>
+                            @endif
+
+                            @if (!empty($partner['logo']))
+                                <div class="mt-3">
+                                    <p class="text-xs text-gray-500">Current logo:</p>
+                                    <img src="{{ $partner['logo'] }}" class="mt-1 w-24 h-24 object-contain rounded-lg bg-gray-50">
+                                </div>
+                            @endif
+                            <p class="mt-2 text-xs text-gray-500">Upload overrides the URL on save.</p>
+                        </div>
                         <input type="text" wire:model="about.partners.{{ $index }}.logo"
-                            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Logo URL">
+                            class="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            placeholder="Logo URL (optional)">
                         <button type="button" wire:click="removeAboutPartner({{ $index }})"
                             class="md:col-span-2 justify-self-end px-4 py-2 bg-red-600 text-white rounded-lg">Remove Partner</button>
                     </div>
