@@ -30,6 +30,8 @@ class EpisodePlayer extends Component
             })
             ->firstOrFail();
 
+        $this->episode->trackPlay(auth()->id(), 0, 0);
+
         // Load last position if user is logged in
         if (auth()->check()) {
             $history = ListeningHistory::where('user_id', auth()->id())

@@ -110,29 +110,50 @@ class Episode extends Model
     // Analytics & Tracking
     public function trackPlay($userId = null, $duration = 0, $position = 0)
     {
-        $sessionId = session()->getId() . '-' . now()->timestamp;
-        
+        $sessionId = session()->getId();
         $totalSeconds = $this->duration ? (int) round($this->duration * 60) : 0;
+        $completionRate = $totalSeconds > 0 ? ($duration / $totalSeconds) * 100 : 0;
+        $completed = $totalSeconds > 0 ? $duration >= ($totalSeconds * 0.9) : false;
 
-        Play::create([
-            'episode_id' => $this->id,
-            'user_id' => $userId,
-            'session_id' => $sessionId,
-            'ip_address' => request()->ip(),
-            'listen_duration' => $duration,
-            'total_duration' => $totalSeconds,
-            'completion_rate' => $totalSeconds > 0 ? ($duration / $totalSeconds) * 100 : 0,
-            'last_position' => $position,
-            'device_type' => $this->detectDeviceType(),
-            'platform' => 'web',
-            'user_agent' => request()->userAgent(),
-            'started_at' => now(),
-            'last_listened_at' => now(),
-            'completed' => $totalSeconds > 0 ? $duration >= ($totalSeconds * 0.9) : false,
-        ]);
+        $play = Play::firstOrCreate(
+            [
+                'episode_id' => $this->id,
+                'session_id' => $sessionId,
+            ],
+            [
+                'user_id' => $userId,
+                'ip_address' => request()->ip(),
+                'listen_duration' => $duration,
+                'total_duration' => $totalSeconds,
+                'completion_rate' => $completionRate,
+                'last_position' => $position,
+                'device_type' => $this->detectDeviceType(),
+                'platform' => 'web',
+                'user_agent' => request()->userAgent(),
+                'started_at' => now(),
+                'last_listened_at' => now(),
+                'completed' => $completed,
+            ]
+        );
 
-        $this->increment('plays');
-        $this->show->increment('total_plays');
+        if ($play->wasRecentlyCreated) {
+            $this->increment('plays');
+            $this->show?->increment('total_plays');
+            return;
+        }
+
+        $play->listen_duration = max($play->listen_duration ?? 0, $duration);
+        $play->total_duration = $totalSeconds;
+        $play->completion_rate = max($play->completion_rate ?? 0, $completionRate);
+        $play->last_position = $position;
+        $play->last_listened_at = now();
+        $play->completed = $play->completed || $completed;
+
+        if (!$play->user_id && $userId) {
+            $play->user_id = $userId;
+        }
+
+        $play->save();
     }
 
     public function trackDownload()

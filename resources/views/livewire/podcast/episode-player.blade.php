@@ -69,82 +69,84 @@
         </div>
     </section>
 
-    <!-- Audio Player -->
-    <section class="py-8 bg-white border-b sticky top-0 z-40 shadow-md">
-        <div class="container mx-auto px-4">
-            <div class="max-w-5xl mx-auto">
-                <div id="audioPlayerContainer">
-                    <audio id="podcastPlayer" class="w-full" controls controlsList="nodownload">
-                        <source src="{{ $episode->audio_file }}" type="audio/{{ $episode->audio_format ?? 'mpeg' }}">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
+    @if($episode->audio_file)
+        <!-- Audio Player -->
+        <section class="py-8 bg-white border-b sticky top-0 z-40 shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="max-w-5xl mx-auto">
+                    <div id="audioPlayerContainer">
+                        <audio id="podcastPlayer" class="w-full" controls controlsList="nodownload">
+                            <source src="{{ $episode->audio_file }}" type="audio/{{ $episode->audio_format ?? 'mpeg' }}">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
 
-                <!-- Player Controls -->
-                <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex items-center space-x-4">
-                        <button wire:click="trackDownload"
-                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
-                            <i class="fas fa-download mr-2"></i>Download
-                        </button>
-
-                        <div class="relative group">
-                            <button
-                                class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors">
-                                <i class="fas fa-share-alt mr-2"></i>Share
+                    <!-- Player Controls -->
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <button wire:click="trackDownload"
+                                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                                <i class="fas fa-download mr-2"></i>Download
                             </button>
-                            <div
-                                class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                <button wire:click="shareEpisode('x')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-t-lg flex items-center">
-                                    <i class="fab fa-x-twitter text-gray-900 mr-2"></i>X
+
+                            <div class="relative group">
+                                <button
+                                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-colors">
+                                    <i class="fas fa-share-alt mr-2"></i>Share
                                 </button>
-                                <button wire:click="shareEpisode('facebook')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
-                                    <i class="fab fa-facebook text-blue-600 mr-2"></i>Facebook
-                                </button>
-                                <button wire:click="shareEpisode('linkedin')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
-                                    <i class="fab fa-linkedin text-blue-700 mr-2"></i>LinkedIn
-                                </button>
-                                <button wire:click="shareEpisode('whatsapp')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
-                                    <i class="fab fa-whatsapp text-green-500 mr-2"></i>WhatsApp
-                                </button>
-                                <button wire:click="shareEpisode('telegram')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
-                                    <i class="fab fa-telegram text-blue-400 mr-2"></i>Telegram
-                                </button>
-                                <button wire:click="shareEpisode('reddit')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
-                                    <i class="fab fa-reddit-alien text-orange-500 mr-2"></i>Reddit
-                                </button>
-                                <button wire:click="shareEpisode('email')"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-envelope text-gray-600 mr-2"></i>Email
-                                </button>
-                                <button type="button" data-copy-link="{{ url()->current() }}"
-                                    class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-b-lg flex items-center">
-                                    <i class="fas fa-link text-gray-600 mr-2"></i><span data-copy-text>Copy link</span>
-                                </button>
+                                <div
+                                    class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                                    <button wire:click="shareEpisode('x')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-t-lg flex items-center">
+                                        <i class="fab fa-x-twitter text-gray-900 mr-2"></i>X
+                                    </button>
+                                    <button wire:click="shareEpisode('facebook')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                        <i class="fab fa-facebook text-blue-600 mr-2"></i>Facebook
+                                    </button>
+                                    <button wire:click="shareEpisode('linkedin')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                        <i class="fab fa-linkedin text-blue-700 mr-2"></i>LinkedIn
+                                    </button>
+                                    <button wire:click="shareEpisode('whatsapp')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                        <i class="fab fa-whatsapp text-green-500 mr-2"></i>WhatsApp
+                                    </button>
+                                    <button wire:click="shareEpisode('telegram')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                        <i class="fab fa-telegram text-blue-400 mr-2"></i>Telegram
+                                    </button>
+                                    <button wire:click="shareEpisode('reddit')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                        <i class="fab fa-reddit-alien text-orange-500 mr-2"></i>Reddit
+                                    </button>
+                                    <button wire:click="shareEpisode('email')"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center">
+                                        <i class="fas fa-envelope text-gray-600 mr-2"></i>Email
+                                    </button>
+                                    <button type="button" data-copy-link="{{ url()->current() }}"
+                                        class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-b-lg flex items-center">
+                                        <i class="fas fa-link text-gray-600 mr-2"></i><span data-copy-text>Copy link</span>
+                                    </button>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-file-audio mr-1"></i>
+                            {{ $episode->file_size_formatted }} • {{ strtoupper($episode->audio_format ?? 'MP3') }}
                         </div>
                     </div>
 
-                    <div class="text-sm text-gray-600">
-                        <i class="fas fa-file-audio mr-1"></i>
-                        {{ $episode->file_size_formatted }} • {{ strtoupper($episode->audio_format ?? 'MP3') }}
-                    </div>
+                    @if (session()->has('success'))
+                        <div class="mt-4 p-3 bg-green-100 text-green-700 rounded-lg">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                 </div>
-
-                @if (session()->has('success'))
-                    <div class="mt-4 p-3 bg-green-100 text-green-700 rounded-lg">
-                        {{ session('success') }}
-                    </div>
-                @endif
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
 <!-- Video Player (if video exists) -->
 @if($episode->has_video)
@@ -338,10 +340,14 @@
                             @error('comment') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
 
                             <div class="mt-4 flex items-center justify-between">
-                                <button type="button" onclick="addTimestamp()"
-                                    class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
-                                    <i class="fas fa-clock mr-1"></i>Add Current Timestamp
-                                </button>
+                                @if($episode->audio_file)
+                                    <button type="button" onclick="addTimestamp()"
+                                        class="text-sm text-purple-600 hover:text-purple-700 font-semibold">
+                                        <i class="fas fa-clock mr-1"></i>Add Current Timestamp
+                                    </button>
+                                @else
+                                    <span class="text-sm text-gray-400">Timestamps available for audio only.</span>
+                                @endif
                                 <button type="submit"
                                     class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
                                     <i class="fas fa-paper-plane mr-2"></i>Post Comment
@@ -457,33 +463,35 @@
         </div>
     </div>
 
-    <!-- JavaScript for Player -->
-    <script>
-        const player = document.getElementById('podcastPlayer');
-        let lastTracked = 0;
+    @if($episode->audio_file)
+        <!-- JavaScript for Player -->
+        <script>
+            const player = document.getElementById('podcastPlayer');
+            let lastTracked = 0;
 
-        player.addEventListener('timeupdate', function () {
-            const currentTime = Math.floor(player.currentTime);
-            const duration = Math.floor(player.duration);
+            player.addEventListener('timeupdate', function () {
+                const currentTime = Math.floor(player.currentTime);
+                const duration = Math.floor(player.duration);
 
-            // Track progress every 30 seconds
-            if (currentTime > 0 && currentTime % 30 === 0 && currentTime !== lastTracked) {
-                @this.call('updateProgress', currentTime, duration);
-                lastTracked = currentTime;
-            }
-        });
-
-        function addTimestamp() {
-            const currentTime = Math.floor(player.currentTime);
-            @this.call('setCommentTime', currentTime);
-        }
-
-        // Resume from last position
-        @if($currentPosition > 0)
-            player.addEventListener('loadedmetadata', function () {
-                player.currentTime = {{ $currentPosition }};
+                // Track progress every 30 seconds
+                if (currentTime > 0 && currentTime % 30 === 0 && currentTime !== lastTracked) {
+                    @this.call('updateProgress', currentTime, duration);
+                    lastTracked = currentTime;
+                }
             });
-        @endif
-    </script>
+
+            function addTimestamp() {
+                const currentTime = Math.floor(player.currentTime);
+                @this.call('setCommentTime', currentTime);
+            }
+
+            // Resume from last position
+            @if($currentPosition > 0)
+                player.addEventListener('loadedmetadata', function () {
+                    player.currentTime = {{ $currentPosition }};
+                });
+            @endif
+        </script>
+    @endif
 
 </div>
