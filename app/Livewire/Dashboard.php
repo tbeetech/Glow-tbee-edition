@@ -228,11 +228,13 @@ class Dashboard extends Component
         $this->todaySchedule = $slotsToday
             ->map(function ($slot) use ($time) {
                 $isCurrent = $slot->start_time <= $time && $slot->end_time > $time;
+                $isAired = $slot->end_time <= $time;
+                $status = $isCurrent ? 'On Air' : ($isAired ? 'Aired' : 'Upcoming');
                 return [
                     'title' => $slot->show?->title ?? 'Unknown',
                     'host' => $slot->oap?->name ?? 'Unknown',
                     'time' => $slot->time_range ?? 'Unknown',
-                    'status' => $isCurrent ? 'On Air' : 'Upcoming',
+                    'status' => $status,
                 ];
             })
             ->values()
