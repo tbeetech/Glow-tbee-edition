@@ -307,30 +307,39 @@
     </section>
 
     <!-- Map Section -->
-    <section class="py-20 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find Us</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Visit our studio and see where the magic happens
-                </p>
-            </div>
+  @php
+    $address = 'No. 1, Efon Alaye Street, Ijapo Estate, Akure, Ondo State, Nigeria';
+    $mapEmbed = 'https://www.google.com/maps?q=' . urlencode($address) . '&output=embed';
+    $directions = 'https://www.google.com/maps/dir/?api=1&destination=' . urlencode($address);
+@endphp
 
-            <div class="rounded-2xl overflow-hidden shadow-2xl">
-                <iframe src="{{ data_get($contactContent, 'contact_info.map_embed') }}" width="100%" height="500"
-                    style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                    class="w-full"></iframe>
-            </div>
 
-            <div class="mt-8 text-center">
-                <a href="https://maps.google.com" target="_blank"
-                    class="inline-flex items-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-                    <i class="fas fa-directions"></i>
-                    <span>Get Directions</span>
-                </a>
-            </div>
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find Us</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Visit our studio and see where the magic happens
+            </p>
         </div>
-    </section>
+
+        <div class="rounded-2xl overflow-hidden shadow-2xl">
+            <iframe src="{{ $mapEmbed }}" width="100%" height="500"
+                style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                class="w-full"></iframe>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ $directions }}" target="_blank"
+                class="inline-flex items-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                <i class="fas fa-directions"></i>
+                <span>Get Directions</span>
+            </a>
+        </div>
+    </div>
+</section>
+
 
     <!-- FAQ Section -->
     <section class="py-20 bg-gray-50">
