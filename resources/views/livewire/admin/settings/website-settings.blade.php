@@ -256,7 +256,7 @@
             <h4 class="text-md font-semibold text-gray-900">Team Members</h4>
             <div class="mt-4 space-y-4">
                 @foreach($about['team'] as $index => $member)
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg" wire:key="about-team-{{ $index }}">
                         <input type="text" wire:model="about.team.{{ $index }}.name"
                             class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Name">
                         <input type="text" wire:model="about.team.{{ $index }}.position"
@@ -302,8 +302,34 @@
                         <input type="text" wire:model="about.team.{{ $index }}.image"
                             class="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             placeholder="Image URL (optional)">
-                        <textarea rows="2" wire:model="about.team.{{ $index }}.bio"
-                            class="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Bio"></textarea>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bio (Rich Text)</label>
+                            <div x-data="richTextEditor(@entangle('about.team.' . $index . '.bio').defer)" class="border border-gray-300 rounded-lg overflow-hidden">
+                                <div class="flex flex-wrap items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-200">
+                                    <button type="button" class="px-2 py-1 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="format('bold')"><strong>B</strong></button>
+                                    <button type="button" class="px-2 py-1 text-sm italic text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="format('italic')"><em>I</em></button>
+                                    <button type="button" class="px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="format('underline')"><span class="underline">U</span></button>
+                                    <button type="button" class="px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="formatBlock('p')">P</button>
+                                    <button type="button" class="px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="format('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
+                                    <button type="button" class="px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="format('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
+                                    <button type="button" class="px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="createLink()"><i class="fas fa-link"></i></button>
+                                    <button type="button" class="px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
+                                        @click="format('unlink')"><i class="fas fa-unlink"></i></button>
+                                </div>
+                                <div x-ref="editor" contenteditable="true"
+                                    class="min-h-[120px] px-4 py-3 text-gray-800 focus:outline-none"
+                                    @input="sync()"
+                                    @blur="sync()"></div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Use the toolbar for bold, italics, lists, and links. This will render on the About page.</p>
+                        </div>
                         <input type="text" wire:model="about.team.{{ $index }}.social.linkedin"
                             class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="LinkedIn URL">
                         <input type="text" wire:model="about.team.{{ $index }}.social.twitter"
@@ -584,3 +610,43 @@
         </div>
     @endif
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('richTextEditor', (model) => ({
+            content: model,
+            init() {
+                this.$nextTick(() => {
+                    this.$refs.editor.innerHTML = this.content || '';
+                });
+
+                this.$watch('content', (value) => {
+                    const html = value || '';
+                    if (this.$refs.editor && this.$refs.editor.innerHTML !== html) {
+                        this.$refs.editor.innerHTML = html;
+                    }
+                });
+            },
+            sync() {
+                this.content = this.$refs.editor.innerHTML;
+            },
+            format(command) {
+                this.$refs.editor.focus();
+                document.execCommand(command, false, null);
+                this.sync();
+            },
+            formatBlock(tag) {
+                this.$refs.editor.focus();
+                document.execCommand('formatBlock', false, tag);
+                this.sync();
+            },
+            createLink() {
+                const url = prompt('Enter URL');
+                if (!url) return;
+                this.$refs.editor.focus();
+                document.execCommand('createLink', false, url);
+                this.sync();
+            },
+        }));
+    });
+</script>
