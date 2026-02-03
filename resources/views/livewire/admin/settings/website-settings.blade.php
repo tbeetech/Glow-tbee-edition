@@ -304,7 +304,8 @@
                             placeholder="Image URL (optional)">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Bio (Rich Text)</label>
-                            <div x-data="richTextEditor(@entangle('about.team.' . $index . '.bio').defer)" class="border border-gray-300 rounded-lg overflow-hidden">
+                            <div x-data="richTextEditor(@entangle('about.team.' . $index . '.bio').defer)"
+                                class="border border-gray-300 rounded-lg overflow-hidden" wire:ignore>
                                 <div class="flex flex-wrap items-center gap-2 px-3 py-2 bg-gray-50 border-b border-gray-200">
                                     <button type="button" class="px-2 py-1 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded hover:bg-gray-100"
                                         @click="format('bold')"><strong>B</strong></button>
@@ -326,7 +327,7 @@
                                 <div x-ref="editor" contenteditable="true"
                                     class="min-h-[120px] px-4 py-3 text-gray-800 focus:outline-none"
                                     @input="sync()"
-                                    @blur="sync()"></div>
+                                    @blur="sync()">{!! $member['bio'] ?? '' !!}</div>
                             </div>
                             <p class="mt-2 text-xs text-gray-500">Use the toolbar for bold, italics, lists, and links. This will render on the About page.</p>
                         </div>
@@ -617,11 +618,17 @@
             content: model,
             init() {
                 this.$nextTick(() => {
-                    this.$refs.editor.innerHTML = this.content || '';
+                    const current = typeof this.content === 'string' ? this.content : '';
+                    const existing = this.$refs.editor.innerHTML || '';
+                    const initial = current || existing;
+                    this.$refs.editor.innerHTML = initial;
+                    if (!current && initial) {
+                        this.content = initial;
+                    }
                 });
 
                 this.$watch('content', (value) => {
-                    const html = value || '';
+                    const html = typeof value === 'string' ? value : '';
                     if (this.$refs.editor && this.$refs.editor.innerHTML !== html) {
                         this.$refs.editor.innerHTML = html;
                     }
