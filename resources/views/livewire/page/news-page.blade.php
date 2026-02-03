@@ -1,4 +1,5 @@
 <div>
+    @normalizeArray($featuredHero)
     @php
         $glowPosterName = 'Glow FM';
         $glowPosterLogo = asset('glowfm logo.jpeg');
@@ -76,6 +77,7 @@
                     <!-- Secondary -->
                     <div class="space-y-6">
                         @foreach($featuredSecondary as $secondary)
+                            @continueIfNotArray($secondary)
                             <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group border border-gray-100">
                                 <div class="relative h-44 overflow-hidden">
                                     <a href="{{ route('news.show', $secondary['slug']) }}">
@@ -147,6 +149,7 @@
                         </h3>
                         <div class="space-y-2">
                             @foreach($categories as $category)
+                                @continueIfNotArray($category)
                                 <button wire:click="$set('selectedCategory', '{{ $category['slug'] }}')"
                                     class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 {{ $selectedCategory === $category['slug'] ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }}">
                                     <span class="flex items-center space-x-2">
@@ -167,6 +170,7 @@
                             </h3>
                             <div class="space-y-4">
                                 @foreach($featuredSidebar as $sidebarItem)
+                                    @continueIfNotArray($sidebarItem)
                                     <a href="{{ route('news.show', $sidebarItem['slug']) }}" class="flex items-start space-x-3 group">
                                         <div class="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                                             <x-initials-image
@@ -199,6 +203,7 @@
                         </h3>
                         <div class="space-y-4">
                             @foreach($trendingNews as $index => $trending)
+                                @continueIfNotArray($trending)
                                 <a href="/news/{{ $trending['id'] }}" class="flex items-start space-x-3 group">
                                     <span
                                         class="flex-shrink-0 w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center font-bold text-sm">
@@ -266,7 +271,7 @@
                                 @if($selectedCategory === 'all')
                                     All News
                                 @else
-                                    {{ collect($categories)->firstWhere('slug', $selectedCategory)['name'] ?? 'News' }}
+                                    {{ data_get(collect($categories)->firstWhere('slug', $selectedCategory), 'name', 'News') }}
                                 @endif
                             </h2>
                             <p class="text-gray-600 mt-1">{{ $newsArticles->total() }} articles found</p>
@@ -293,6 +298,7 @@
                     @if(count($newsArticles) > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             @foreach($newsArticles as $article)
+                                @continueIfNotArray($article)
                                 <article
                                     class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                                     <!-- Image -->

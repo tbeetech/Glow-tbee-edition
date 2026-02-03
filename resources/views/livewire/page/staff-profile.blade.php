@@ -1,4 +1,5 @@
 <div class="min-h-screen bg-gray-50">
+    @normalizeArray($profile)
     <section class="relative bg-gradient-to-br from-emerald-700 via-emerald-800 to-slate-900 text-white py-16">
         <div class="container mx-auto px-4">
             <x-ad-slot placement="staff-profile" />
@@ -57,7 +58,7 @@
                         </div>
                     </div>
 
-                    @if(!empty($profile['social_links']))
+                    @if(is_array($profile) && !empty($profile['social_links']) && (is_array($profile['social_links']) || $profile['social_links'] instanceof \ArrayAccess))
                         <div class="bg-white rounded-2xl shadow-lg p-6">
                             <h3 class="font-bold text-gray-900 mb-4">Social</h3>
                             <div class="flex flex-wrap gap-3 text-gray-500">

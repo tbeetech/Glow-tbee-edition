@@ -35,6 +35,11 @@ class HomePage extends Component
     public $homeContent = [];
     public $currentShow = null;
 
+    public function hydrate()
+    {
+        $this->normalizeFeaturedShows();
+    }
+
     public function mount()
     {
         $this->loadRealNews();
@@ -46,6 +51,27 @@ class HomePage extends Component
         $this->loadStats();
         $this->loadTestimonials();
         $this->loadHomeContent();
+    }
+
+    private function normalizeFeaturedShows(): void
+    {
+        if (!is_array($this->featuredShows)) {
+            $this->loadRealPodcasts();
+            return;
+        }
+
+        if (empty($this->featuredShows)) {
+            return;
+        }
+
+        $first = $this->featuredShows[array_key_first($this->featuredShows)] ?? null;
+        if (is_array($first) || is_object($first)) {
+            return;
+        }
+
+        if (is_numeric($first)) {
+            $this->loadRealPodcasts();
+        }
     }
 
     private function loadRealNews()

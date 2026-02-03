@@ -85,6 +85,7 @@
                         </h3>
                         <div class="space-y-2">
                             @foreach($categories as $category)
+                                @continueIfNotArray($category)
                                 <button wire:click="$set('selectedCategory', '{{ $category['slug'] }}')"
                                     class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 {{ $selectedCategory === $category['slug'] ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }}">
                                     <span class="flex items-center space-x-2">
@@ -105,7 +106,7 @@
                                 @if($selectedCategory === 'all')
                                     All Shows
                                 @else
-                                    {{ collect($categories)->firstWhere('slug', $selectedCategory)['name'] ?? 'Shows' }}
+                                    {{ data_get(collect($categories)->firstWhere('slug', $selectedCategory), 'name', 'Shows') }}
                                 @endif
                             </h2>
                             <p class="text-gray-600 mt-1">{{ $shows->total() }} shows found</p>

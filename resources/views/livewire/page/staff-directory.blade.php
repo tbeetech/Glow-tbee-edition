@@ -23,6 +23,7 @@
             @if($staffProfiles->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($staffProfiles as $staff)
+                        @continueIfNotArray($staff)
                         <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                             <div class="p-6">
                                 <div class="flex items-center space-x-4">
@@ -63,7 +64,7 @@
                                     @endif
                                 </div>
 
-                                @if(!empty($staff['social_links']))
+                                @if(!empty($staff['social_links']) && (is_array($staff['social_links']) || $staff['social_links'] instanceof \ArrayAccess))
                                     <div class="mt-4 flex items-center space-x-3 text-gray-400">
                                         @foreach($staff['social_links'] as $key => $url)
                                             @if(!empty($url))

@@ -1,4 +1,5 @@
 <div>
+    @normalizeArray($featuredPost)
     <!-- Page Header -->
     <section
         class="relative bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 text-white py-20 overflow-hidden">
@@ -129,6 +130,7 @@
                         </h3>
                         <div class="space-y-2">
                             @foreach($categories as $category)
+                                @continueIfNotArray($category)
                                 <button wire:click="$set('selectedCategory', '{{ $category['slug'] }}')"
                                     class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 {{ $selectedCategory === $category['slug'] ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }}">
                                     <span class="flex items-center space-x-2">
@@ -149,6 +151,7 @@
                         </h3>
                         <div class="space-y-4">
                             @foreach($trendingPosts as $index => $trending)
+                                @continueIfNotArray($trending)
                                 <a href="/blog/{{ $trending['slug'] }}" class="flex items-start space-x-3 group">
                                     <span
                                         class="flex-shrink-0 w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">
@@ -216,7 +219,7 @@
                                 @if($selectedCategory === 'all')
                                     All Posts
                                 @else
-                                    {{ collect($categories)->firstWhere('slug', $selectedCategory)['name'] ?? 'Blog' }}
+                                    {{ data_get(collect($categories)->firstWhere('slug', $selectedCategory), 'name', 'Blog') }}
                                 @endif
                             </h2>
                             <p class="text-gray-600 mt-1">{{ $posts->total() }} articles found</p>
@@ -235,6 +238,7 @@
                     @if(count($posts) > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             @foreach($posts as $post)
+                                @continueIfNotArray($post)
                                 <article
                                     class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                                     <!-- Image -->

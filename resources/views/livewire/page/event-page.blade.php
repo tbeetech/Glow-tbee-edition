@@ -1,4 +1,5 @@
 <div>
+    @normalizeArray($featuredEvent)
     <!-- Page Header -->
     <section class="relative bg-gradient-to-br from-amber-600 via-amber-700 to-orange-700 text-white py-20 overflow-hidden">
         <div class="absolute inset-0 opacity-10">
@@ -105,6 +106,7 @@
                         </h3>
                         <div class="space-y-2">
                             @foreach($categories as $category)
+                                @continueIfNotArray($category)
                                 <button wire:click="$set('selectedCategory', '{{ $category['slug'] }}')"
                                     class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 {{ $selectedCategory === $category['slug'] ? 'bg-amber-50 text-amber-700 font-semibold' : 'text-gray-700 hover:bg-gray-50' }}">
                                     <span class="flex items-center space-x-2">
@@ -165,7 +167,7 @@
                                 @if($selectedCategory === 'all')
                                     All Events
                                 @else
-                                    {{ collect($categories)->firstWhere('slug', $selectedCategory)['name'] ?? 'Events' }}
+                                    {{ data_get(collect($categories)->firstWhere('slug', $selectedCategory), 'name', 'Events') }}
                                 @endif
                             </h2>
                             <p class="text-gray-600 mt-1">{{ $events->total() }} events found</p>

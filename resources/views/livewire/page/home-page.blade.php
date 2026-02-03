@@ -1,4 +1,18 @@
 <div wire:poll.60s="refreshHomeData">
+    @normalizeArray($featuredShows)
+    @normalizeArray($latestPodcastEpisodes)
+    @normalizeArray($latestNews)
+    @normalizeArray($latestBlogPosts)
+    @normalizeArray($trendingBlogPosts)
+    @normalizeArray($upcomingEvents)
+    @normalizeArray($stats)
+    @normalizeArray($testimonials)
+    @normalizeArray($trendingNews)
+    @normalizeArray($featuredNews)
+    @normalizeArray($mostViewedNews)
+    @normalizeArray($otherNews)
+    @normalizeArray($homeContent)
+    @normalizeArray($currentShow)
     <!-- Breaking News Banner (if exists) -->
     @if($breakingNews)
     <div class="bg-red-600 text-white py-3 sticky top-28 z-40 shadow-lg animate-pulse">
@@ -143,6 +157,7 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                 @foreach($stats as $stat)
+                    @continueIfNotArray($stat)
                     <div class="text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-2xl mb-4">
                             <i class="{{ $stat['icon'] }} text-3xl text-emerald-600"></i>
@@ -166,7 +181,8 @@
                 </div>
                 <div class="flex-1 overflow-hidden">
                     <div class="flex animate-scroll space-x-8">
-                        @foreach($trendingNews as $trending)
+                    @foreach($trendingNews as $trending)
+                        @continueIfNotArray($trending)
                             <a href="/news/{{ $trending['slug'] }}" class="flex-shrink-0 hover:text-emerald-200 transition-colors">
                                 <span class="font-semibold">{{ $trending['title'] }}</span>
                                 <span class="text-emerald-200 text-sm ml-2">• {{ $trending['views'] }} views</span>
@@ -205,6 +221,7 @@
             @if(count($latestNews) > 0)
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     @foreach($latestNews as $news)
+                        @continueIfNotArray($news)
                         <article class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
                             <div class="relative h-56 overflow-hidden">
                                 <x-initials-image
@@ -317,6 +334,7 @@
                         <i class="fas fa-fire text-amber-300"></i> Trending Now
                     </span>
                     @foreach($trendingNews as $trend)
+                        @continueIfNotArray($trend)
                         <a href="/news/{{ $trend['slug'] ?? '#' }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full bg-white/80 border border-emerald-100 text-emerald-800 hover:bg-emerald-600 hover:text-white transition-colors">
                             <span>{{ $trend['title'] }}</span>
                             <span class="text-[10px] opacity-70">{{ $trend['published_at'] }}</span>
@@ -370,6 +388,7 @@
                     @if(count($featuredNews) > 1)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @foreach(array_slice($featuredNews, 1) as $news)
+                                @continueIfNotArray($news)
                                 <article class="group rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <div class="relative h-48">
                                         <x-initials-image
@@ -404,6 +423,7 @@
 
                     <div class="space-y-4">
                         @forelse($mostViewedNews as $index => $news)
+                            @continueIfNotArray($news)
                             <a href="/news/{{ $news['slug'] }}" class="group flex items-start gap-4 p-4 rounded-2xl bg-white/80 border border-white hover:bg-white shadow-sm hover:shadow-lg transition-all duration-300">
                                 <div class="text-2xl font-black text-emerald-700/60 w-8">{{ $index + 1 }}</div>
                                 <div class="flex-1">
@@ -435,6 +455,7 @@
                 @if(count($otherNews) > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         @foreach($otherNews as $news)
+                            @continueIfNotArray($news)
                             <article class="group rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300">
                                 <div class="relative h-48 overflow-hidden">
                                     <x-initials-image
@@ -506,6 +527,7 @@
         @if(count($latestBlogPosts) > 0)
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($latestBlogPosts as $post)
+                    @continueIfNotArray($post)
                     <article class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group">
                         <div class="relative h-56 overflow-hidden">
                             <x-initials-image
@@ -585,8 +607,9 @@
             </div>
             <div class="flex-1 overflow-hidden">
                 <div class="flex animate-scroll space-x-8">
-                    @foreach($trendingBlogPosts as $trending)
-                        <a href="/blog/{{ $trending['slug'] }}" class="flex-shrink-0 hover:text-purple-200 transition-colors">
+                @foreach($trendingBlogPosts as $trending)
+                    @continueIfNotArray($trending)
+                    <a href="/blog/{{ $trending['slug'] }}" class="flex-shrink-0 hover:text-purple-200 transition-colors">
                             <span class="font-semibold">{{ $trending['title'] }}</span>
                             <span class="text-purple-200 text-sm ml-2">• {{ number_format($trending['views']) }} views</span>
                         </a>
@@ -615,6 +638,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($upcomingEvents as $event)
+                    @continueIfNotArray($event)
                     <div class="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20 hover:bg-white/20 transition-all duration-300 group">
                         <div class="relative h-48 overflow-hidden">
                             <x-initials-image
@@ -675,8 +699,9 @@
 
         @if(count($latestPodcastEpisodes) > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($latestPodcastEpisodes as $episode)
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
+            @foreach($latestPodcastEpisodes as $episode)
+                @continueIfNotArray($episode)
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
                         <div class="relative h-48 overflow-hidden">
                             <x-initials-image
                                 :src="$episode['image'] ?? null"
@@ -750,6 +775,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($featuredShows as $show)
+                    @continueIfNotArray($show)
                     <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
                         <a href="{{ route('shows.show', $show['slug']) }}" class="relative h-64 overflow-hidden block">
                             <x-initials-image
@@ -817,6 +843,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($testimonials as $testimonial)
+                    @continueIfNotArray($testimonial)
                     <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
                         <div class="flex items-center mb-4">
                             @for($i = 0; $i < $testimonial['rating']; $i++)

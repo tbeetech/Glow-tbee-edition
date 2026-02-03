@@ -276,6 +276,7 @@
                         </h2>
                         <div class="space-y-3">
                             @foreach($episode->chapters as $chapter)
+                                @continueIfNotArray($chapter)
                                 <div class="flex items-start space-x-3 p-3 hover:bg-purple-50 rounded-lg cursor-pointer transition-colors"
                                     onclick="document.getElementById('podcastPlayer').currentTime = {{ $chapter['time'] }}">
                                     <span
@@ -296,6 +297,7 @@
                         </h2>
                         <div class="space-y-4 max-h-96 overflow-y-auto">
                             @foreach($episode->transcript as $line)
+                                @continueIfNotArray($line)
                                 <div class="flex items-start space-x-3">
                                     @if(isset($line['time']))
                                         <span class="font-mono text-xs text-gray-500">{{ gmdate('H:i:s', $line['time']) }}</span>

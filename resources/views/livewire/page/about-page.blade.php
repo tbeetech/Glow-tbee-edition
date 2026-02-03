@@ -1,4 +1,5 @@
 <div>
+    @normalizeArray($aboutContent)
     <!-- Page Header -->
     <section
         class="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 text-white py-20 overflow-hidden">
@@ -26,12 +27,12 @@
                 <div>
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{{ $aboutContent['story_title'] }}</h2>
                     <div class="space-y-6 text-lg text-gray-700 leading-relaxed">
-                        @foreach($aboutContent['story_paragraphs'] as $paragraph)
+                        @foreach((array) data_get($aboutContent, 'story_paragraphs', []) as $paragraph)
                             <p>{{ $paragraph }}</p>
                         @endforeach
                     </div>
                     <div class="mt-8 flex flex-wrap gap-4">
-                        @foreach($aboutContent['story_badges'] as $badge)
+                        @foreach((array) data_get($aboutContent, 'story_badges', []) as $badge)
                             <div class="flex items-center space-x-3 bg-emerald-50 px-6 py-3 rounded-full">
                                 <i class="fas fa-check-circle text-emerald-600 text-xl"></i>
                                 <span class="font-semibold text-gray-900">{{ $badge }}</span>
@@ -91,7 +92,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($aboutContent['values'] as $value)
+                @foreach((array) data_get($aboutContent, 'values', []) as $value)
+                    @continueIfNotArray($value)
                     <div
                         class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 border-b-4 border-{{ $value['color'] }}-500">
                         <div
@@ -117,7 +119,8 @@
             </div>
 
             <div class="max-w-5xl mx-auto">
-                @foreach($aboutContent['milestones'] as $index => $milestone)
+                @foreach((array) data_get($aboutContent, 'milestones', []) as $index => $milestone)
+                    @continueIfNotArray($milestone)
                     <div class="relative pl-8 pb-12 border-l-4 border-emerald-600 {{ $loop->last ? 'pb-0' : '' }}">
                         <!-- Timeline Dot -->
                         <div
@@ -153,7 +156,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                @foreach($aboutContent['team'] as $member)
+                @foreach((array) data_get($aboutContent, 'team', []) as $member)
+                    @continueIfNotArray($member)
                     <div
                         class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                         <div class="relative h-80 overflow-hidden">
@@ -199,7 +203,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($aboutContent['achievements'] as $achievement)
+                @foreach((array) data_get($aboutContent, 'achievements', []) as $achievement)
+                    @continueIfNotArray($achievement)
                     <div
                         class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
                         <div class="flex items-start space-x-4">
@@ -231,7 +236,8 @@
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-                @foreach($aboutContent['partners'] as $partner)
+                @foreach((array) data_get($aboutContent, 'partners', []) as $partner)
+                    @continueIfNotArray($partner)
                     <div
                         class="bg-white rounded-xl shadow-md p-6 flex items-center justify-center hover:shadow-xl transition-shadow duration-300 group">
                         <img src="{{ $partner['logo'] }}" alt="{{ $partner['name'] }}"
@@ -254,7 +260,8 @@
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        @foreach($aboutContent['stats'] as $stat)
+                        @foreach((array) data_get($aboutContent, 'stats', []) as $stat)
+                            @continueIfNotArray($stat)
                             <div class="text-center">
                                 <div class="text-5xl font-bold mb-2">{{ $stat['number'] }}</div>
                                 <div class="text-emerald-100">{{ $stat['label'] }}</div>

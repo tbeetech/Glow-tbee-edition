@@ -1,4 +1,5 @@
 <div>
+    @normalizeArray($contactContent)
     <!-- Page Header -->
     <section
         class="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 text-white py-20 overflow-hidden">
@@ -11,9 +12,9 @@
         <div class="container mx-auto px-4 relative z-10">
             <x-ad-slot placement="contact" />
             <div class="max-w-4xl mx-auto text-center">
-                <h1 class="text-5xl md:text-6xl font-bold mb-6">{{ $contactContent['header_title'] }}</h1>
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">{{ data_get($contactContent, 'header_title') }}</h1>
                 <p class="text-xl md:text-2xl text-emerald-100 leading-relaxed">
-                    {{ $contactContent['header_subtitle'] }}
+                    {{ data_get($contactContent, 'header_subtitle') }}
                 </p>
             </div>
         </div>
@@ -31,11 +32,11 @@
                         <i class="fas fa-phone text-3xl text-white"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">Call Us</h3>
-                    <p class="text-gray-600 mb-4">Weekdays: {{ $contactContent['contact_info']['hours']['weekdays'] }}
+                    <p class="text-gray-600 mb-4">Weekdays: {{ data_get($contactContent, 'contact_info.hours.weekdays') }}
                     </p>
-                    <a href="tel:{{ $contactContent['contact_info']['phone'] }}"
+                    <a href="tel:{{ data_get($contactContent, 'contact_info.phone') }}"
                         class="text-xl font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-                        {{ $contactContent['contact_info']['phone'] }}
+                        {{ data_get($contactContent, 'contact_info.phone') }}
                     </a>
                 </div>
 
@@ -48,9 +49,9 @@
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">Email Us</h3>
                     <p class="text-gray-600 mb-4">We'll respond within 24 hours</p>
-                    <a href="mailto:{{ $contactContent['contact_info']['email'] }}"
+                    <a href="mailto:{{ data_get($contactContent, 'contact_info.email') }}"
                         class="text-xl font-semibold text-blue-600 hover:text-blue-700 transition-colors break-all">
-                        {{ $contactContent['contact_info']['email'] }}
+                        {{ data_get($contactContent, 'contact_info.email') }}
                     </a>
                 </div>
 
@@ -64,7 +65,7 @@
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">Visit Us</h3>
                     <p class="text-gray-600 mb-4">Come see our studio</p>
                     <p class="text-purple-600 font-semibold">
-                        {{ $contactContent['contact_info']['address'] }}
+                        {{ data_get($contactContent, 'contact_info.address') }}
                     </p>
                 </div>
             </div>
@@ -201,17 +202,17 @@
                             <div class="flex justify-between items-center py-2 border-b border-gray-200">
                                 <span class="text-gray-600 font-medium">Weekdays</span>
                                 <span
-                                    class="text-gray-900 font-semibold">{{ $contactContent['contact_info']['hours']['weekdays'] }}</span>
+                                    class="text-gray-900 font-semibold">{{ data_get($contactContent, 'contact_info.hours.weekdays') }}</span>
                             </div>
                             <div class="flex justify-between items-center py-2 border-b border-gray-200">
                                 <span class="text-gray-600 font-medium">Saturday</span>
                                 <span
-                                    class="text-gray-900 font-semibold">{{ $contactContent['contact_info']['hours']['saturday'] }}</span>
+                                    class="text-gray-900 font-semibold">{{ data_get($contactContent, 'contact_info.hours.saturday') }}</span>
                             </div>
                             <div class="flex justify-between items-center py-2">
                                 <span class="text-gray-600 font-medium">Sunday</span>
                                 <span
-                                    class="text-gray-900 font-semibold">{{ $contactContent['contact_info']['hours']['sunday'] }}</span>
+                                    class="text-gray-900 font-semibold">{{ data_get($contactContent, 'contact_info.hours.sunday') }}</span>
                             </div>
                         </div>
                         <p class="mt-4 text-sm text-gray-600 bg-emerald-50 p-3 rounded-lg">
@@ -231,7 +232,8 @@
                         <p class="text-gray-600 mb-4">Connect with us on social media for updates and behind-the-scenes
                             content!</p>
                         <div class="grid grid-cols-3 gap-3">
-                            @foreach($contactContent['socials'] as $social)
+                            @foreach((array) data_get($contactContent, 'socials', []) as $social)
+                                @continueIfNotArray($social)
                                 <a href="{{ $social['url'] }}"
                                     class="flex flex-col items-center justify-center p-4 bg-gray-50 hover:bg-{{ $social['color'] }}-50 rounded-xl transition-all duration-300 group">
                                     <i
@@ -249,9 +251,9 @@
                             <h3 class="text-xl font-bold">Request Line</h3>
                         </div>
                         <p class="mb-3 text-red-100">Call to request a song or give a shout-out on air!</p>
-                        <a href="tel:{{ $contactContent['contact_info']['phone'] }}"
+                        <a href="tel:{{ data_get($contactContent, 'contact_info.phone') }}"
                             class="block text-center py-3 bg-white text-red-600 font-bold rounded-xl hover:bg-red-50 transition-colors">
-                            {{ $contactContent['contact_info']['phone'] }}
+                            {{ data_get($contactContent, 'contact_info.phone') }}
                         </a>
                     </div>
                 </div>
@@ -270,7 +272,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($contactContent['departments'] as $dept)
+                @foreach((array) data_get($contactContent, 'departments', []) as $dept)
+                    @continueIfNotArray($dept)
                     <div
                         class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-b-4 border-{{ $dept['color'] }}-500">
                         <div class="flex items-start space-x-4 mb-4">
@@ -314,7 +317,7 @@
             </div>
 
             <div class="rounded-2xl overflow-hidden shadow-2xl">
-                <iframe src="{{ $contactContent['contact_info']['map_embed'] }}" width="100%" height="500"
+                <iframe src="{{ data_get($contactContent, 'contact_info.map_embed') }}" width="100%" height="500"
                     style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
                     class="w-full"></iframe>
             </div>
@@ -340,7 +343,8 @@
             </div>
 
             <div class="max-w-4xl mx-auto space-y-4">
-                @foreach($contactContent['faqs'] as $index => $faq)
+                @foreach((array) data_get($contactContent, 'faqs', []) as $index => $faq)
+                    @continueIfNotArray($faq)
                     <div x-data="{ open: false }" class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <button @click="open = !open"
                             class="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors">
