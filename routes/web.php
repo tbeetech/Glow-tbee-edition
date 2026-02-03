@@ -62,6 +62,7 @@ use App\Livewire\Admin\Ads\Index as AdminAdsIndex;
 use App\Livewire\Admin\Ads\Form as AdminAdsForm;
 use App\Livewire\Admin\Approvals\ApproverSettings;
 use App\Livewire\Admin\Profile\ProfileForm as AdminProfileForm;
+use App\Http\Controllers\SitemapController;
 
 use App\Livewire\Admin\Show\Manage as ShowManage;
 use App\Livewire\Admin\Show\ShowForm as AdminShowForm;
@@ -72,6 +73,7 @@ use App\Livewire\Admin\Show\OapForm as AdminShowOapForm;
 use App\Livewire\Admin\Show\Reviews as AdminShowReviews;
 
 // Public Routes
+Route::get('/sitemap', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/', HomePage::class)->name('home');
 Route::get('/about', AboutPage::class)->name('about');
 Route::get('/contact', ContactPage::class)->name('contact');
