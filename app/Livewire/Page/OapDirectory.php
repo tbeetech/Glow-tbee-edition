@@ -24,7 +24,8 @@ class OapDirectory extends Component
     public function getOapsProperty()
     {
         return OAP::active()
-            ->with(['department', 'teamRole'])
+            ->with(['department', 'teamRole', 'staffMember'])
+            ->withCount('shows')
             ->when($this->searchQuery, function ($q) {
                 $q->where('name', 'like', "%{$this->searchQuery}%")
                   ->orWhere('bio', 'like', "%{$this->searchQuery}%")

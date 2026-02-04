@@ -42,8 +42,20 @@
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mt-4 line-clamp-3">{{ $oap->bio }}</p>
+                                @php($socialLinks = array_filter($oap->public_social_links ?? []))
+                                @if(count($socialLinks) > 0)
+                                    <div class="mt-4 flex flex-wrap items-center gap-3 text-slate-500">
+                                        @foreach($socialLinks as $platform => $url)
+                                            <a href="{{ $url }}" target="_blank" rel="noopener"
+                                                class="hover:text-slate-700 transition-colors"
+                                                aria-label="{{ ucfirst($platform) }}">
+                                                <i class="fab fa-{{ $platform === 'linkedin' ? 'linkedin-in' : $platform }}"></i>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
                                 <div class="mt-4 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">{{ $oap->shows()->count() }} shows</span>
+                                    <span class="text-xs text-gray-500">{{ $oap->shows_count ?? 0 }} shows</span>
                                     <a href="{{ route('oaps.show', $oap->slug) }}"
                                         class="text-slate-600 hover:text-slate-800 text-sm font-semibold">
                                         View Profile

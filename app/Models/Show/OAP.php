@@ -95,10 +95,45 @@ class OAP extends Model
         return $query->where('available', true);
     }
 
+    public function getPublicSocialLinksAttribute(): array
+    {
+        $oapLinks = $this->normalizeSocialLinks($this->social_media);
+        if (!empty(array_filter($oapLinks))) {
+            return $oapLinks;
+        }
+
+        $staffLinks = $this->normalizeSocialLinks($this->staffMember?->social_links);
+        if (!empty(array_filter($staffLinks))) {
+            return $staffLinks;
+        }
+
+        return $oapLinks;
+    }
+
+    private function normalizeSocialLinks($links): array
+    {
+        if (!is_array($links)) {
+            $links = [];
+        }
+
+        return [
+            'facebook' => $this->normalizeSocialValue($links['facebook'] ?? $links['facebook_url'] ?? ''),
+            'twitter' => $this->normalizeSocialValue($links['twitter'] ?? $links['twitter_url'] ?? $links['x'] ?? ''),
+            'instagram' => $this->normalizeSocialValue($links['instagram'] ?? $links['instagram_url'] ?? ''),
+            'tiktok' => $this->normalizeSocialValue($links['tiktok'] ?? $links['tiktok_url'] ?? ''),
+            'linkedin' => $this->normalizeSocialValue($links['linkedin'] ?? $links['linkedin_url'] ?? ''),
+            'youtube' => $this->normalizeSocialValue($links['youtube'] ?? $links['youtube_url'] ?? ''),
+        ];
+    }
+
+    private function normalizeSocialValue($value): string
+    {
+        return is_string($value) ? trim($value) : '';
+    }
+
     public function getRouteKeyName()
     {
         return 'slug';
     }
 }
-
 
