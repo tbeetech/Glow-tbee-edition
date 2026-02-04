@@ -70,8 +70,50 @@ class OapForm extends Component
         ];
     }
 
+    private function defaultSocialMedia(): array
+    {
+        return [
+            'facebook' => '',
+            'twitter' => '',
+            'instagram' => '',
+            'tiktok' => '',
+            'linkedin' => '',
+            'youtube' => '',
+        ];
+    }
+
+    private function normalizedSocialMedia(?array $links): array
+    {
+        $defaults = $this->defaultSocialMedia();
+
+        if (!is_array($links)) {
+            return $defaults;
+        }
+
+        return [
+            'facebook' => $links['facebook'] ?? $links['facebook_url'] ?? '',
+            'twitter' => $links['twitter'] ?? $links['twitter_url'] ?? '',
+            'instagram' => $links['instagram'] ?? $links['instagram_url'] ?? '',
+            'tiktok' => $links['tiktok'] ?? $links['tiktok_url'] ?? '',
+            'linkedin' => $links['linkedin'] ?? $links['linkedin_url'] ?? '',
+            'youtube' => $links['youtube'] ?? $links['youtube_url'] ?? '',
+        ];
+    }
+
+    private function setTeamRolesForDepartment(): void
+    {
+        $this->teamRoles = $this->department_id
+            ? TeamRole::query()
+                ->where('is_active', true)
+                ->where('department_id', $this->department_id)
+                ->orderBy('name')
+                ->get()
+            : collect();
+    }
+
     public function mount($oapId = null)
     {
+        $this->social_media = $this->defaultSocialMedia();
         $this->departments = Department::query()
             ->where('is_active', true)
             ->orderBy('name')
@@ -95,18 +137,11 @@ class OapForm extends Component
             $this->is_active = $oap->is_active;
             $this->available = $oap->available;
             $this->joined_date = $oap->joined_date?->format('Y-m-d') ?? '';
-            $this->social_media = $oap->social_media ?? $this->social_media;
+            $this->social_media = $this->normalizedSocialMedia($oap->social_media);
         }
 
         $this->loadStaffMembers();
-
-        $this->teamRoles = $this->department_id
-            ? TeamRole::query()
-                ->where('is_active', true)
-                ->where('department_id', $this->department_id)
-                ->orderBy('name')
-                ->get()
-            : collect();
+        $this->setTeamRolesForDepartment();
     }
 
     private function loadStaffMembers()
@@ -129,65 +164,41 @@ class OapForm extends Component
         $this->staffMembers = $query->get();
     }
 
-    public function updatedStaffMemberId()
+    public function updatedStaffMemberId($value)
     {
-        if (!$this->staff_member_id) {
+        if (!$value) {
             return;
         }
 
-        $staff = StaffMember::find($this->staff_member_id);
+        $staff = StaffMember::find($value);
         if (!$staff) {
             return;
         }
 
-        $this->name = $staff->name;
-        if (!empty($staff->bio)) {
-            $this->bio = $staff->bio;
-        }
-        if (!empty($staff->photo_url)) {
-            $this->profile_photo = $staff->photo_url;
-        }
-        if (!empty($staff->email)) {
-            $this->email = $staff->email;
-        }
-        if (!empty($staff->phone)) {
-            $this->phone = $staff->phone;
-        }
-        if (!empty($staff->employment_status)) {
-            $this->employment_status = $staff->employment_status;
-        }
-        if (!empty($staff->joined_date)) {
-            $this->joined_date = $staff->joined_date->format('Y-m-d');
-        }
-        if (!empty($staff->department_id)) {
-            $this->department_id = $staff->department_id;
-        }
-        if (!empty($staff->team_role_id)) {
-            $this->team_role_id = $staff->team_role_id;
-        }
-        if (!empty($staff->social_links) && is_array($staff->social_links)) {
-            $this->social_media = array_merge($this->social_media, $staff->social_links);
-        }
+        $this->name = (string) ($staff->name ?? '');
+        $this->bio = (string) ($staff->bio ?? '');
+        $this->profile_photo = (string) ($staff->photo_url ?? '');
+        $this->profile_photo_upload = null;
+        $this->email = (string) ($staff->email ?? '');
+        $this->phone = (string) ($staff->phone ?? '');
+        $this->employment_status = (string) ($staff->employment_status ?: 'full-time');
+        $this->joined_date = $staff->joined_date?->format('Y-m-d') ?? '';
+        $this->department_id = $staff->department_id ?: '';
+        $this->setTeamRolesForDepartment();
+        $this->team_role_id = $staff->team_role_id ?: '';
+        $this->social_media = $this->normalizedSocialMedia($staff->social_links);
+        $this->is_active = (bool) $staff->is_active;
+        $this->available = true;
 
-        $this->teamRoles = $this->department_id
-            ? TeamRole::query()
-                ->where('is_active', true)
-                ->where('department_id', $this->department_id)
-                ->orderBy('name')
-                ->get()
-            : collect();
+        if (empty($this->specializations) && !empty($staff->role)) {
+            $this->specializations = $staff->role;
+        }
     }
 
     public function updatedDepartmentId()
     {
         $this->team_role_id = '';
-        $this->teamRoles = $this->department_id
-            ? TeamRole::query()
-                ->where('is_active', true)
-                ->where('department_id', $this->department_id)
-                ->orderBy('name')
-                ->get()
-            : collect();
+        $this->setTeamRolesForDepartment();
     }
 
     public function updatedProfilePhotoUpload()
