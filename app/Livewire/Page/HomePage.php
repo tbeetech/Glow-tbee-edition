@@ -65,7 +65,23 @@ class HomePage extends Component
         }
 
         $first = $this->featuredShows[array_key_first($this->featuredShows)] ?? null;
-        if (is_array($first) || is_object($first)) {
+        if (is_array($first) || $first instanceof \ArrayAccess) {
+            $hasSlugKey = is_array($first)
+                ? array_key_exists('slug', $first)
+                : isset($first['slug']);
+
+            if (!$hasSlugKey) {
+                $this->loadRealPodcasts();
+            }
+
+            return;
+        }
+
+        if (is_object($first)) {
+            if (!isset($first->slug)) {
+                $this->loadRealPodcasts();
+            }
+
             return;
         }
 

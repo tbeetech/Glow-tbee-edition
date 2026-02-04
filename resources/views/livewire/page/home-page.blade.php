@@ -776,8 +776,13 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($featuredShows as $show)
                     @continueIfNotArray($show)
+                    @php($showSlug = $show['slug'] ?? null)
                     <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                        <a href="{{ route('shows.show', $show['slug']) }}" class="relative h-64 overflow-hidden block">
+                        @if($showSlug)
+                            <a href="{{ route('shows.show', $showSlug) }}" class="relative h-64 overflow-hidden block">
+                        @else
+                            <div class="relative h-64 overflow-hidden block">
+                        @endif
                             <x-initials-image
                                 :src="$show['image'] ?? null"
                                 :title="$show['title'] ?? ''"
@@ -795,7 +800,11 @@
                                 <h3 class="text-2xl font-bold text-white mb-1">{{ $show['title'] }}</h3>
                                 <p class="text-emerald-300 text-sm">{{ $show['days'] }}</p>
                             </div>
-                        </a>
+                        @if($showSlug)
+                            </a>
+                        @else
+                            </div>
+                        @endif
                         <div class="p-6">
                             <div class="flex items-center space-x-3 mb-4">
                                 <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
@@ -813,10 +822,17 @@
                                 </div>
                             </div>
                             <p class="text-gray-600 mb-4">{{ $show['description'] }}</p>
-                            <a href="{{ route('shows.show', $show['slug']) }}" class="inline-flex items-center space-x-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
-                                <span>Learn More</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
+                            @if($showSlug)
+                                <a href="{{ route('shows.show', $showSlug) }}" class="inline-flex items-center space-x-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+                                    <span>Learn More</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            @else
+                                <span class="inline-flex items-center space-x-2 text-gray-400 font-semibold cursor-not-allowed">
+                                    <span>Learn More</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            @endif
                         </div>
                     </div>
                 @endforeach
