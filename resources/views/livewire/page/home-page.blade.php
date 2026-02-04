@@ -155,7 +155,7 @@
     <!-- Stats Section -->
     <section class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
                 @foreach($stats as $stat)
                     @continueIfNotArray($stat)
                     <div class="text-center">

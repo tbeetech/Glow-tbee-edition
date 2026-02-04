@@ -410,10 +410,9 @@ class HomePage extends Component
     {
         // Get real statistics from database
         $totalNews = News::published()->count();
-        $totalBlogPosts = \App\Models\Blog\Post::published()->count(); // ADD THIS
+        $totalBlogPosts = \App\Models\Blog\Post::published()->count();
         $totalPodcasts = ProgramShow::active()->count();
         $totalEpisodes = Episode::where('status', 'published')->count();
-        $totalPodcastPlays = Episode::sum('plays');
         
         $this->stats = [
             [
@@ -427,14 +426,24 @@ class HomePage extends Component
                 'icon' => 'fas fa-broadcast-tower'
             ],
             [
-                'number' => number_format($totalBlogPosts), // USE BLOG POSTS HERE
+                'number' => number_format($totalNews),
+                'label' => 'News Articles',
+                'icon' => 'fas fa-newspaper'
+            ],
+            [
+                'number' => number_format($totalBlogPosts),
                 'label' => 'Blog Articles',
-                'icon' => 'fas fa-blog' // Changed from fa-newspaper to fa-blog
+                'icon' => 'fas fa-blog'
             ],
             [
                 'number' => $totalPodcasts . '+',
                 'label' => 'Show Programs',
                 'icon' => 'fas fa-microphone'
+            ],
+            [
+                'number' => number_format($totalEpisodes),
+                'label' => 'Podcast Episodes',
+                'icon' => 'fas fa-podcast'
             ],
         ];
     }
