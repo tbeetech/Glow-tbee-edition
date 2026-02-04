@@ -7,7 +7,6 @@ use App\Models\Staff\StaffMember;
 use App\Models\Team\Department;
 use App\Models\Team\Role as TeamRole;
 use App\Support\CloudinaryUploader;
-use App\Support\PersonProfileSync;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -302,8 +301,6 @@ class OapForm extends Component
             $oap = OAP::create($data);
             $message = 'OAP created successfully.';
         }
-
-        PersonProfileSync::fromOap($oap);
 
         return redirect()->route('admin.team.oaps')->with('success', $message);
     }

@@ -10,7 +10,44 @@ use App\Models\User;
 
 class PersonProfileSync
 {
+    private static bool $isSyncing = false;
+
     public static function fromUser(User $user): void
+    {
+        self::runSync(function () use ($user) {
+            self::syncFromUser($user);
+        });
+    }
+
+    public static function fromStaff(StaffMember $staff): void
+    {
+        self::runSync(function () use ($staff) {
+            self::syncFromStaff($staff);
+        });
+    }
+
+    public static function fromOap(OAP $oap): void
+    {
+        self::runSync(function () use ($oap) {
+            self::syncFromOap($oap);
+        });
+    }
+
+    private static function runSync(callable $callback): void
+    {
+        if (self::$isSyncing) {
+            return;
+        }
+
+        self::$isSyncing = true;
+        try {
+            $callback();
+        } finally {
+            self::$isSyncing = false;
+        }
+    }
+
+    private static function syncFromUser(User $user): void
     {
         $staff = $user->staffMember;
         if (!$staff) {
@@ -47,7 +84,7 @@ class PersonProfileSync
         ]);
     }
 
-    public static function fromStaff(StaffMember $staff): void
+    private static function syncFromStaff(StaffMember $staff): void
     {
         $staff->loadMissing(['user', 'oap']);
 
@@ -84,7 +121,7 @@ class PersonProfileSync
         ]);
     }
 
-    public static function fromOap(OAP $oap): void
+    private static function syncFromOap(OAP $oap): void
     {
         $staff = $oap->staffMember;
         if (!$staff) {

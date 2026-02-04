@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin\Profile;
 
-use App\Support\PersonProfileSync;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
@@ -52,7 +51,6 @@ class ProfileForm extends Component
         }
 
         $user->update($data);
-        PersonProfileSync::fromUser($user);
 
         $this->reset('password', 'password_confirmation');
 

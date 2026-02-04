@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Models\Team\Department;
 use App\Models\Team\Role as TeamRole;
 use App\Support\CloudinaryUploader;
-use App\Support\PersonProfileSync;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -160,8 +159,6 @@ class Form extends Component
         } else {
             $user->syncRoles([]);
         }
-
-        PersonProfileSync::fromUser($user);
 
         return redirect()->route('admin.users.index')->with('success', $message);
     }
