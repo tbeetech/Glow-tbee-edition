@@ -28,12 +28,14 @@ class StaffMember extends Model
         'employment_status',
         'is_active',
         'joined_date',
+        'date_of_birth',
         'social_links',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'joined_date' => 'date',
+        'date_of_birth' => 'date',
         'social_links' => 'array',
     ];
 

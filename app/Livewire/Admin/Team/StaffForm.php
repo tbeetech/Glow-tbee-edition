@@ -32,6 +32,7 @@ class StaffForm extends Component
     public $employment_status = 'full-time';
     public $is_active = true;
     public $joined_date = '';
+    public $date_of_birth = '';
     public $departments = [];
     public $teamRoles = [];
     public $users = [];
@@ -55,6 +56,7 @@ class StaffForm extends Component
         'photo_upload' => 'nullable|image|max:5120',
         'email' => 'nullable|email',
         'joined_date' => 'nullable|date',
+        'date_of_birth' => 'nullable|date|before_or_equal:today',
         'employment_status' => 'required',
         'is_active' => 'boolean',
     ];
@@ -84,6 +86,7 @@ class StaffForm extends Component
             $this->employment_status = $staff->employment_status;
             $this->is_active = $staff->is_active;
             $this->joined_date = $staff->joined_date?->format('Y-m-d') ?? '';
+            $this->date_of_birth = $staff->date_of_birth?->format('Y-m-d') ?? '';
             $this->social_links = $staff->social_links ?? $this->social_links;
         }
 
@@ -212,6 +215,7 @@ class StaffForm extends Component
             'employment_status' => $this->employment_status,
             'is_active' => $this->is_active,
             'joined_date' => $this->joined_date ?: null,
+            'date_of_birth' => $this->date_of_birth ?: null,
             'social_links' => $this->social_links,
         ];
 

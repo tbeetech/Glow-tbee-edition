@@ -370,6 +370,11 @@ return [
                         'active' => 'admin.team.staff'
                     ],
                     [
+                        'title' => 'Birthdays',
+                        'route' => 'admin.team.birthdays',
+                        'active' => 'admin.team.birthdays'
+                    ],
+                    [
                         'title' => 'Departments',
                         'route' => 'admin.team.departments',
                         'active' => 'admin.team.departments*'

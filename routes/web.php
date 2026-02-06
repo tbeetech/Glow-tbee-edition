@@ -319,6 +319,7 @@ Route::middleware(['auth', 'admin_or_staff'])->group(function () {
             Route::get('/staff', AdminStaffIndex::class)->name('staff');
             Route::get('/staff/create', AdminStaffForm::class)->name('staff.create');
             Route::get('/staff/{staffId}/edit', AdminStaffForm::class)->name('staff.edit');
+            Route::get('/birthdays', \App\Livewire\Admin\Team\StaffBirthdays::class)->name('birthdays');
             Route::get('/links', AdminTeamProfileLinks::class)->name('links');
             Route::get('/departments', \App\Livewire\Admin\Team\DepartmentsIndex::class)->name('departments');
             Route::get('/departments/create', \App\Livewire\Admin\Team\DepartmentForm::class)->name('departments.create');

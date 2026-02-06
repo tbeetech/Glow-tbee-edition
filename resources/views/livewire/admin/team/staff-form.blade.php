@@ -138,6 +138,13 @@
                 <input type="date" wire:model="joined_date"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                <input type="date" wire:model="date_of_birth"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <p class="mt-1 text-xs text-gray-500">Used for birthday messages. Not shown publicly.</p>
+                @error('date_of_birth') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
                 <textarea rows="4" wire:model="bio"
