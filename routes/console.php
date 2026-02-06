@@ -70,7 +70,7 @@ Artisan::command('staff:send-birthday-emails {--date=}', function () {
         $sent++;
     }
 
-    $this->info(\"Birthday emails sent: {$sent}. Skipped: {$skipped}.\");
+    $this->info("Birthday emails sent: {$sent}. Skipped: {$skipped}.");
 })->purpose('Send automated birthday emails to active staff');
 
 Schedule::command('staff:send-birthday-emails')
