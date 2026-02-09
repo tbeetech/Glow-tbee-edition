@@ -60,6 +60,8 @@
                 <select wire:model="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="admin">Admin</option>
                     <option value="staff">Staff</option>
+                    <option value="corp_member">Corp Member</option>
+                    <option value="intern">Intern</option>
                     <option value="user">User</option>
                 </select>
             </div>

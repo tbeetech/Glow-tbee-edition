@@ -239,7 +239,7 @@ class NewsPage extends Component
                 'id' => $news->author->id,
                 'name' => $news->author->name,
                 'avatar' => $news->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($news->author->name),
-                'role' => ucfirst($news->author->role ?? 'Author'),
+                'role' => $news->author->role_label ?? 'Author',
             ],
             'published_at' => $news->published_at->format('Y-m-d H:i:s'),
             'read_time' => $news->read_time,

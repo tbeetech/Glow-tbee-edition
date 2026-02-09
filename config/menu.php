@@ -3,7 +3,7 @@
 return [
     [
         'group' => 'Main',
-        'roles' => ['admin', 'staff'],
+        'roles' => ['admin', 'staff', 'corp_member', 'intern'],
         'items' => [
             [
                 'title' => 'Dashboard',
@@ -34,7 +34,7 @@ return [
     ],
     [
         'group' => 'Content Management',
-        'roles' => ['admin', 'staff'],
+        'roles' => ['admin', 'staff', 'corp_member', 'intern'],
         'items' => [
             [
                 'title' => 'News & Updates',
@@ -142,7 +142,7 @@ return [
     ],
     [
         'group' => 'Community',
-        'roles' => ['admin', 'staff'],
+        'roles' => ['admin', 'staff', 'corp_member', 'intern'],
         'items' => [
             [
                 'title' => 'Listeners',

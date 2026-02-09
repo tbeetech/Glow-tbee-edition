@@ -55,7 +55,7 @@ class StaffProfile extends Component
 
             $this->profile = [
                 'name' => $user->name,
-                'role' => $user->teamRole?->name ?? ucfirst($user->role),
+                'role' => $user->teamRole?->name ?? ($user->role_label ?? 'User'),
                 'department' => $user->department?->name ?? 'General',
                 'bio' => null,
                 'photo' => $user->avatar,

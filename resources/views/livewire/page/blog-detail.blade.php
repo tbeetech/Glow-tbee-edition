@@ -82,7 +82,7 @@
                             <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $post->author->id]) }}" class="font-semibold hover:text-purple-200 transition-colors">
                                 {{ $post->author->name }}
                             </a>
-                            <p class="text-sm text-purple-200">{{ ucfirst($post->author->role) }}</p>
+                            <p class="text-sm text-purple-200">{{ $post->author->role_label ?? 'Author' }}</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-4 text-sm text-purple-200">
@@ -346,7 +346,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $post->author->name }}</h3>
-                                    <p class="text-purple-600 font-semibold mb-3">{{ ucfirst($post->author->role) }}</p>
+                                    <p class="text-purple-600 font-semibold mb-3">{{ $post->author->role_label ?? 'Author' }}</p>
                                     <p class="text-gray-700">Dedicated to bringing you the best content and stories from the world of music and entertainment.</p>
                                 </div>
                             </div>

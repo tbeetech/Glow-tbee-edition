@@ -333,7 +333,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <h3 class="text-xl font-bold text-gray-900 mb-1">{{ $news->author->name }}</h3>
-                                    <p class="text-emerald-600 font-semibold mb-3">{{ ucfirst($news->author->role) }}</p>
+                                    <p class="text-emerald-600 font-semibold mb-3">{{ $news->author->role_label ?? 'Author' }}</p>
                                     <p class="text-gray-700">Dedicated to bringing you the latest news and stories from Glow Media.</p>
                                 </div>
                             </div>

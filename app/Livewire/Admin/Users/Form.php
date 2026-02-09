@@ -41,7 +41,7 @@ class Form extends Component
             'avatar' => 'nullable|url|max:500',
             'avatar_upload' => 'nullable|image|max:5120',
             'bio' => 'nullable|string|max:2000',
-            'role' => 'required|in:admin,staff,user',
+            'role' => 'required|in:admin,staff,corp_member,intern,user',
             'department_id' => 'required|exists:team_departments,id',
             'team_role_id' => 'required|exists:team_roles,id',
             'is_active' => 'boolean',
@@ -149,13 +149,20 @@ class Form extends Component
             $message = 'User created successfully.';
         }
 
-        if (in_array($this->role, ['admin', 'staff'], true)) {
+        $permissionRole = null;
+        if ($this->role === 'admin') {
+            $permissionRole = 'admin';
+        } elseif (in_array($this->role, ['staff', 'corp_member', 'intern'], true)) {
+            $permissionRole = 'staff';
+        }
+
+        if ($permissionRole) {
             $guardName = method_exists($user, 'getDefaultGuardName')
                 ? $user->getDefaultGuardName()
                 : config('auth.defaults.guard', 'web');
-            Role::findOrCreate($this->role, $guardName);
+            Role::findOrCreate($permissionRole, $guardName);
             app(PermissionRegistrar::class)->forgetCachedPermissions();
-            $user->syncRoles([$this->role]);
+            $user->syncRoles([$permissionRole]);
         } else {
             $user->syncRoles([]);
         }

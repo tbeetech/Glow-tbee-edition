@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-700">{{ ucfirst($user->role ?? 'user') }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $user->role_label ?? 'User' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $user->department?->name ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $user->teamRole?->name ?? '—' }}</td>
                             <td class="px-6 py-4">

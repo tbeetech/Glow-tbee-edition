@@ -30,7 +30,7 @@ class RoleSeeder extends Seeder
                 return;
             }
 
-            if (in_array($user->role, ['staff', 'dj'], true)) {
+            if (in_array($user->role, ['staff', 'corp_member', 'intern'], true)) {
                 $user->assignRole($staffRole);
             }
         });

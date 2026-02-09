@@ -153,7 +153,7 @@ class EventPage extends Component
             'author' => [
                 'name' => $event->author->name,
                 'avatar' => $event->author->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($event->author->name),
-                'role' => ucfirst($event->author->role ?? 'Organizer'),
+                'role' => $event->author->role_label ?? 'Organizer',
             ],
             'views' => $event->views,
             'shares' => $event->shares,

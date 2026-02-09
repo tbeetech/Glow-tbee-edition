@@ -313,7 +313,7 @@
                                                 <div>
                                                     <a href="{{ route('staff.profile', ['type' => 'user', 'identifier' => $post['author']['id']]) }}" class="text-sm font-semibold text-gray-900 hover:text-purple-600 transition-colors">
                                                         {{ $post['author']['name'] }}</a>
-                                                    <p class="text-xs text-gray-500">{{ $post['author']['role'] }}</p>
+                                                    <p class="text-xs text-gray-500">{{ $post->author->role_label ?? 'Author' }}</p>
                                                 </div>
                                             </div>
 
